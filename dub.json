@@ -1,0 +1,14 @@
+{
+    "authors": [
+        "karita"
+    ],
+    "copyright": "Copyright © 2019, karita",
+    "dependencies": {
+        "mir-blas": "~>1.1.4",
+        "mir-runtime": "~>0.0.22",
+        "mir-random": "~>2.2.4"
+    },
+    "description": "autograd library",
+    "license": "BSL-1.0",
+    "name": "grain2"
+}
