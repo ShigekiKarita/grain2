@@ -108,10 +108,10 @@ auto matmul(T)(Tensor!(2, T) a, Tensor!(2, T) b)
 @system @nogc
 unittest
 {
-    auto x = Tensor!(2, double)(2, 3);
-    x.normal_;
-    auto y = Tensor!(2, double)(3, 2);
-    y.normal_;
+    import grain.random : normal_;
+    
+    auto x = Tensor!(2, double)(2, 3).normal_;
+    auto y = Tensor!(2, double)(3, 2).normal_;
     auto z = x.matmul(y);
     auto c = Tensor!(2, double)(2, 2);
     c.asSlice[] = 0;

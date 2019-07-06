@@ -9,21 +9,20 @@ enum Device
 }
 
 // Tensor on CPU implementation
-struct Tensor(size_t dim, T)
-{
-    import std.traits : isPointer, PointerTarget, isFloatingPoint;
-    import mir.rc : RCArray, RCI;
-    import mir.ndslice.slice : Slice, Universal;
-    import mir.ndslice.topology : iota;
-    
+struct Tensor(size_t dim, T, Device device = Device.CPU)
+{    
+    import mir.ndslice.slice : Slice, Universal, Structure;
+    import mir.rc.array : RCArray, RCI;
+
     size_t[dim] shape;
     ptrdiff_t[dim] stride;
-
-    RCArray!T storage;
+    RCArray!T array;
     ptrdiff_t offset = 0;
 
     this(size_t[dim] shape...)
     {
+        import mir.ndslice.topology : iota;
+        
         this.shape = shape;
         size_t n = 1;
         foreach (s; shape)
@@ -31,12 +30,12 @@ struct Tensor(size_t dim, T)
             n *= s;
         }
         this.stride = shape.iota.strides;
-        this.storage = typeof(storage)(n);
+        this.array = typeof(array)(n);
     }
-
+    
     RCI!T iterator()
     {
-        return storage.asSlice._iterator + offset;
+        return array.asSlice._iterator + offset;
     }
 
     Slice!(typeof(this.iterator()), dim, Universal) asSlice()
@@ -51,18 +50,7 @@ struct Tensor(size_t dim, T)
         import std.meta : AliasSeq;
         alias structure = AliasSeq!(this.shape, this.stride);
         return typeof(return)(structure, this.iterator.lightScope);        
-    }
-    
-    static if (isFloatingPoint!T)
-    @trusted ref normal_()
-    {
-        import grain.random : rng;
-        import mir.ndslice : each;
-        import mir.random.variable: NormalVariable;
-        auto rv = NormalVariable!T(0, 1);
-        this.asSlice.each!((ref x) {x = rv(rng);});
-        return this;
-    }
+    }    
 }
 
 

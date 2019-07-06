@@ -1,6 +1,11 @@
 module grain.random;
 
+import std.traits : isFloatingPoint;
+
 import mir.random : Random;
+
+import grain.tensor : Tensor;
+
 
 /// thread global random number generator (rng)
 __gshared Random rng = void;
@@ -33,4 +38,15 @@ unittest
     setSeed(0);
     auto a2 = rv(rng);
     assert(a == a2);
+}
+
+
+Tensor!(dim, T) normal_(size_t dim, T)(Tensor!(dim, T) a) if (isFloatingPoint!T)
+{
+    import mir.ndslice : each;
+    import mir.random.variable: NormalVariable;
+
+    auto rv = NormalVariable!T(0, 1);
+    a.asSlice.each!((ref x) {x = rv(rng);});
+    return a;
 }
