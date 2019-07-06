@@ -6,9 +6,9 @@ void assertEqual(T1, T2)(T1 actual, T2 desired, string info = "none")
 {
     assert(actual == desired,
            stringBuf()
-           << "(actual)" << actual
-           << " !=  (desired)" << desired
-           << ", (info)" <<  info
+           << "(actual) " << actual
+           << " != (desired) " << desired
+           << ", (info) " <<  info
            << getData);
 }
 
