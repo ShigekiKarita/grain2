@@ -39,22 +39,29 @@ struct Tensor(size_t dim, T)
         return storage.asSlice._iterator + offset;
     }
 
-    @trusted Slice!(typeof(this.iterator()), dim, Universal) asSlice()
+    Slice!(typeof(this.iterator()), dim, Universal) asSlice()
     {
         import std.meta : AliasSeq;
         alias structure = AliasSeq!(this.shape, this.stride);
         return typeof(return)(structure, this.iterator);
     }
 
+    Slice!(T*, dim, Universal) lightScope()
+    {
+        import std.meta : AliasSeq;
+        alias structure = AliasSeq!(this.shape, this.stride);
+        return typeof(return)(structure, this.iterator.lightScope);        
+    }
+    
     static if (isFloatingPoint!T)
-    @trusted void normal_()
+    @trusted ref normal_()
     {
         import grain.random : rng;
         import mir.ndslice : each;
         import mir.random.variable: NormalVariable;
         auto rv = NormalVariable!T(0, 1);
         this.asSlice.each!((ref x) {x = rv(rng);});
-        // return this;
+        return this;
     }
 }
 

@@ -64,7 +64,9 @@ auto transposed(size_t N, T)(Tensor!(N, T) x)
     assert(t.asSlice[1, 1] == x.asSlice[1, 1]);   
 
     assert(t.asSlice[2, 0] == x.asSlice[0, 2]);
-    assert(t.asSlice[2, 1] == x.asSlice[1, 2]);   
+    assert(t.asSlice[2, 1] == x.asSlice[1, 2]);
+
+    assert(t.transposed.asSlice == x.asSlice);
 }
 
 
@@ -80,13 +82,12 @@ struct Matmul(T)
     }
     do
     {
+        import mir.ndslice : as;
         import mir.blas : gemm;
         auto c = Tensor!(2, T)(a.shape[0], b.shape[1]);
-        // c.asSlice[] = 0;
-        gemm(cast(T) 1, a.asSlice, b.asSlice, cast(T) 0, c.asSlice);
+        gemm(cast(T) 1, a.lightScope, b.lightScope, cast(T) 0, c.lightScope);
         return c;
     }
-
 
     Tuple!(Tensor!(2, T), Tensor!(2, T)) backward(Tensor!(2, T) gc)
     {
@@ -104,25 +105,25 @@ auto matmul(T)(Tensor!(2, T) a, Tensor!(2, T) b)
 }
 
 
-@safe @nogc
+@system @nogc
 unittest
 {
     auto x = Tensor!(2, double)(2, 3);
-    // x.normal_;
-    // auto y = Tensor!(2, double)(3, 2);
-    // y.normal_;
-    // auto z = x.matmul(y);
-    // auto c = Tensor!(2, double)(2, 2);
-    // c.asSlice[] = 0;
-    // foreach (i; 0 .. x.shape[0])
-    // {
-    //     foreach (j; 0 .. y.shape[1])
-    //     {
-    //         foreach (k; 0 .. x.shape[1])
-    //         {
-    //             c.asSlice[i, j] += x.asSlice[i, k] * y.asSlice[k, j];
-    //         }
-    //     }
-    // }
-    // assertAllClose(x.matmul(y), c);
+    x.normal_;
+    auto y = Tensor!(2, double)(3, 2);
+    y.normal_;
+    auto z = x.matmul(y);
+    auto c = Tensor!(2, double)(2, 2);
+    c.asSlice[] = 0;
+    foreach (i; 0 .. x.shape[0])
+    {
+        foreach (j; 0 .. y.shape[1])
+        {
+            foreach (k; 0 .. x.shape[1])
+            {
+                c.asSlice[i, j] += x.asSlice[i, k] * y.asSlice[k, j];
+            }
+        }
+    }
+    assertAllClose(x.matmul(y), c);
 }

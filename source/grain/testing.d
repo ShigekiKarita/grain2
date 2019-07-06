@@ -2,6 +2,7 @@ module grain.testing;
 
 import mir.format : stringBuf, getData;
 
+/// assert all elements are equal
 void assertEqual(T1, T2)(T1 actual, T2 desired, string info = "none")
 {
     assert(actual == desired,
@@ -19,6 +20,7 @@ void assertShapeEqual(T1, T2)(T1 actual, T2 desired, string info = "shape mismat
 }
 
 
+/// assert tensor elements are all close
 void assertAllClose(T1, T2)(
     T1 actual,
     T2 desired,
