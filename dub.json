@@ -6,7 +6,8 @@
     "dependencies": {
         "mir-blas": "~>1.1.4",
         "mir-runtime": "~>0.0.22",
-        "mir-random": "~>2.2.4"
+        "mir-random": "~>2.2.4",
+	"stdx-allocator": "~>3.0.2"
     },
     "buildTypes": {
         "cuda-unittest": {

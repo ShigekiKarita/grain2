@@ -1,7 +1,7 @@
 module grain.functions;
 
 import std.typecons : Tuple, tuple;
-import grain.tensor : Tensor, Device;
+import grain.tensor : Tensor;
 debug import grain.testing : assertEqual, assertAllClose;
 
 
@@ -12,14 +12,14 @@ struct Transposed(size_t N, T)
 
     static Tensor!(N, T) forward(Tensor!(N, T) x)
     {
-        auto n1 = x.shape[$-1];
-        auto n2 = x.shape[$-2];
-        x.shape[$-2] = n1;
-        x.shape[$-1] = n2;
-        auto s1 = x.stride[$-1];
-        auto s2 = x.stride[$-2];
-        x.stride[$-1] = s2;
-        x.stride[$-2] = s1;
+        auto n1 = x.lengths[$-1];
+        auto n2 = x.lengths[$-2];
+        x.lengths[$-2] = n1;
+        x.lengths[$-1] = n2;
+        auto s1 = x.strides[$-1];
+        auto s2 = x.strides[$-2];
+        x.strides[$-1] = s2;
+        x.strides[$-2] = s1;
         return x;
     }
 
@@ -43,19 +43,19 @@ auto transposed(size_t N, T)(Tensor!(N, T) x)
     // [0, 1, 2]
     // [3, 4, 5]
     // iter   = p
-    // shape  = [2, 3]
-    // stride = [3, 1]
+    // lengths  = [2, 3]
+    // strides = [3, 1]
     auto x = Tensor!(2, size_t)(2, 3);
     x.asSlice[] = iota(2, 3);
 
     // [0, 3]
     // [1, 4]
     // [2, 5]
-    // shape  = [3, 2]
-    // stride = [1, 3]
+    // lengths  = [3, 2]
+    // strides = [1, 3]
     auto t = x.transposed;
-    assert(t.shape[1] == x.shape[0]);
-    assert(t.shape[0] == x.shape[1]);
+    assert(t.lengths[1] == x.lengths[0]);
+    assert(t.lengths[0] == x.lengths[1]);
     
     assert(t.asSlice[0, 0] == x.asSlice[0, 0]);
     assert(t.asSlice[0, 1] == x.asSlice[1, 0]);
@@ -69,24 +69,23 @@ auto transposed(size_t N, T)(Tensor!(N, T) x)
     assert(t.transposed.asSlice == x.asSlice);
 }
 
-
 /// matrix multiplication
-struct Matmul(T, Device device) if (device == Device.CPU)
+struct Matmul(T, Storage) if (Storage.deviceof == "cpu")
 {
-    alias Matrix = Tensor!(2, T, device);
+    alias Matrix = Tensor!(2, T, Storage);
 
     Matrix a, b;
 
     Matrix forward(Matrix a, Matrix b)
     in
     {
-        assertEqual(a.shape[1], b.shape[0], "Matmul shape mismatch");
+        assertEqual(a.lengths[1], b.lengths[0], "Matmul lengths mismatch");
     }
     do
     {
         import mir.ndslice : as;
         import mir.blas : gemm;
-        auto c = Tensor!(2, T)(a.shape[0], b.shape[1]);
+        auto c = Tensor!(2, T)(a.lengths[0], b.lengths[1]);
         gemm(cast(T) 1, a.lightScope, b.lightScope, cast(T) 0, c.lightScope);
         return c;
     }
@@ -99,15 +98,10 @@ struct Matmul(T, Device device) if (device == Device.CPU)
     }
 }
 
-struct Matmul(T, Device device) if (device == Device.CUDA)
-{
-    
-}
-
 /// ditto
-auto matmul(T, Device dev)(Tensor!(2, T, dev) a, Tensor!(2, T, dev) b)
+auto matmul(T, Storage)(Tensor!(2, T, Storage) a, Tensor!(2, T, Storage) b)
 {
-    Matmul!(T, dev) mm;
+    Matmul!(T, Storage) mm;
     return mm.forward(a, b);
 }
 
@@ -122,11 +116,11 @@ unittest
     auto z = x.matmul(y);
     auto c = Tensor!(2, double)(2, 2);
     c.asSlice[] = 0;
-    foreach (i; 0 .. x.shape[0])
+    foreach (i; 0 .. x.lengths[0])
     {
-        foreach (j; 0 .. y.shape[1])
+        foreach (j; 0 .. y.lengths[1])
         {
-            foreach (k; 0 .. x.shape[1])
+            foreach (k; 0 .. x.lengths[1])
             {
                 c.asSlice[i, j] += x.asSlice[i, k] * y.asSlice[k, j];
             }
@@ -134,3 +128,4 @@ unittest
     }
     assertAllClose(x.matmul(y), c);
 }
+

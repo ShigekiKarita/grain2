@@ -1,51 +1,49 @@
 /// Tensor data structure module
 module grain.tensor;
 
+import stdx.allocator.mallocator : Mallocator;
+import grain.storage : RCStorage;
 debug import grain.testing : assertAllClose, assertEqual;
 
-enum Device
-{
-    CPU,
-    CUDA
-}
 
 // Tensor on CPU implementation
-struct Tensor(size_t dim, T, Device device = Device.CPU)
+struct Tensor(size_t dim, T, Storage = RCStorage!Mallocator)
 {
     import mir.ndslice.slice : Slice, Universal, Structure;
-    import mir.rc.array : RCArray, RCI;
 
-    size_t[dim] shape;
-    ptrdiff_t[dim] stride;
-    RCArray!T payload;
+    size_t[dim] lengths;
+    ptrdiff_t[dim] strides;
+    Storage payload;
     ptrdiff_t offset = 0;
 
-    this(size_t[dim] shape...)
+    alias shape = lengths;
+    
+    this(size_t[dim] lengths...)
     {
         import mir.ndslice.topology : iota;
 
-        this.shape = shape;
-        this.stride = shape.iota.strides;
-        this.payload = typeof(payload)(this.stride[0] * this.shape[0]);
+        this.lengths = lengths;
+        this.strides = lengths.iota.strides;
+        this.payload = typeof(payload)(T.sizeof * this.strides[0] * this.lengths[0]);
     }
 
-    RCI!T iterator() @property
+    auto iterator() @property
     {
-        return payload.asSlice._iterator + offset;
+        return payload.iterator!(T*) + offset;
     }
 
-    Slice!(RCI!T, dim, Universal) asSlice()
+    Slice!(typeof(this.iterator()), dim, Universal) asSlice()
     {
         import std.meta : AliasSeq;
-        alias structure = AliasSeq!(this.shape, this.stride);
+        alias structure = AliasSeq!(this.lengths, this.strides);
         return typeof(return)(structure, this.iterator);
     }
 
     Slice!(T*, dim, Universal) lightScope()() scope return @property @trusted
     {
         import std.meta : AliasSeq;
-        alias structure = AliasSeq!(this.shape, this.stride);
-        return typeof(return)(structure, this.iterator.lightScope);
+        alias structure = AliasSeq!(this.lengths, this.strides);
+        return typeof(return)(structure, this.iterator);
     }
 }
 
@@ -53,6 +51,6 @@ struct Tensor(size_t dim, T, Device device = Device.CPU)
 @nogc unittest
 {
     auto x = Tensor!(2, double)(2, 3);
-    assertEqual(x.stride[0], 3);
-    assertEqual(x.stride[1], 1);
+    assertEqual(x.strides[0], 3);
+    assertEqual(x.strides[1], 1);
 }
