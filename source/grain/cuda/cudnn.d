@@ -109,7 +109,7 @@ auto makeCudnnTensor(bool allowSameSize = false, T, size_t dim, Storage)(Tensor!
 unittest
 {
     import grain.cuda.allocator : GPUTensor;
-    import grain.functions : transposed;
+    import grain.ops.transposed : transposed;
     auto x = GPUTensor!(3, float)(2, 3, 4).transposed;
     auto t = x.makeCudnnTensor;
 
@@ -149,7 +149,7 @@ unittest
 {
     /// FIXME: int support
     import grain.cuda.allocator : GPUTensor;
-    import grain.functions : transposed;
+    import grain.ops.transposed : transposed;
     auto x = GPUTensor!(3, float)(2, 3, 4).transposed;
     auto y = GPUTensor!(3, float)(x.shape);
     transform(x, y);
