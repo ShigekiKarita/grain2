@@ -1,7 +1,7 @@
+/// CUDA Storage module
 module grain.cuda.storage;
 
-import derelict.cuda;
-
+import grain.cuda.dpp.driver;
 import grain.cuda.testing;
 
 
@@ -13,7 +13,7 @@ struct CuPtr(T) {
     /// create copy of host array into device
     this(T[] host) {
         this(host.length);
-        checkCuda(cuMemcpyHtoD(ptr, &host[0], T.sizeof * length));
+        checkCuda(cuMemcpyHtoD_v2(ptr, &host[0], T.sizeof * length));
     }
 
     @disable this(this); // not copyable
@@ -23,7 +23,7 @@ struct CuPtr(T) {
     this(size_t n) {
         this.length = n;
         if (n > 0) {
-            checkCuda(cuMemAlloc(&this.ptr, T.sizeof * this.length));
+            checkCuda(cuMemAlloc_v2(&this.ptr, T.sizeof * this.length));
         }
     }
 
@@ -35,7 +35,7 @@ struct CuPtr(T) {
 
     /// dtor calling cuMemFree
     ~this() {
-        if (ptr != 0x0) checkCuda(cuMemFree(ptr));
+        if (ptr != 0x0) checkCuda(cuMemFree_v2(ptr));
         ptr = 0x0;
     }
 
@@ -57,6 +57,7 @@ auto dup(M)(ref M m) if (isDeviceMemory!M) {
 }
 
 
+version (grain_cuda) @system @nogc
 unittest
 {
     auto cp = CuPtr!double(3);

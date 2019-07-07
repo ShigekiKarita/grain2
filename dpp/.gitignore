@@ -1,0 +1,6 @@
+*
+
+!*.d
+!*.dpp
+!*.sh
+!.gitignore

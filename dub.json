@@ -6,14 +6,13 @@
     "dependencies": {
         "mir-blas": "~>1.1.4",
         "mir-runtime": "~>0.0.22",
-        "mir-random": "~>2.2.4",
-	"derelict-cuda": "~>3.1.1"
+        "mir-random": "~>2.2.4"
     },
     "buildTypes": {
         "cuda-unittest": {
             "buildOptions": ["unittests", "debugMode", "debugInfo"],
             "versions": ["grain_cuda"],
-            "libs": ["cublas", "cudart"]
+            "libs": ["cuda", "cublas", "cudnn"]
         }
     },
     "dflags": ["-dip25", "-dip1000", "-dip1008"],
