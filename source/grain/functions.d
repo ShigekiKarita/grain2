@@ -1,7 +1,7 @@
 module grain.functions;
 
 import std.typecons : Tuple, tuple;
-import grain.tensor : Tensor;
+import grain.tensor : Tensor, Device;
 debug import grain.testing : assertEqual, assertAllClose;
 
 
@@ -71,11 +71,13 @@ auto transposed(size_t N, T)(Tensor!(N, T) x)
 
 
 /// matrix multiplication
-struct Matmul(T)
+struct Matmul(T, Device device) if (device == Device.CPU)
 {
-    Tensor!(2, T) a, b;
+    alias Matrix = Tensor!(2, T, device);
 
-    Tensor!(2, T) forward(Tensor!(2, T) a, Tensor!(2, T) b)
+    Matrix a, b;
+
+    Matrix forward(Matrix a, Matrix b)
     in
     {
         assertEqual(a.shape[1], b.shape[0], "Matmul shape mismatch");
@@ -89,7 +91,7 @@ struct Matmul(T)
         return c;
     }
 
-    Tuple!(Tensor!(2, T), Tensor!(2, T)) backward(Tensor!(2, T) gc)
+    Tuple!(Matrix, Matrix) backward(Matrix gc)
     {
         auto ga = matmul(gc, this.b.transposed);
         auto gb = matmul(this.a.transposed, gc);
@@ -97,10 +99,15 @@ struct Matmul(T)
     }
 }
 
-/// ditto
-auto matmul(T)(Tensor!(2, T) a, Tensor!(2, T) b)
+struct Matmul(T, Device device) if (device == Device.CUDA)
 {
-    Matmul!T mm;
+    
+}
+
+/// ditto
+auto matmul(T, Device dev)(Tensor!(2, T, dev) a, Tensor!(2, T, dev) b)
+{
+    Matmul!(T, dev) mm;
     return mm.forward(a, b);
 }
 

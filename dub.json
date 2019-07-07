@@ -6,8 +6,17 @@
     "dependencies": {
         "mir-blas": "~>1.1.4",
         "mir-runtime": "~>0.0.22",
-        "mir-random": "~>2.2.4"
+        "mir-random": "~>2.2.4",
+	"derelict-cuda": "~>3.1.1"
     },
+    "buildTypes": {
+        "cuda-unittest": {
+            "buildOptions": ["unittests", "debugMode", "debugInfo"],
+            "versions": ["grain_cuda"],
+            "libs": ["cublas", "cudart"]
+        }
+    },
+    "dflags": ["-dip25", "-dip1000", "-dip1008"],
     "description": "autograd library",
     "license": "BSL-1.0",
     "name": "grain2"
