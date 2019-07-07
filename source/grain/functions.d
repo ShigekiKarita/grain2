@@ -89,11 +89,11 @@ unittest
 
 
 /// transpose last two dim
-struct Transposed(size_t N, T)
+struct Transposed(size_t N, T, Storage)
 {
     static assert(N >= 2);
 
-    static Tensor!(N, T) forward(Tensor!(N, T) x)
+    static Tensor!(N, T, Storage) forward(Tensor!(N, T, Storage) x)
     {
         auto n1 = x.lengths[$-1];
         auto n2 = x.lengths[$-2];
@@ -106,16 +106,16 @@ struct Transposed(size_t N, T)
         return x;
     }
 
-    static Tensor!(N, T) backward(Tensor!(N, T) gy)
+    static Tensor!(N, T, Storage) backward(Tensor!(N, T, Storage) gy)
     {
         return gy.transposed;
     }
 }
 
 /// ditto
-auto transposed(size_t N, T)(Tensor!(N, T) x)
+auto transposed(size_t N, T, Storage)(Tensor!(N, T, Storage) x)
 {
-    return Transposed!(N, T).forward(x);
+    return Transposed!(N, T, Storage).forward(x);
 }
 
 ///

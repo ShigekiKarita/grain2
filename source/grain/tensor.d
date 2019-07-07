@@ -6,7 +6,7 @@ debug import grain.testing : assertAllClose, assertEqual;
 
 
 // Tensor on CPU implementation
-struct Tensor(size_t dim, T, Storage = DefaultCPUStorage)
+struct Tensor(size_t _dim, T, Storage = DefaultCPUStorage)
 {
     import mir.ndslice.slice : Slice, Universal, Structure;
 
@@ -15,6 +15,7 @@ struct Tensor(size_t dim, T, Storage = DefaultCPUStorage)
     Storage payload;
     ptrdiff_t offset = 0;
 
+    alias dim = _dim;
     alias deviceof = Storage.deviceof;
     alias shape = lengths;
     

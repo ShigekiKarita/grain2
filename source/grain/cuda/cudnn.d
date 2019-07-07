@@ -1,8 +1,11 @@
 /// High-level wrapper of cudnn library
 module grain.cuda.cudnn;
 
+version (grain_cuda):
+
 import grain.tensor : Tensor;
 import grain.cuda.dpp.cudnn;
+import grain.cuda.dpp.driver : CUdeviceptr;
 import grain.cuda.testing;
 
 
@@ -38,8 +41,6 @@ template cudnnDataType(T)
 /// cudnn data type of variable like struct
 struct TensorDesc
 {
-    import grain.cuda.dpp.driver : CUdeviceptr;
-
     cudnnTensorDescriptor_t desc;
     CUdeviceptr ptr;
     alias desc this;
@@ -49,14 +50,14 @@ struct TensorDesc
     /// no allocation on heap
     @disable new(size_t);
 
-    ~this()
+    @nogc ~this()
     {
         checkCudnn( cudnnDestroyTensorDescriptor(desc) );
     }
 }
 
 /// convert variable to cudnn tensor discriptor object
-auto makeCudnnTensor(T, size_t dim, Storage)(Tensor!(T, dim, Storage) x)
+auto makeCudnnTensor(T, size_t dim, Storage)(Tensor!(dim, T, Storage) x)
 {
     static assert(Storage.deviceof == "cuda");
     static assert(dim < CUDNN_DIM_MAX);
@@ -71,9 +72,8 @@ auto makeCudnnTensor(T, size_t dim, Storage)(Tensor!(T, dim, Storage) x)
         {
             assert(x.shape[d] < int.max);
             shape[d] = cast(int) x.shape[d];
+            strides[d] = cast(int) x.strides[d];
         }
-        // shape[0..dim] = x.shape;
-        strides[0..dim] = x.strides;
     } else {
         enum int ddim = cast(int) dim;
         int[ddim] shape;
@@ -85,9 +85,9 @@ auto makeCudnnTensor(T, size_t dim, Storage)(Tensor!(T, dim, Storage) x)
     }
 
     TensorDesc tdesc;
-    tdesc.ptr = x.data.ptr;
-    checkCUDNN(cudnnCreateTensorDescriptor(&tdesc.desc));
-    checkCUDNN(cudnnSetTensorNdDescriptor(
+    tdesc.ptr = cast(CUdeviceptr)  x.iterator.lightScope;
+    checkCudnn(cudnnCreateTensorDescriptor(&tdesc.desc));
+    checkCudnn(cudnnSetTensorNdDescriptor(
         tdesc.desc,
         cudnnDataType!T,
         ddim,
@@ -96,11 +96,30 @@ auto makeCudnnTensor(T, size_t dim, Storage)(Tensor!(T, dim, Storage) x)
     return tdesc;
 }
 
+@nogc
+unittest
+{
+    import grain.cuda.allocator : GPUTensor;
+    import grain.functions : transposed;
+    auto x = GPUTensor!(3, float)(2, 3, 4).transposed;
+    auto t = x.makeCudnnTensor;
+
+    cudnnDataType_t dtype;
+    int dim;
+    int[3] shape;
+    int[3] strides;
+    import grain.testing;
+    cudnnGetTensorNdDescriptor(t.desc, 3, &dtype, &dim, shape.ptr, strides.ptr);
+    assert(dtype == CUDNN_DATA_FLOAT);
+    assertEqual(dim, 4, "dim < 4 will be 4");
+    assert(shape == x.shape);
+    assert(strides == x.strides);
+}
 
 /// copy src to dst with broadcasting
 void transform(T, size_t dim, Storage)(
-    Tensor!(T, dim, Storage) src,
-    ref Tensor!(T, dim, Storage) dst,
+    Tensor!(dim,  T, Storage) src,
+    ref Tensor!(dim, T, Storage) dst,
     T alpha=1,
     T beta=0
 )

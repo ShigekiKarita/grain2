@@ -60,3 +60,10 @@ unittest
     auto x = Tensor!(2, double, RCStorage!CuMallocator)(2, 3);
     static assert(x.deviceof == "cuda");
 }
+
+
+import grain.storage : RCStorage;
+import grain.tensor : Tensor;
+
+alias DefaultCudaStorage = RCStorage!CuMallocator;
+alias GPUTensor(size_t dim, T) = Tensor!(dim, T, DefaultCudaStorage);
