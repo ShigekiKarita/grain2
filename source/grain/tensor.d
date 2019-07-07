@@ -2,7 +2,7 @@
 module grain.tensor;
 
 import stdx.allocator.mallocator : Mallocator;
-import grain.storage : RCStorage;
+import grain.storage : RCStorage, RCIter;
 debug import grain.testing : assertAllClose, assertEqual;
 
 
@@ -27,7 +27,7 @@ struct Tensor(size_t dim, T, Storage = RCStorage!Mallocator)
         this.payload = typeof(payload)(T.sizeof * this.strides[0] * this.lengths[0]);
     }
 
-    auto iterator() @property
+    RCIter!(T*, Storage) iterator() @property
     {
         return payload.iterator!(T*) + offset;
     }
@@ -43,7 +43,7 @@ struct Tensor(size_t dim, T, Storage = RCStorage!Mallocator)
     {
         import std.meta : AliasSeq;
         alias structure = AliasSeq!(this.lengths, this.strides);
-        return typeof(return)(structure, this.iterator);
+        return typeof(return)(structure, this.iterator.lightScope);
     }
 }
 

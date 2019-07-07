@@ -11,9 +11,9 @@ struct Storage(Allocator)
         enum deviceof = "cpu";
     }
     
-    void[] data;
+    void[] payload;
     Allocator allocator;
-    alias data this;
+    alias payload this;
 
     @disable this(this);
     @disable new(size_t);
@@ -21,12 +21,12 @@ struct Storage(Allocator)
     this(size_t bytes, Allocator a = Allocator.instance)
     {
         this.allocator = a;
-        this.data = a.allocate(bytes);
+        this.payload = a.allocate(bytes);
     }
 
     ~this()
     {
-        this.allocator.deallocate(this.data);
+        this.allocator.deallocate(this.payload);
     }
 }
 
@@ -47,20 +47,97 @@ struct RCStorage(Allocator)
 
     RCIter!(It, typeof(this)) iterator(It)()
     {
-        return typeof(return)(this);
+        return typeof(return)(cast(It) this.base.ptr, this);
     }
 }
 
 /// Iterator for RCStorage that shares ownership by itself
 struct RCIter(It, Rc)
 {
-    It ptr;
-    Rc rc;  // hold ownership here
-    alias ptr this;
+    import mir.ndslice.traits : isIterator;
+    static assert(isIterator!It);
+    
+    It _iterator;
+    Rc _rc;  // hold ownership here
 
-    this(Rc rc)
+    alias T = typeof(*It.init);
+
+    private inout payload()
     {
-        this.rc = rc;
-        this.ptr = cast(It) rc.data.ptr;
+        return cast(It) _rc.payload;
     }
+
+    ///
+    inout(T)* lightScope()() scope return inout @property @trusted
+    {
+        debug
+        {
+            assert(payload <= _iterator);
+            assert(_iterator is null || _iterator <= payload + _rc.length / T.sizeof);
+        }
+        return _iterator;
+    }
+    
+    ///   
+    ref inout(T) opUnary(string op : "*")() inout scope return
+    {
+        debug
+        {
+            assert(_iterator);
+            assert(payload);
+            assert(payload <= _iterator);
+            assert(_iterator <= payload + _rc.length / T.sizeof);
+        }
+        return *_iterator;
+    }
+
+    ///   
+    ref inout(T) opIndex(ptrdiff_t index) inout scope return @trusted
+    {
+        debug
+        {
+            assert(_iterator);
+            assert(payload);
+            assert(payload <= _iterator + index);
+            assert(_iterator + index <= payload + _rc.length / T.sizeof);
+        }
+        return _iterator[index];
+    }
+
+    ///   
+    void opUnary(string op)() scope
+        if (op == "--" || op == "++")
+    { mixin(op ~ "_iterator;"); }
+
+    ///   
+    void opOpAssign(string op)(ptrdiff_t index) scope
+        if (op == "-" || op == "+")
+    { mixin("_iterator " ~ op ~ "= index;"); }
+
+    ///
+    RCIter!(It, Rc) opBinary(string op)(ptrdiff_t index)
+        if (op == "+" || op == "-")
+    { return typeof(return)(_iterator + index, _rc); }
+
+    ///   
+    RCIter!(const It, RC) opBinary(string op)(ptrdiff_t index) const
+        if (op == "+" || op == "-")
+    { return typeof(return)(_iterator + index, _rc); }
+
+    ///   
+    RCIter!(immutable It, RC) opBinary(string op)(ptrdiff_t index) immutable
+        if (op == "+" || op == "-")
+    { return typeof(return)(_iterator + index, _rc); }
+
+    ///   
+    ptrdiff_t opBinary(string op : "-")(scope ref const typeof(this) right) scope const
+    { return this._iterator - right._iterator; }
+
+    ///   
+    bool opEquals()(scope ref const typeof(this) right) scope const
+    { return this._iterator == right._iterator; }
+
+    ///   
+    ptrdiff_t opCmp()(scope ref const typeof(this) right) scope const
+    { return this._iterator - right._iterator; }
 }
