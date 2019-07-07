@@ -147,9 +147,11 @@ void transform(T, size_t dim, Storage)(
 @nogc
 unittest
 {
+    /// FIXME: int support
     import grain.cuda.allocator : GPUTensor;
     import grain.functions : transposed;
     auto x = GPUTensor!(3, float)(2, 3, 4).transposed;
     auto y = GPUTensor!(3, float)(x.shape);
     transform(x, y);
+    transform(y, x);
 }

@@ -91,12 +91,12 @@ auto copy(alias Dst, size_t N, T, Src)(Tensor!(N, T, Src) x)
 }
 
 ///
-@system @nogc nothrow
+@system @nogc
 unittest
 {
     import mir.ndslice.topology : iota;
-    auto x = Tensor!(2, int)(2, 3);
-    x.asSlice[] = iota!int(x.shape);
+    auto x = Tensor!(2, float)(2, 3);
+    x.asSlice[] = iota(x.shape);
     auto y = x.copy!"cpu";
     assert(y.asSlice == x.asSlice);
     x.asSlice[0, 0] = 1;
@@ -104,7 +104,10 @@ unittest
 
     version (grain_cuda)
     {
-        auto c = x.copy!"cuda";
+        // FIXME: CUDNN_NOT_SUPPORTED if use int
+        auto c = x.copy!"cuda".transposed;
+        auto x1 = c.copy!"cpu".transposed;
+        assert(x1.asSlice == x.asSlice);
     }
 }
 
