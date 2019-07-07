@@ -7,7 +7,10 @@ version (grain_cuda):
 
 /// CUDA heap allocator
 struct CuMallocator
-{    
+{
+    /// device indicator
+    enum deviceof = "cuda";
+    
     /**
     In CUDA, the alignment requirement is automatically fulfilled for the built-in types of
     char, short, int, long, longlong, float, double like float2 or float4. 
@@ -55,4 +58,5 @@ unittest
     import grain.tensor : Tensor;
     import grain.storage : RCStorage;
     auto x = Tensor!(2, double, RCStorage!CuMallocator)(2, 3);
+    static assert(x.deviceof == "cuda");
 }

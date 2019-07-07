@@ -5,6 +5,89 @@ import grain.tensor : Tensor;
 debug import grain.testing : assertEqual, assertAllClose;
 
 
+struct Copy(size_t N, T, Src, Dst)
+{
+    alias dsrc = Src.deviceof;
+    alias ddst = Dst.deviceof;
+    
+    static if (dsrc == ddst)
+    {
+        static if (dsrc == "cpu")
+        {
+            Tensor!(N, T, Dst) forward(Tensor!(N, T, Src) x)
+            {
+                import mir.ndslice : zip, each;
+                auto y = typeof(return)(x.shape);
+                y.lightScope[] = x.lightScope;
+                return y;
+            }
+        }
+        else static if (dsrc == "cuda")
+        {
+            // TODO
+        }
+        else
+        {
+            static assert(false, "unsupported copy: " ~ dsrc ~ " -> " ~ ddst);
+        }
+
+        Tensor!(N, T, Src) backward(Tensor!(N, T, Dst) x)
+        {
+            return x;
+        }
+    }
+    else
+    {
+        static if (dsrc == "cpu" && ddst == "cuda")
+        {
+            // TODO
+        }
+        else static if (dsrc == "cuda" && ddst == "cpu")
+        {
+            // TODO
+        }
+        else
+        {
+            static assert(false, "unsupported copy: " ~ dsrc ~ " -> " ~ ddst);
+        }
+    }
+}
+
+
+auto copy(alias Dst, size_t N, T, Src)(Tensor!(N, T, Src) x)
+{
+    static if (is(typeof(Dst) == string))
+    {
+        static if (Dst == "cpu")
+        {
+            import grain.storage : DefaultCPUStorage;
+            Copy!(N, T, Src, DefaultCPUStorage) f;
+        }
+        else
+        {
+            static assert("unsupported string Dst: " ~ Dst);
+        }
+    }
+    else
+    {
+        Copy!(N, T, Src, Dst) f;
+    }
+    return f.forward(x);
+}
+
+///
+unittest
+{
+    import mir.ndslice.topology : iota;
+    auto x = Tensor!(2, int)(2, 3);
+    x.asSlice[] = iota!int(x.shape);
+    auto y = x.copy!"cpu";
+    assert(y.asSlice == x.asSlice);
+    x.asSlice[0, 0] = 1;
+    assert(y.asSlice != x.asSlice);
+}
+
+
 /// transpose last two dim
 struct Transposed(size_t N, T)
 {

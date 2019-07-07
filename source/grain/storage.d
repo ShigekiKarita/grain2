@@ -141,3 +141,8 @@ struct RCIter(It, Rc)
     ptrdiff_t opCmp()(scope ref const typeof(this) right) scope const
     { return this._iterator - right._iterator; }
 }
+
+
+import stdx.allocator.mallocator : Mallocator;
+
+alias DefaultCPUStorage = RCStorage!Mallocator;

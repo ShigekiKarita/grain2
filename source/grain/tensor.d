@@ -1,13 +1,12 @@
 /// Tensor data structure module
 module grain.tensor;
 
-import stdx.allocator.mallocator : Mallocator;
-import grain.storage : RCStorage, RCIter;
+import grain.storage : RCStorage, RCIter, DefaultCPUStorage;
 debug import grain.testing : assertAllClose, assertEqual;
 
 
 // Tensor on CPU implementation
-struct Tensor(size_t dim, T, Storage = RCStorage!Mallocator)
+struct Tensor(size_t dim, T, Storage = DefaultCPUStorage)
 {
     import mir.ndslice.slice : Slice, Universal, Structure;
 
@@ -16,6 +15,7 @@ struct Tensor(size_t dim, T, Storage = RCStorage!Mallocator)
     Storage payload;
     ptrdiff_t offset = 0;
 
+    alias deviceof = Storage.deviceof;
     alias shape = lengths;
     
     this(size_t[dim] lengths...)
@@ -51,6 +51,7 @@ struct Tensor(size_t dim, T, Storage = RCStorage!Mallocator)
 @nogc unittest
 {
     auto x = Tensor!(2, double)(2, 3);
+    static assert(x.deviceof == "cpu");
     assertEqual(x.strides[0], 3);
     assertEqual(x.strides[1], 1);
 }
