@@ -4,9 +4,10 @@ module grain.cuda.cudnn;
 version (grain_cuda):
 
 import grain.tensor : Tensor;
+import grain.cuda : cudnnHandle;
 import grain.cuda.dpp.cudnn;
 import grain.cuda.dpp.driver : CUdeviceptr;
-import grain.cuda.testing;
+import grain.cuda.testing : checkCudnn;
 
 
 // TODO make shared
@@ -25,14 +26,22 @@ auto isNanProp()
     return nanProp ? CUDNN_PROPAGATE_NAN : CUDNN_NOT_PROPAGATE_NAN;
 }
 
-
 /// convert floating point types (float, double) into cudnn enum
-template cudnnDataType(T)
+template cudnnDataType(T, bool allowSameSize)
 {
-    // TODO support half
-    static if(is(T == float))
+    // TODO support half/int8
+    static if (is(T == ubyte))
+        alias cudnnDataType = CUDNN_DATA_UINT8;
+    else static if (is(T == byte) || (allowSameSize && (T.sizeof == byte.sizeof)))
+        alias cudnnDataType = CUDNN_DATA_INT8;
+    else static if (//is(T == half) ||
+                    (allowSameSize && (T.sizeof == 16)))
+        alias cudnnDataType = CUDNN_DATA_HALF;
+    else static if (is(T == int))
+        alias cudnnDataType = CUDNN_DATA_INT32;
+    else static if(is(T == float) || (allowSameSize && (T.sizeof == float.sizeof)))
         alias cudnnDataType = CUDNN_DATA_FLOAT;
-    else static if(is(T == double))
+    else static if(is(T == double) || (allowSameSize && (T.sizeof == double.sizeof)))
         alias cudnnDataType = CUDNN_DATA_DOUBLE;
     else
         static assert(false, "unsupported type");
@@ -57,7 +66,7 @@ struct TensorDesc
 }
 
 /// convert variable to cudnn tensor discriptor object
-auto makeCudnnTensor(T, size_t dim, Storage)(Tensor!(dim, T, Storage) x)
+auto makeCudnnTensor(bool allowSameSize = false, T, size_t dim, Storage)(Tensor!(dim, T, Storage) x)
 {
     static assert(Storage.deviceof == "cuda");
     static assert(dim < CUDNN_DIM_MAX);
@@ -89,7 +98,7 @@ auto makeCudnnTensor(T, size_t dim, Storage)(Tensor!(dim, T, Storage) x)
     checkCudnn(cudnnCreateTensorDescriptor(&tdesc.desc));
     checkCudnn(cudnnSetTensorNdDescriptor(
         tdesc.desc,
-        cudnnDataType!T,
+        cudnnDataType!(T, allowSameSize),
         ddim,
         shape.ptr,
         strides.ptr));
@@ -126,10 +135,21 @@ void transform(T, size_t dim, Storage)(
 {
     static assert(Storage.deviceof == "cuda");
     assert(src.shape == dst.shape);
-    checkCUDNN(
+    checkCudnn(
         cudnnTransformTensor(
             cudnnHandle,
-            cast(const void*) &alpha, src.makeCudnnTensor, cast(const void*) src.data.ptr,
-            cast(const void*) &beta, dst.makeCudnnTensor, cast(void*) dst.data.ptr
+            cast(const void*) &alpha, src.makeCudnnTensor!true, cast(const void*) src.iterator.lightScope,
+            cast(const void*) &beta, dst.makeCudnnTensor!true, cast(void*) dst.iterator.lightScope
             ) );
+}
+
+
+@nogc
+unittest
+{
+    import grain.cuda.allocator : GPUTensor;
+    import grain.functions : transposed;
+    auto x = GPUTensor!(3, float)(2, 3, 4).transposed;
+    auto y = GPUTensor!(3, float)(x.shape);
+    transform(x, y);
 }

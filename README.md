@@ -8,6 +8,13 @@ This project is a successor of [grain](https://github.com/ShigekiKarita/grain).
 - @nogc support
 - heterogeneous device (CPU/CUDA) support
 
+## requirements
+
+- CPU backend
+  - BLAS library (e.g., OpenBLAS, MKL)
+- CUDA backend
+  - CUDA SDK v10-
+  - CUDNN Library v7-
 
 ## roadmap
 

@@ -10,46 +10,55 @@ struct Copy(size_t N, T, Src, Dst)
     alias dsrc = Src.deviceof;
     alias ddst = Dst.deviceof;
     
-    static if (dsrc == ddst)
+    Tensor!(N, T, Dst) forward(Tensor!(N, T, Src) x)
     {
-        static if (dsrc == "cpu")
+        auto y = typeof(return)(x.shape);
+        static if (dsrc == "cpu" && ddst == "cpu")
         {
-            Tensor!(N, T, Dst) forward(Tensor!(N, T, Src) x)
-            {
-                import mir.ndslice : zip, each;
-                auto y = typeof(return)(x.shape);
-                y.lightScope[] = x.lightScope;
-                return y;
-            }
+            y.lightScope[] = x.lightScope;
         }
-        else static if (dsrc == "cuda")
+        else static if (dsrc == "cuda" && ddst == "cuda")
+        {
+            import grain.cuda.cudnn : transform;
+            transform(x, y);
+        }
+        else static if (dsrc == "cpu" && ddst == "cuda")
         {
             // TODO
-        }
-        else
-        {
-            static assert(false, "unsupported copy: " ~ dsrc ~ " -> " ~ ddst);
-        }
+            import grain.cuda.dpp.driver : cuMemcpyHtoD_v2;
+            import grain.cuda.testing : checkCuda;
 
-        Tensor!(N, T, Src) backward(Tensor!(N, T, Dst) x)
-        {
-            return x;
-        }
-    }
-    else
-    {
-        static if (dsrc == "cpu" && ddst == "cuda")
-        {
-            // TODO
+            if (!x.isContiguous)
+            {
+                x = x.copy!Src;
+            }
+            checkCuda(cuMemcpyHtoD_v2(y.ptr, x.ptr, T.sizeof * x.numel));
         }
         else static if (dsrc == "cuda" && ddst == "cpu")
         {
             // TODO
+            import grain.cuda.dpp.driver : cuMemcpyDtoH_v2;
+            import grain.cuda.testing : checkCuda;
+
+            if (!x.isContiguous)
+            {
+                x = x.copy!Src;
+            }
+            checkCuda(cuMemcpyDtoH_v2(y.ptr, x.ptr, T.sizeof * x.numel));
         }
         else
         {
             static assert(false, "unsupported copy: " ~ dsrc ~ " -> " ~ ddst);
         }
+        return y;
+    }
+
+    Tensor!(N, T, Src) backward(Tensor!(N, T, Dst) x)
+    {
+        static if (dsrc == ddst)
+            return x;
+        else
+            return x.copy!Src;
     }
 }
 
@@ -61,7 +70,12 @@ auto copy(alias Dst, size_t N, T, Src)(Tensor!(N, T, Src) x)
         static if (Dst == "cpu")
         {
             import grain.storage : DefaultCPUStorage;
-            Copy!(N, T, Src, DefaultCPUStorage) f;
+            alias D = DefaultCPUStorage;
+        }
+        static if (Dst == "cuda")
+        {
+            import grain.cuda.allocator : DefaultCudaStorage;
+            alias D = DefaultCudaStorage;
         }
         else
         {
@@ -70,12 +84,14 @@ auto copy(alias Dst, size_t N, T, Src)(Tensor!(N, T, Src) x)
     }
     else
     {
-        Copy!(N, T, Src, Dst) f;
+        alias D = Dst;
     }
+    Copy!(N, T, Src, D) f;
     return f.forward(x);
 }
 
 ///
+@system @nogc nothrow
 unittest
 {
     import mir.ndslice.topology : iota;
@@ -85,6 +101,11 @@ unittest
     assert(y.asSlice == x.asSlice);
     x.asSlice[0, 0] = 1;
     assert(y.asSlice != x.asSlice);
+
+    version (grain_cuda)
+    {
+        auto c = x.copy!"cuda";
+    }
 }
 
 
@@ -137,6 +158,7 @@ auto transposed(size_t N, T, Storage)(Tensor!(N, T, Storage) x)
     // lengths  = [3, 2]
     // strides = [1, 3]
     auto t = x.transposed;
+    assert(!t.isContiguous);
     assert(t.lengths[1] == x.lengths[0]);
     assert(t.lengths[0] == x.lengths[1]);
     
