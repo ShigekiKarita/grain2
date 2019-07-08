@@ -29,12 +29,22 @@ void assertAllClose(T1, T2)(
     double atol = 0,
 )
 {
+    import grain.tensor : isTensor;
     import mir.ndslice : zip, reshape;
     import std.math : abs;
     assertShapeEqual(actual, desired);
     int err;
-    auto aflat = actual.asSlice.reshape([-1], err);
-    auto dflat = desired.asSlice.reshape([-1], err);
+    static if (isTensor!T1)
+        auto a = actual.asSlice;
+    else
+        auto a = actual;
+    static if (isTensor!T2)
+        auto d = desired.asSlice;
+    else
+        auto d = desired;
+    
+    auto aflat = a.reshape([-1], err);
+    auto dflat = d.reshape([-1], err);
     foreach (t; zip(aflat, dflat))
     {
         auto lhs = abs(t[0] - t[1]);

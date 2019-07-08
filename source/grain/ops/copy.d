@@ -6,7 +6,7 @@ import grain.tensor : Tensor;
 
 /// copy tensor between devices
 struct Copy(size_t N, T, Src, Dst)
-{
+{    
     alias dsrc = Src.deviceof;
     alias ddst = Dst.deviceof;
     

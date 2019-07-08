@@ -90,13 +90,24 @@ struct Tensor(size_t _dim, T, Storage = DefaultCPUStorage)
     }
 }
 
+template isTensor(T)
+{
+    static if (is(T : Tensor!(N, E, S), E, size_t N, S))
+        enum bool isTensor = true;
+    else
+        enum bool isTensor = false;
+}
+
+
 
 @nogc unittest
 {
     auto x = Tensor!(2, double)(2, 3);
+    static assert(isTensor!(typeof(x)));
     static assert(x.deviceof == "cpu");
     assertEqual(x.strides[0], 3);
     assertEqual(x.strides[1], 1);
     assert(x.isContiguous);
     assert(x.numel == 2 * 3);
 }
+

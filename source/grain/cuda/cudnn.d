@@ -59,7 +59,7 @@ struct TensorDesc
     /// no allocation on heap
     @disable new(size_t);
 
-    @nogc ~this()
+    nothrow @nogc ~this()
     {
         checkCudnn( cudnnDestroyTensorDescriptor(desc) );
     }
@@ -146,7 +146,7 @@ void transform(T, size_t dim, Storage)(
 }
 
 ///
-@system @nogc
+@system @nogc nothrow
 unittest
 {
     /// FIXME: int support

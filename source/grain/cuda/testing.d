@@ -112,12 +112,25 @@ void checkNvrtc(
 )(nvrtcResult err, const(char)[] info = "")
 {
     if (err == NVRTC_SUCCESS) return;
-    assert(err == NVRTC_SUCCESS,
-           stringBuf()
-           << nvrtcGetErrorString(err).fromStringz
-           << " (func) " << func
-           << " (file) " << file
-           << " (line) " << line
-           << " (info) " << info
-           << getData);
+    if (info != "")
+    {
+        assert(err == NVRTC_SUCCESS,
+               stringBuf()
+               << nvrtcGetErrorString(err).fromStringz
+               << " (func) " << func
+               << " (file) " << file
+               << " (line) " << line
+               << " (info) " << info
+               << getData);
+    }
+    else
+    {
+        assert(err == NVRTC_SUCCESS,
+               stringBuf()
+               << nvrtcGetErrorString(err).fromStringz
+               << " (func) " << func
+               << " (file) " << file
+               << " (line) " << line
+               << getData);
+    }
 }
