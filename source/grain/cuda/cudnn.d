@@ -105,11 +105,14 @@ auto makeCudnnTensor(bool allowSameSize = false, T, size_t dim, Storage)(Tensor!
     return tdesc;
 }
 
-@nogc
+///
+@system @nogc
 unittest
 {
     import grain.cuda.allocator : GPUTensor;
     import grain.ops.transposed : transposed;
+    import grain.testing : assertEqual;
+    
     auto x = GPUTensor!(3, float)(2, 3, 4).transposed;
     auto t = x.makeCudnnTensor;
 
@@ -117,7 +120,6 @@ unittest
     int dim;
     int[3] shape;
     int[3] strides;
-    import grain.testing;
     cudnnGetTensorNdDescriptor(t.desc, 3, &dtype, &dim, shape.ptr, strides.ptr);
     assert(dtype == CUDNN_DATA_FLOAT);
     assertEqual(dim, 4, "dim < 4 will be 4");
@@ -143,8 +145,8 @@ void transform(T, size_t dim, Storage)(
             ) );
 }
 
-
-@nogc
+///
+@system @nogc
 unittest
 {
     /// FIXME: int support
