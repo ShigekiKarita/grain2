@@ -13,7 +13,7 @@
         "cuda-unittest": {
             "buildOptions": ["unittests", "debugMode", "debugInfo"],
             "versions": ["grain_cuda"],
-            "libs": ["cuda", "cublas", "cudnn"]
+            "libs": ["cuda", "cublas", "cudnn", "nvrtc"]
         }
     },
     "dflags": ["-dip25", "-dip1000", "-dip1008"],

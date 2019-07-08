@@ -1,6 +1,18 @@
+#!/usr/bin/env bash
+
 dst=../source/grain/cuda/dpp
+rm -rf $dst ./*.di ./*.o
 mkdir -p $dst
-for f in cublas.d cudnn.d driver.d; do
-    d++ --include-path /home/karita/work/tools/cudnn-v7.1.3-cuda9.1/cuda/include --include-path /usr/local/cuda/include --keep-d-files ${f}pp main.d
-    cp $f ${dst}/${f}i
+echo "module grain.cuda.dpp;" > $dst/package.d
+
+cuda_root=/usr/local/cuda
+cudnn_root=/home/karita/work/tools/cudnn-v7.1.3-cuda9.1/cuda/include
+modules="cublas cudnn driver nvrtc"
+
+for f in $modules; do
+    echo "processing ${f}.dpp"
+    d++ --include-path $cudnn_root/include --include-path $cuda_root/include --keep-d-files "${f}.dpp" main.d
+    mv "${f}.d" "${dst}/${f}.di"
+    echo "public import grain.cuda.dpp.${f%.*};" >> $dst/package.d
 done
+rm ./*.o $modules

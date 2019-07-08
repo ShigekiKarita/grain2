@@ -2,11 +2,13 @@
 module grain.cuda;
 version(grain_cuda):
 
-// import derelict.cuda;
-import grain.cuda.dpp.driver;
-import grain.cuda.dpp.cublas;
-import grain.cuda.dpp.cudnn;
-import grain.cuda.testing;
+public import grain.cuda.dpp.driver;
+public import grain.cuda.dpp.cublas;
+public import grain.cuda.dpp.cudnn;
+
+public import grain.cuda.allocator;
+public import grain.cuda.cudnn;
+public import grain.cuda.testing;
 
 
 // TODO: support multiple GPU devices (context)

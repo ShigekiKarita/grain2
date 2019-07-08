@@ -1,6 +1,102 @@
 module grain.cuda.kernel;
 
+import grain.cuda.testing : checkNvrtc;
+
+/// compile kernel string (input) to PTX
+/// TODO type check
+/**
+ * \ingroup compilation
+ * \brief   nvrtcCreateProgram creates an instance of nvrtcProgram with the
+ *          given input parameters, and sets the output parameter \p prog with
+ *          it.
+ *
+ * \param   [out] prog         CUDA Runtime Compilation program.
+ * \param   [in]  src          CUDA program source.
+ * \param   [in]  name         CUDA program name.\n
+ *                             \p name can be \c NULL; \c "default_program" is
+ *                             used when \p name is \c NULL.
+ * \param   [in]  numHeaders   Number of headers used.\n
+ *                             \p numHeaders must be greater than or equal to 0.
+ * \param   [in]  headers      Sources of the headers.\n
+ *                             \p headers can be \c NULL when \p numHeaders is
+ *                             0.
+ * \param   [in]  includeNames Name of each header by which they can be
+ *                             included in the CUDA program source.\n
+ *                             \p includeNames can be \c NULL when \p numHeaders
+ *                             is 0.
+ * \return
+ *   - \link #nvrtcResult NVRTC_SUCCESS \endlink
+ *   - \link #nvrtcResult NVRTC_ERROR_OUT_OF_MEMORY \endlink
+ *   - \link #nvrtcResult NVRTC_ERROR_PROGRAM_CREATION_FAILURE \endlink
+ *   - \link #nvrtcResult NVRTC_ERROR_INVALID_INPUT \endlink
+ *   - \link #nvrtcResult NVRTC_ERROR_INVALID_PROGRAM \endlink
+ *
+ * \see     ::nvrtcDestroyProgram
+ */
+string compileToPTX(size_t numHeader, size_t numOption)(
+    string src, string name,
+    string[numHeader] headerSrcs, string[numHeader] headerNames,
+    string[numOption] options)
+{
+    import grain.cuda.dpp.nvrtc;
+
+    nvrtcProgram prog;
+    immutable(char)*[numHeader] hss, hns;
+    foreach (i; 0 .. numHeader)
+    {
+        hss[i] = headerSrcs[i].ptr;
+        hns[i] = headerNames[i].ptr;
+    }
+    checkNvrtc(nvrtcCreateProgram(&prog, src.ptr, name.ptr, numHeader, hss.ptr, hns.ptr));
+
+    immutable(char)*[numOption] opts;
+    foreach (i; 0 .. numOption)
+    {
+        opts[i] = options[i].ptr;
+    }
+    nvrtcResult res = nvrtcCompileProgram(prog, numOption, opts.ptr);
+    // TODO print log when fail
+    checkNvrtc(res);
+
+    // fetch PTX
+    size_t ptxSize;
+    checkNvrtc(nvrtcGetPTXSize(prog, &ptxSize));
+    
+    //   char *ptx = reinterpret_cast<char *>(malloc(sizeof(char) * ptxSize));
+    // NVRTC_SAFE_CALL("nvrtcGetPTX", nvrtcGetPTX(prog, ptx));
+    // NVRTC_SAFE_CALL("nvrtcDestroyProgram", nvrtcDestroyProgram(&prog));
+    // *ptxResult = ptx;
+    // *ptxResultSize = ptxSize;
+    
+    
+    string result;
+    return result;
+}
+
+string compileToPTX(string src, string name="")
+{
+    return compileToPTX!0(src, name, string[0].init, string[0].init, string[0].init);
+}
+
+
+///
+unittest
+{
+    auto ptx = compileToPTX(
+        q{
+extern "C" __global__ void vectorAdd(const float *A, const float *B, float *C,
+                                     int numElements) {
+  int i = blockDim.x * blockIdx.x + threadIdx.x;
+
+  if (i < numElements) {
+    C[i] = A[i] + B[i];
+  }
+}
+        });
+}
+
 /+
+
 /// cuda module compiled from ptx string
 struct CuModule {
     CUmodule cuModule;

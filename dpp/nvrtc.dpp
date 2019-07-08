@@ -1,0 +1,2 @@
+module grain.cuda.dpp.nvrtc;
+#include <nvrtc.h>

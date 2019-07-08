@@ -8,6 +8,7 @@ import mir.format : stringBuf, getData;
 import grain.cuda.dpp.driver;
 import grain.cuda.dpp.cublas;
 import grain.cuda.dpp.cudnn;
+import grain.cuda.dpp.nvrtc;
 
 
 /// emit error message string from enum
@@ -95,6 +96,25 @@ void checkCuda(
            stringBuf()
            << name.fromStringz
            << " (info) " << content.fromStringz
+           << " (func) " << func
+           << " (file) " << file
+           << " (line) " << line
+           << getData);
+}
+
+
+/// nvrtc error checker
+@nogc
+void checkNvrtc(
+    string file = __FILE__,
+    size_t line = __LINE__,
+    string func = __FUNCTION__
+)(nvrtcResult err)
+{
+    if (err == NVRTC_SUCCESS) return;
+    assert(err == NVRTC_SUCCESS,
+           stringBuf()
+           << nvrtcGetErrorString(err).fromStringz
            << " (func) " << func
            << " (file) " << file
            << " (line) " << line
