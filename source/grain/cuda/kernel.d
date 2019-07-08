@@ -33,6 +33,8 @@ import grain.cuda.testing : checkNvrtc;
  *
  * \see     ::nvrtcDestroyProgram
  */
+// import mir.rc.array : rcarray;
+// alias RCString = rcarray!(immutable char);
 string compileToPTX(size_t numHeader, size_t numOption)(
     string src, string name,
     string[numHeader] headerSrcs, string[numHeader] headerNames,
@@ -61,7 +63,9 @@ string compileToPTX(size_t numHeader, size_t numOption)(
     // fetch PTX
     size_t ptxSize;
     checkNvrtc(nvrtcGetPTXSize(prog, &ptxSize));
-    
+
+    // char* 
+    // RCString();
     //   char *ptx = reinterpret_cast<char *>(malloc(sizeof(char) * ptxSize));
     // NVRTC_SAFE_CALL("nvrtcGetPTX", nvrtcGetPTX(prog, ptx));
     // NVRTC_SAFE_CALL("nvrtcDestroyProgram", nvrtcDestroyProgram(&prog));

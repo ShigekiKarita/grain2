@@ -150,44 +150,45 @@ alias DefaultCPUStorage = RCStorage!Mallocator;
 /// Refrence counting string
 struct RCString
 {
-    import mir.rc.array : RCArray;
-    RCArray!char payload;
+    import mir.rc.array : RCArray, rcarray;
+    RCArray!(immutable char) payload;
     alias toString this;
     
-    this(size_t length) @nogc pure nothrow
+    this(scope const(char)[] s) @nogc @safe pure nothrow
     {
-        this.payload = typeof(this.payload)(length);
+        this = s;
     }
 
-    this(string s) @nogc pure nothrow
+    void opAssign(scope const(char)[] rhs) @nogc @safe pure nothrow
     {
-        import core.stdc.string : memcpy;
-        this(s.length + 1);
-        memcpy(this.payload.ptr, s.ptr, s.length);
-        this.payload[$-1] = '\0';
+        this.payload = rcarray!(immutable char)(rhs);
     }
     
-    inout(char)[] chars() scope pure nothrow inout @nogc
+    string toString() return scope @nogc @safe pure nothrow const
     {
-        return this.payload[][0 .. $-1];
-    }
-
-    string toString() scope pure nothrow inout @nogc
-    {
-        return cast(string) this.chars;
+        return this.payload[];
     }
 
 }
 
 ///
-@nogc pure nothrow
+@safe @nogc pure nothrow
 unittest
 {
     void f(string) {}
-    auto s = "hello, world";
-    auto r = RCString(s);
-    assert(r == s);
-    r.payload[0] = 'g';
-    f(r);
-    assert(r == "gello, world");
+    RCString r;
+    {
+        auto s1 = "hello, world";
+
+        // assign (copy)
+        r = s1;
+        assert(&r[0] != &s1[0]);
+
+        // able to copy mutable string
+        char[100] s;
+        s[0 .. s1.length] = s1;
+        r = s;
+        r = RCString(s[0 .. s1.length]);
+    }
+    assert(r == "hello, world");
 }
