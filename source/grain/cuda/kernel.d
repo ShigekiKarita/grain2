@@ -1,5 +1,6 @@
 module grain.cuda.kernel;
 
+import grain.storage : RCString;
 import grain.cuda.testing : checkNvrtc;
 
 /// compile kernel string (input) to PTX
@@ -35,11 +36,13 @@ import grain.cuda.testing : checkNvrtc;
  */
 // import mir.rc.array : rcarray;
 // alias RCString = rcarray!(immutable char);
-string compileToPTX(size_t numHeader, size_t numOption)(
+RCString compileToPTX(size_t numHeader, size_t numOption)(
     string src, string name,
     string[numHeader] headerSrcs, string[numHeader] headerNames,
     string[numOption] options)
 {
+    import std.string : fromStringz;
+    import core.memory : pureMalloc, pureFree;
     import grain.cuda.dpp.nvrtc;
 
     nvrtcProgram prog;
@@ -50,30 +53,43 @@ string compileToPTX(size_t numHeader, size_t numOption)(
         hns[i] = headerNames[i].ptr;
     }
     checkNvrtc(nvrtcCreateProgram(&prog, src.ptr, name.ptr, numHeader, hss.ptr, hns.ptr));
+    scope (exit) checkNvrtc(nvrtcDestroyProgram(&prog));
 
+    // compile PTX
     immutable(char)*[numOption] opts;
     foreach (i; 0 .. numOption)
     {
         opts[i] = options[i].ptr;
     }
     nvrtcResult res = nvrtcCompileProgram(prog, numOption, opts.ptr);
+
+    // dump log
+    size_t logSize;
+    checkNvrtc(nvrtcGetProgramLogSize(prog, &logSize));
+    char *log = cast(char*) pureMalloc(char.sizeof * (logSize + 1));
+    log[logSize] = '\0';
+    scope (exit) pureFree(log);
+    
     // TODO print log when fail
-    checkNvrtc(res);
+    checkNvrtc(res, log[0 .. logSize]);
 
     // fetch PTX
     size_t ptxSize;
     checkNvrtc(nvrtcGetPTXSize(prog, &ptxSize));
-
+    char *ptx = cast(char*) pureMalloc(char.sizeof * ptxSize);
+    scope (exit) pureFree(ptx);
+    checkNvrtc(nvrtcGetPTX(prog, ptx));
+    RCString result = ptx[0 .. ptxSize];
+    
     // char* 
     // RCString();
-    //   char *ptx = reinterpret_cast<char *>(malloc(sizeof(char) * ptxSize));
+
     // NVRTC_SAFE_CALL("nvrtcGetPTX", nvrtcGetPTX(prog, ptx));
     // NVRTC_SAFE_CALL("nvrtcDestroyProgram", nvrtcDestroyProgram(&prog));
     // *ptxResult = ptx;
     // *ptxResultSize = ptxSize;
     
     
-    string result;
     return result;
 }
 

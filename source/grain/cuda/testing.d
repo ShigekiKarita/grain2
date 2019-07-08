@@ -109,7 +109,7 @@ void checkNvrtc(
     string file = __FILE__,
     size_t line = __LINE__,
     string func = __FUNCTION__
-)(nvrtcResult err)
+)(nvrtcResult err, const(char)[] info = "")
 {
     if (err == NVRTC_SUCCESS) return;
     assert(err == NVRTC_SUCCESS,
@@ -118,5 +118,6 @@ void checkNvrtc(
            << " (func) " << func
            << " (file) " << file
            << " (line) " << line
+           << " (info) " << info
            << getData);
 }
