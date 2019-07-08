@@ -146,3 +146,48 @@ struct RCIter(It, Rc)
 import stdx.allocator.mallocator : Mallocator;
 
 alias DefaultCPUStorage = RCStorage!Mallocator;
+
+/// Refrence counting string
+struct RCString
+{
+    import mir.rc.array : RCArray;
+    RCArray!char payload;
+    alias toString this;
+    
+    this(size_t length) @nogc pure nothrow
+    {
+        this.payload = typeof(this.payload)(length);
+    }
+
+    this(string s) @nogc pure nothrow
+    {
+        import core.stdc.string : memcpy;
+        this(s.length + 1);
+        memcpy(this.payload.ptr, s.ptr, s.length);
+        this.payload[$-1] = '\0';
+    }
+    
+    inout(char)[] chars() scope pure nothrow inout @nogc
+    {
+        return this.payload[][0 .. $-1];
+    }
+
+    string toString() scope pure nothrow inout @nogc
+    {
+        return cast(string) this.chars;
+    }
+
+}
+
+///
+@nogc pure nothrow
+unittest
+{
+    void f(string) {}
+    auto s = "hello, world";
+    auto r = RCString(s);
+    assert(r == s);
+    r.payload[0] = 'g';
+    f(r);
+    assert(r == "gello, world");
+}
