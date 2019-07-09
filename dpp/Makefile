@@ -1,7 +1,7 @@
 CUDA_ROOT := /usr/local/cuda
 CUDNN_ROOT := /usr/local/cuda
 DPPROOT := build/grain/dpp
-DPPSRC := cublas.d cudnn.d driver.d nvrtc.d runtime_api.d cl.d
+DPPSRC := cublas.d cudnn.d cuda_driver.d nvrtc.d cuda_runtime_api.d cl.d
 
 .PHONY: all clean
 

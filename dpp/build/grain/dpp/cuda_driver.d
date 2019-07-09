@@ -1,4 +1,4 @@
-module grain.dpp.driver;
+module grain.dpp.cuda_driver;
 
 
         import core.stdc.config;

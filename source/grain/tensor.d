@@ -89,7 +89,7 @@ struct Tensor(size_t _dim, T, Storage = DefaultCPUStorage)
     {
         static if (deviceof == "cuda")
         {
-            import grain.dpp.runtime_api : cudaSetDevice;
+            import grain.dpp.cuda_runtime_api : cudaSetDevice;
             cudaSetDevice(this.deviceId);
         }
         return payload.iterator!(T*) + offset;

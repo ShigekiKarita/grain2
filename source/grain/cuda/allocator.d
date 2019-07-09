@@ -4,7 +4,7 @@ version (grain_cuda):
 
 import grain.tensor : Opt;
 import grain.cuda.testing : checkCuda;
-import grain.dpp.runtime_api;
+import grain.dpp.cuda_runtime_api;
 
 /// CUDA heap allocator
 struct CuMallocator
@@ -25,7 +25,7 @@ struct CuMallocator
     @trusted @nogc nothrow
     void[] allocate()(size_t bytes)
     {
-        // import grain.dpp.driver : cuMemAlloc_v2, CUdeviceptr;
+        // import grain.dpp.cuda_driver : cuMemAlloc_v2, CUdeviceptr;
         if (!bytes) return null;
 
         void* p;

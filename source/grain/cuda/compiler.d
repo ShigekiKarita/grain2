@@ -4,11 +4,11 @@ version (grain_cuda):
 
 import grain.storage : RCString;
 import grain.cuda.testing : checkNvrtc, checkCuda;
-import grain.dpp.driver : CUmodule, CUfunction;
+import grain.dpp.cuda_driver : CUmodule, CUfunction;
 
 struct CompileOpt
 {
-    import grain.dpp.driver : CUjit_option;
+    import grain.dpp.cuda_driver : CUjit_option;
 
     string[] headerSources;
     string[] headerNames;
@@ -53,7 +53,7 @@ CUmodule compileModule(
     import std.string : fromStringz;
     import core.memory : pureMalloc, pureFree;
     import grain.dpp.nvrtc;
-    import grain.dpp.driver;
+    import grain.dpp.cuda_driver;
 
     nvrtcProgram prog;
     auto nh = opt.numHeaders;
@@ -112,7 +112,7 @@ CUfunction compile(
     scope string name, scope string args, scope string proc,
     CompileOpt opt = CompileOpt.init
 ) {
-    import grain.dpp.driver : cuModuleGetFunction;
+    import grain.dpp.cuda_driver : cuModuleGetFunction;
     import mir.format : stringBuf, getData;
     enum attr = q{extern "C" __global__ void };
     auto src = stringBuf()
@@ -136,7 +136,7 @@ unittest
     import grain.cuda : CuTensor, CuDevice;
     import grain.random : normal_;
     import grain.ops : copy;
-    import grain.dpp.driver : cuLaunchKernel, CUstream;
+    import grain.dpp.cuda_driver : cuLaunchKernel, CUstream;
     
     auto cufun = compile(
         "vectorAdd",
@@ -169,7 +169,7 @@ unittest
     ];
     void*[] config;
     // NOTE runtime api failed
-    // import grain.dpp.runtime_api;
+    // import grain.dpp.cuda_runtime_api;
     // checkCuda(cudaLaunchKernel(
     //     cufun,
     //     // grid

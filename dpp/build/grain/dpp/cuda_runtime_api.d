@@ -1,4 +1,4 @@
-module grain.dpp.runtime_api;
+module grain.dpp.cuda_runtime_api;
 
 
         import core.stdc.config;

@@ -4,7 +4,7 @@ module grain.cuda.device;
 version (grain_cuda):
 
 import grain.cuda.testing : checkCuda;
-import grain.dpp.runtime_api;
+import grain.dpp.cuda_runtime_api;
 
 @nogc nothrow:
 

@@ -7,7 +7,7 @@ import std.string : fromStringz;
 
 import mir.format : stringBuf, getData;
 
-import grain.dpp.driver;
+import grain.dpp.cuda_driver;
 import grain.dpp.cublas;
 import grain.dpp.nvrtc;
 
@@ -105,7 +105,7 @@ void checkCuda(
            << getData);
 }
 
-import R = grain.dpp.runtime_api;
+import R = grain.dpp.cuda_runtime_api;
 @nogc
 void checkCuda(
     string file = __FILE__,
