@@ -2,6 +2,7 @@
 module grain.ops.transposed;
 
 import grain.tensor : Tensor;
+import grain.ops.common : apply;
 
 
 /// transpose last two dim
@@ -31,7 +32,7 @@ struct Transposed(size_t N, T, Storage)
 /// ditto
 auto transposed(size_t N, T, Storage)(Tensor!(N, T, Storage) x)
 {
-    return Transposed!(N, T, Storage).forward(x);
+    return Transposed!(N, T, Storage)().apply(x);
 }
 
 ///

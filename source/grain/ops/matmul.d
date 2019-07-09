@@ -5,6 +5,7 @@ import std.typecons : Tuple, tuple;
 
 import grain.tensor : Tensor;
 import grain.testing : assertEqual;
+import grain.ops.common : apply;
 
 
 /// matrix multiplication
@@ -43,7 +44,7 @@ struct Matmul(T, Storage) if (Storage.deviceof == "cpu")
 auto matmul(T, Storage)(Tensor!(2, T, Storage) a, Tensor!(2, T, Storage) b)
 {
     Matmul!(T, Storage) mm;
-    return mm.forward(a, b);
+    return mm.apply(a, b);
 }
 
 
