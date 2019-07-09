@@ -13,6 +13,7 @@
 
 !dub.json
 !.gitignore
+!Makefile
 
 .dub
 docs.json
