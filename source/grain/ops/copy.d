@@ -87,8 +87,8 @@ auto copy(alias Dst, size_t N, T, Src)(Tensor!(N, T, Src) x, Opt opt)
         }
         static if (Dst == "cuda")
         {
-            import grain.cuda.allocator : DefaultCudaStorage;
-            alias D = DefaultCudaStorage;
+            import grain.cuda.allocator : DefaultCuStorage;
+            alias D = DefaultCuStorage;
         }
         else
         {

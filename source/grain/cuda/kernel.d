@@ -129,8 +129,8 @@ CUfunction compile(
 unittest
 {
     import grain.testing : assertAllClose;
-    import grain.tensor : Tensor;
-    import grain.cuda : GPUTensor;
+    import grain.tensor : Tensor, Opt;
+    import grain.cuda : CuTensor, CuDevice;
     import grain.random : normal_;
     import grain.ops : copy;
 
@@ -145,16 +145,17 @@ unittest
         });
 
     scope auto n = 50000;
-    auto ha = Tensor!(1, float)(n).normal_;
-    auto hb = Tensor!(1, float)(n).normal_;
+    Opt hopt = {pinMemory: true};
+    auto ha = Tensor!(1, float)(hopt, n).normal_;
+    auto hb = Tensor!(1, float)(hopt, n).normal_;
 
     auto da = ha.copy!"cuda";
     auto db = hb.copy!"cuda";
-    auto dc = GPUTensor!(1, float)(n);
+    auto dc = CuTensor!(1, float)(n);
 
     int threadPerBlock = 256;
     int sharedMemBytes = 0;
-    CUstream stream = null;
+    auto stream = cast(CUstream) CuDevice.get(dc.deviceId).stream;
     auto ps = [da.ptr, db.ptr, dc.ptr];
     scope void*[4] args = [
         cast(void*) &ps[0],

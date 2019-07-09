@@ -19,7 +19,7 @@ struct CuDevice
         auto dev = devices[index];
         if (dev.stream is null)
         {
-            cudaStreamCreate(&dev.stream);
+            cudaStreamCreateWithFlags(&dev.stream, cudaStreamNonBlocking);
         }
         return dev;
     }

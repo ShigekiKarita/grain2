@@ -6,6 +6,7 @@ import grain.cuda.dpp.cublas : cublasHandle_t, cublasCreate_v2, cublasDestroy_v2
 import grain.cuda.dpp.cudnn : cudnnHandle_t, cudnnCreate, cudnnDestroy;
 
 public import grain.cuda.allocator;
+public import grain.cuda.device;
 public import grain.cuda.cudnn;
 public import grain.cuda.testing;
 

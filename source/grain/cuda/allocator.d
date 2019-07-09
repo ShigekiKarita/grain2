@@ -59,5 +59,5 @@ unittest
 import grain.storage : RCStorage;
 import grain.tensor : Tensor;
 
-alias DefaultCudaStorage = RCStorage!CuMallocator;
-alias GPUTensor(size_t dim, T) = Tensor!(dim, T, DefaultCudaStorage);
+alias DefaultCuStorage = RCStorage!CuMallocator;
+alias CuTensor(size_t dim, T) = Tensor!(dim, T, DefaultCuStorage);
