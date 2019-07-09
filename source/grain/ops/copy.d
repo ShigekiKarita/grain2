@@ -6,13 +6,16 @@ import grain.tensor : Tensor, Opt;
 
 /// copy tensor between devices
 struct Copy(size_t N, T, Src, Dst)
-{    
+{
+    @nogc nothrow:
+    
     alias dsrc = Src.deviceof;
     alias ddst = Dst.deviceof;
-    Opt opt;
+    Opt opt, srcOpt;
     
     Tensor!(N, T, Dst) forward(Tensor!(N, T, Src) x)
     {
+        this.srcOpt = x.opt;
         auto y = typeof(return)(this.opt, x.shape);
         static if (dsrc == "cpu" && ddst == "cpu")
         {
@@ -21,7 +24,24 @@ struct Copy(size_t N, T, Src, Dst)
         else static if (dsrc == "cuda" && ddst == "cuda")
         {
             import grain.cuda.cudnn : transform;
-            transform(x, y);
+            if (x.deviceId == y.deviceId)
+            {
+                transform(x, y);
+            }
+            else
+            {
+                import grain.cuda.dpp.runtime_api;
+                import grain.cuda.device : CuDevice;
+                import grain.cuda.testing : checkCuda;
+
+                if (!x.isContiguous)
+                {
+                    auto f = Copy!(N, T, Src, Src)(x.opt);
+                    x = f.forward(x);
+                }
+                cudaMemcpyAsync(y.ptr, x.ptr, T.sizeof * x.numel,
+                                cudaMemcpyDeviceToDevice, CuDevice.get(x.deviceId).stream);
+            }
         }
         else static if (dsrc == "cpu" && ddst == "cuda")
         {
@@ -34,11 +54,12 @@ struct Copy(size_t N, T, Src, Dst)
 
             if (!x.isContiguous)
             {
-                x = x.copy!Src;
+                auto f = Copy!(N, T, Src, Src)(x.opt);
+                x = f.forward(x);
             }
             if (x.pinMemory)
             {
-                cudaMemcpyAsync(x.ptr, y.ptr, T.sizeof * x.numel,
+                cudaMemcpyAsync(y.ptr, x.ptr, T.sizeof * x.numel,
                                 cudaMemcpyHostToDevice,
                                 CuDevice.get(opt.deviceId).stream);
             }
@@ -50,14 +71,23 @@ struct Copy(size_t N, T, Src, Dst)
         else static if (dsrc == "cuda" && ddst == "cpu")
         {
             // TODO
-            import grain.cuda.dpp.driver : cuMemcpyDtoH_v2, CUdeviceptr;
+            import grain.cuda.device : CuDevice;
+            import grain.cuda.dpp.runtime_api; // driver : cuMemcpyDtoH_v2, CUdeviceptr;
             import grain.cuda.testing : checkCuda;
 
             if (!x.isContiguous)
             {
                 x = x.copy!Src;
             }
-            checkCuda(cuMemcpyDtoH_v2(y.ptr, cast(CUdeviceptr) x.ptr, T.sizeof * x.numel));
+            if (x.pinMemory)
+            {
+                cudaMemcpyAsync(y.ptr, x.ptr, T.sizeof * x.numel,
+                                cudaMemcpyDeviceToHost, CuDevice.get(x.deviceId).stream);
+            }
+            else
+            {
+                checkCuda(cudaMemcpy(y.ptr, x.ptr, T.sizeof * x.numel, cudaMemcpyDeviceToHost));
+            }
         }
         else
         {
@@ -66,16 +96,22 @@ struct Copy(size_t N, T, Src, Dst)
         return y;
     }
 
-    Tensor!(N, T, Src) backward(Tensor!(N, T, Dst) x)
+    Tensor!(N, T, Src) backward(Tensor!(N, T, Dst) gy)
     {
         static if (dsrc == ddst)
-            return x;
+        {
+            if (this.opt == this.srcOpt)
+                return gy;
+            else
+                return gy.copy!Src(this.srcOpt);
+        }
         else
-            return x.copy!Src(this.opt);
+            return gy.copy!Src(this.srcOpt);
     }
 }
 
 /// ditto
+@nogc nothrow
 auto copy(alias Dst, size_t N, T, Src)(Tensor!(N, T, Src) x, Opt opt)
 {
     static if (is(typeof(Dst) == string))

@@ -12,7 +12,7 @@
     "buildTypes": {
         "cuda-unittest": {
             "buildOptions": ["unittests", "debugMode", "debugInfo"],
-            "versions": ["grain_cuda"],
+            "versions": ["grain_cuda", "grain_debug"],
             "libs": ["cuda", "cudart", "cublas", "cudnn", "nvrtc"]
         }
     },

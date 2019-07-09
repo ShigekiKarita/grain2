@@ -4,10 +4,12 @@ version (grain_cuda):
 
 import grain.storage : RCString;
 import grain.cuda.testing : checkNvrtc, checkCuda;
-import grain.cuda.dpp.driver;
+import grain.cuda.dpp.driver : CUmodule, CUfunction;
 
 struct CompileOpt
 {
+    import grain.cuda.dpp.driver : CUjit_option;
+
     string[] headerSources;
     string[] headerNames;
     string[] options;
@@ -110,6 +112,7 @@ CUfunction compile(
     scope string name, scope string args, scope string proc,
     CompileOpt opt = CompileOpt.init
 ) {
+    import grain.cuda.dpp.driver : cuModuleGetFunction;
     import mir.format : stringBuf, getData;
     enum attr = q{extern "C" __global__ void };
     auto src = stringBuf()
@@ -133,7 +136,8 @@ unittest
     import grain.cuda : CuTensor, CuDevice;
     import grain.random : normal_;
     import grain.ops : copy;
-
+    import grain.cuda.dpp.driver : cuLaunchKernel, CUstream;
+    
     auto cufun = compile(
         "vectorAdd",
         q{const float *A, const float *B, float *C, int numElements},
@@ -155,7 +159,7 @@ unittest
 
     int threadPerBlock = 256;
     int sharedMemBytes = 0;
-    auto stream = cast(CUstream) CuDevice.get(dc.deviceId).stream;
+    auto stream = CuDevice.get(dc.deviceId).stream;
     auto ps = [da.ptr, db.ptr, dc.ptr];
     scope void*[4] args = [
         cast(void*) &ps[0],
@@ -164,13 +168,25 @@ unittest
         cast(void*) &n
     ];
     void*[] config;
+    // NOTE runtime api failed
+    // import grain.cuda.dpp.runtime_api;
+    // checkCuda(cudaLaunchKernel(
+    //     cufun,
+    //     // grid
+    //     dim3(threadPerBlock, 1, 1),
+    //     // block
+    //     dim3((n + threadPerBlock - 1) / threadPerBlock, 1, 1),
+    //     args.ptr,
+    //     sharedMemBytes, stream));
+
+    // device api
     checkCuda(cuLaunchKernel(
         cufun,
         // grid
         threadPerBlock, 1, 1,
         // block
         (n + threadPerBlock - 1) / threadPerBlock, 1, 1,
-        sharedMemBytes, stream, args.ptr, config.ptr));
+        sharedMemBytes, cast(CUstream) stream, args.ptr, config.ptr));
 
     auto hc = dc.copy!"cpu";
     assertAllClose(ha.asSlice + hb.asSlice, hc.asSlice);
