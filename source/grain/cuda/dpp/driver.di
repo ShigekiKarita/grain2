@@ -2747,3 +2747,7 @@ extern(C)
         enum _ALLOCA_H = 1;
     }
 }
+
+
+
+version (grain_cuda):

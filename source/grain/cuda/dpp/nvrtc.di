@@ -986,3 +986,6 @@ extern(C)
         enum __BIT_TYPES_DEFINED__ = 1;
     }
 }
+
+
+version (grain_cuda):

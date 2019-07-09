@@ -3556,3 +3556,7 @@ extern(C)
         enum cudaExternalMemoryDedicated = 0x1;
     }
 }
+
+
+
+version (grain_cuda):

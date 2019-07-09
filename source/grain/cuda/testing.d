@@ -1,6 +1,8 @@
 /// Test functions for CUDA
 module grain.cuda.testing;
 
+version (grain_cuda):
+
 import std.string : fromStringz;
 
 import mir.format : stringBuf, getData;
@@ -103,19 +105,19 @@ void checkCuda(
            << getData);
 }
 
-
+import R = grain.cuda.dpp.runtime_api;
 @nogc
-void checkCudaError(
+void checkCuda(
     string file = __FILE__,
     size_t line = __LINE__,
     string func = __FUNCTION__
-)(cudaError err)
+)(R.cudaError err)
 {
-    if (err == cudaSuccess) return;
-    const(char)* name, content;
-    cudaGetErrorName(err, &name);
-    cudaGetErrorString(err, &content);
-    assert(err == cudaSuccess,
+    if (err == R.cudaSuccess) return;
+    // const(char)* name, content;
+    auto name = R.cudaGetErrorName(err);
+    auto content = R.cudaGetErrorString(err);
+    assert(err == R.cudaSuccess,
            stringBuf()
            << name.fromStringz
            << " (info) " << content.fromStringz

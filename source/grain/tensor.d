@@ -9,8 +9,8 @@ debug import grain.testing : assertAllClose, assertEqual;
 
 // TODO fix this linker error
 // import std.numeric : CustomFloat;
-// /// IEEE 754-2008 16-bit float
-// alias CustomFloat!16 half;
+// // /// IEEE 754-2008 16-bit float
+// alias grain_half = CustomFloat!16;
 
 
 struct Opt

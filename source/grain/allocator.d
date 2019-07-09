@@ -26,11 +26,11 @@ struct CPUMallocator
         {
             version (grain_cuda)
             {
-                import grain.cuda.testing : checkCudaError;
+                import grain.cuda.testing : checkCuda;
                 import grain.cuda.dpp.runtime_api : cudaMallocHost;
-                // checkCudaError(
-                cudaMallocHost(&p, bytes);
-                // );
+                checkCuda(
+                    cudaMallocHost(&p, bytes)
+                );
             }
             else
             {
@@ -53,11 +53,11 @@ struct CPUMallocator
         {
             version (grain_cuda)
             {
-                import grain.cuda.testing : checkCudaError;
+                import grain.cuda.testing : checkCuda;
                 import grain.cuda.dpp.runtime_api : cudaFreeHost;
-                // checkCudaError(
-                cudaFreeHost(b.ptr);
-                // );
+                checkCuda(
+                    cudaFreeHost(b.ptr)
+                );
             }
             else
             {

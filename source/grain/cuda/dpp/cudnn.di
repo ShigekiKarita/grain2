@@ -3492,3 +3492,7 @@ extern(C)
         enum CUDNN_MAJOR = 7;
     }
 }
+
+
+
+version(grain_cuda):
