@@ -7,7 +7,6 @@ import mir.format : stringBuf, getData;
 
 import grain.cuda.dpp.driver;
 import grain.cuda.dpp.cublas;
-import grain.cuda.dpp.cudnn;
 import grain.cuda.dpp.nvrtc;
 
 
@@ -61,6 +60,8 @@ void checkCublas(
 }
 
 
+import grain.cuda.dpp.cudnn : cudnnStatus_t, CUDNN_STATUS_SUCCESS, cudnnGetErrorString;
+
 /// cudnn error checker
 @nogc
 void checkCudnn(
@@ -93,6 +94,28 @@ void checkCuda(
     cuGetErrorName(err, &name);
     cuGetErrorString(err, &content);
     assert(err == CUDA_SUCCESS,
+           stringBuf()
+           << name.fromStringz
+           << " (info) " << content.fromStringz
+           << " (func) " << func
+           << " (file) " << file
+           << " (line) " << line
+           << getData);
+}
+
+
+@nogc
+void checkCudaError(
+    string file = __FILE__,
+    size_t line = __LINE__,
+    string func = __FUNCTION__
+)(cudaError err)
+{
+    if (err == cudaSuccess) return;
+    const(char)* name, content;
+    cudaGetErrorName(err, &name);
+    cudaGetErrorString(err, &content);
+    assert(err == cudaSuccess,
            stringBuf()
            << name.fromStringz
            << " (info) " << content.fromStringz

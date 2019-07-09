@@ -1,6 +1,6 @@
 module grain.cuda.allocator;
 
-import stdx.allocator.common;
+import grain.tensor : Opt;
 import grain.cuda.testing : checkCuda;
 
 version (grain_cuda):
@@ -8,18 +8,12 @@ version (grain_cuda):
 /// CUDA heap allocator
 struct CuMallocator
 {
+    Opt opt;
+    alias opt this;
+    
     /// device indicator
     enum deviceof = "cuda";
     
-    /**
-    In CUDA, the alignment requirement is automatically fulfilled for the built-in types of
-    char, short, int, long, longlong, float, double like float2 or float4. 
-
-    See also:
-        https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#device-memory-accesses
-    */
-    enum uint alignment = platformAlignment;
-
     /**
     Standard allocator methods per the semantics defined above. The
     $(D deallocate) method is $(D @system) because it
@@ -48,7 +42,7 @@ struct CuMallocator
         return true;
     }
 
-    enum CuMallocator instance = CuMallocator();
+    enum instance = CuMallocator();
 }
 
 

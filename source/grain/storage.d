@@ -3,8 +3,10 @@ module grain.storage;
 
 
 /// Basic storage
-struct Storage(Allocator)
+struct Storage(Allocator_)
 {
+    alias Allocator = Allocator_;
+    
     static if(is(typeof(Allocator.deviceof))) {
         enum deviceof = Allocator.deviceof;
     } else {
@@ -31,10 +33,11 @@ struct Storage(Allocator)
 }
 
 /// Reference count storage
-struct RCStorage(Allocator)
+struct RCStorage(Allocator_)
 {
     import mir.rc.ptr : RCPtr, createRC;
 
+    alias Allocator = Allocator_;
     alias Base = Storage!Allocator;
 
     RCPtr!Base base;
@@ -142,10 +145,8 @@ struct RCIter(It, Rc)
     { return this._iterator - right._iterator; }
 }
 
-
-import stdx.allocator.mallocator : Mallocator;
-
-alias DefaultCPUStorage = RCStorage!Mallocator;
+import grain.allocator : CPUMallocator;
+alias DefaultCPUStorage = RCStorage!CPUMallocator;
 
 /// Refrence counting string
 struct RCString

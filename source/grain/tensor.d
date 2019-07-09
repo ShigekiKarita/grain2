@@ -13,19 +13,35 @@ debug import grain.testing : assertAllClose, assertEqual;
 // alias CustomFloat!16 half;
 
 
+struct Opt
+{
+    bool requireGrad = false;
+    bool pinMemory = false;
+    int deviceId = 0;
+}
+
 // Tensor on CPU implementation
 struct Tensor(size_t _dim, T, Storage = DefaultCPUStorage)
 {
     import mir.ndslice.slice : Slice, Universal, Structure;
 
+    alias dim = _dim;
+    alias deviceof = Storage.deviceof;
+    alias shape = lengths;
+    
     size_t[dim] lengths;
     ptrdiff_t[dim] strides;
     Storage payload;
     ptrdiff_t offset = 0;
 
-    alias dim = _dim;
-    alias deviceof = Storage.deviceof;
-    alias shape = lengths;
+    Opt opt;
+    alias opt this;
+
+    this(Opt opt, size_t[dim] lengths...)
+    {
+        this.opt = opt;
+        this(lengths);
+    }
     
     this(size_t[dim] lengths...)
     {
@@ -33,7 +49,9 @@ struct Tensor(size_t _dim, T, Storage = DefaultCPUStorage)
 
         this.lengths = lengths;
         this.strides = lengths.iota.strides;
-        this.payload = typeof(payload)(T.sizeof * this.strides[0] * this.lengths[0]);
+        auto al = typeof(Storage.init.allocator)(this.opt);
+        size_t n = T.sizeof * this.strides[0] * this.lengths[0];
+        this.payload = typeof(payload)(n, al);
     }
 
     bool isContiguous() const
@@ -55,38 +73,31 @@ struct Tensor(size_t _dim, T, Storage = DefaultCPUStorage)
 
     RCIter!(T*, Storage) iterator() @property
     {
+        static if (deviceof == "cuda")
+        {
+            import grain.cuda.dpp.runtime_api : cudaSetDevice;
+            cudaSetDevice(this.deviceId);
+        }
         return payload.iterator!(T*) + offset;
     }
 
-    static if (deviceof == "cpu")
+    Slice!(typeof(this.iterator()), dim, Universal) asSlice()()
     {
-        Slice!(typeof(this.iterator()), dim, Universal) asSlice()()
-        {
-            import std.meta : AliasSeq;
-            alias structure = AliasSeq!(this.lengths, this.strides);
-            return typeof(return)(structure, this.iterator);
-        }
-
-        Slice!(T*, dim, Universal) lightScope()() scope return @property @trusted
-        {
-            import std.meta : AliasSeq;
-            alias structure = AliasSeq!(this.lengths, this.strides);
-            return typeof(return)(structure, this.ptr);
-        }
-
-        T* ptr()() scope return @property @trusted
-        {
-            return this.iterator.lightScope;
-        }
+        import std.meta : AliasSeq;
+        alias structure = AliasSeq!(this.lengths, this.strides);
+        return typeof(return)(structure, this.iterator);
+    }
+    
+    Slice!(T*, dim, Universal) lightScope()() scope return @property @trusted
+    {
+        import std.meta : AliasSeq;
+        alias structure = AliasSeq!(this.lengths, this.strides);
+        return typeof(return)(structure, this.ptr);
     }
 
-    static if (deviceof == "cuda")
+    T* ptr()() scope return @property @trusted
     {
-        import grain.cuda.dpp.driver : CUdeviceptr;
-        CUdeviceptr ptr()() scope return @property @trusted
-        {
-            return cast(typeof(return)) this.iterator.lightScope;
-        }
+        return this.iterator.lightScope;
     }
 }
 
