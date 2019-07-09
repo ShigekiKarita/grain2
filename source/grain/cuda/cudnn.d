@@ -66,7 +66,7 @@ struct TensorDesc
 }
 
 /// convert variable to cudnn tensor discriptor object
-auto makeCudnnTensor(bool allowSameSize = false, T, size_t dim, Storage)(Tensor!(dim, T, Storage) x)
+TensorDesc makeCudnnTensor(bool allowSameSize = false, T, size_t dim, Storage)(Tensor!(dim, T, Storage) x)
 {
     static assert(Storage.deviceof == "cuda");
     static assert(dim < CUDNN_DIM_MAX);
@@ -93,16 +93,16 @@ auto makeCudnnTensor(bool allowSameSize = false, T, size_t dim, Storage)(Tensor!
         auto strides = x.strides;
     }
 
-    TensorDesc tdesc;
-    tdesc.ptr = cast(CUdeviceptr)  x.iterator.lightScope;
-    checkCudnn(cudnnCreateTensorDescriptor(&tdesc.desc));
+    auto ptr = cast(CUdeviceptr) x.ptr;
+    cudnnTensorDescriptor_t desc;
+    checkCudnn(cudnnCreateTensorDescriptor(&desc));
     checkCudnn(cudnnSetTensorNdDescriptor(
-        tdesc.desc,
+        desc,
         cudnnDataType!(T, allowSameSize),
         ddim,
         shape.ptr,
         strides.ptr));
-    return tdesc;
+    return TensorDesc(desc, ptr);
 }
 
 ///
@@ -136,12 +136,13 @@ void transform(T, size_t dim, Storage)(
 )
 {
     static assert(Storage.deviceof == "cuda");
+    // assert(is(T == float) || is(T == double), "unsupported type: " ~ T.stringof);
     assert(src.shape == dst.shape);
     checkCudnn(
         cudnnTransformTensor(
             cudnnHandle,
-            cast(const void*) &alpha, src.makeCudnnTensor!true, cast(const void*) src.iterator.lightScope,
-            cast(const void*) &beta, dst.makeCudnnTensor!true, cast(void*) dst.iterator.lightScope
+            cast(const void*) &alpha, src.makeCudnnTensor!true, cast(const void*) src.ptr,
+            cast(const void*) &beta, dst.makeCudnnTensor!true, cast(void*) dst.ptr
             ) );
 }
 
@@ -149,7 +150,7 @@ void transform(T, size_t dim, Storage)(
 @system @nogc nothrow
 unittest
 {
-    /// FIXME: int support
+    /// FIXME: int/long support
     import grain.cuda.allocator : CuTensor;
     import grain.ops.transposed : transposed;
     auto x = CuTensor!(3, float)(2, 3, 4).transposed;

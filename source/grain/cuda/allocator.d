@@ -4,6 +4,7 @@ version (grain_cuda):
 
 import grain.tensor : Opt;
 import grain.cuda.testing : checkCuda;
+import grain.cuda.dpp.runtime_api;
 
 /// CUDA heap allocator
 struct CuMallocator
@@ -22,23 +23,23 @@ struct CuMallocator
     programs that can afford to leak memory allocated.
     */
     @trusted @nogc nothrow
-    static void[] allocate()(size_t bytes)
+    void[] allocate()(size_t bytes)
     {
-        import grain.cuda.dpp.driver : cuMemAlloc_v2, CUdeviceptr;
+        // import grain.cuda.dpp.driver : cuMemAlloc_v2, CUdeviceptr;
         if (!bytes) return null;
 
-        CUdeviceptr c;
-        checkCuda(cuMemAlloc_v2(&c, bytes));
-        auto p = cast(void*) c;
+        void* p;
+        cudaSetDevice(this.opt.deviceId);
+        checkCuda(cudaMalloc(&p, bytes));
         return p ? p[0 .. bytes] : null;
     }
 
     /// Ditto
     @system @nogc nothrow
-    static bool deallocate()(void[] b)
+    bool deallocate()(void[] b)
     {
-        import grain.cuda.dpp.driver : cuMemFree_v2, CUdeviceptr;
-        checkCuda(cuMemFree_v2(cast(CUdeviceptr) b.ptr));
+        cudaSetDevice(this.opt.deviceId);
+        checkCuda(cudaFree(b.ptr));
         return true;
     }
 

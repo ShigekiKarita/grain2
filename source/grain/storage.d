@@ -52,6 +52,11 @@ struct RCStorage(Allocator_)
     {
         return typeof(return)(cast(It) this.base.ptr, this);
     }
+
+    RCIter!(It, const typeof(this)) iterator(It)() const
+    {
+        return typeof(return)(cast(It) this.base.ptr, this);
+    }
 }
 
 /// Iterator for RCStorage that shares ownership by itself

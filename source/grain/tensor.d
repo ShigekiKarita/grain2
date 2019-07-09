@@ -18,6 +18,19 @@ struct Opt
     bool requireGrad = false;
     bool pinMemory = false;
     int deviceId = 0;
+
+    pure @nogc nothrow @safe
+    const(char)[] toString() const
+    {
+        import mir.format;
+        return (stringBuf()
+                << "Opt("
+                << "requireGrad=" << this.requireGrad
+                << ", pinMemory=" << this.pinMemory
+                << ", deviceId=" << this.deviceId
+                << ")"
+                << getData);
+    }
 }
 
 // Tensor on CPU implementation
@@ -81,6 +94,16 @@ struct Tensor(size_t _dim, T, Storage = DefaultCPUStorage)
         return payload.iterator!(T*) + offset;
     }
 
+    // RCIter!(const(T)*, const Storage) iterator() @property const
+    // {
+    //     static if (deviceof == "cuda")
+    //     {
+    //         import grain.cuda.dpp.runtime_api : cudaSetDevice;
+    //         cudaSetDevice(this.deviceId);
+    //     }
+    //     return cast(typeof(return)) (payload.iterator!(T*) + offset);
+    // }
+    
     Slice!(typeof(this.iterator()), dim, Universal) asSlice()()
     {
         import std.meta : AliasSeq;
@@ -95,10 +118,22 @@ struct Tensor(size_t _dim, T, Storage = DefaultCPUStorage)
         return typeof(return)(structure, this.ptr);
     }
 
+    // Slice!(const(T)*, dim, Universal) lightScope()() const scope return @property @trusted
+    // {
+    //     import std.meta : AliasSeq;
+    //     alias structure = AliasSeq!(this.lengths, this.strides);
+    //     return typeof(return)(structure, this.ptr);
+    // }
+    
     T* ptr()() scope return @property @trusted
     {
         return this.iterator.lightScope;
     }
+
+    // const(T)* ptr()() const scope return @property @trusted
+    // {
+    //     return cast(const(T)*) this.iterator.lightScope;
+    // }
 }
 
 template isTensor(T)
