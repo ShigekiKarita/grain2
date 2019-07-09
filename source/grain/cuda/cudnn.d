@@ -5,8 +5,8 @@ version (grain_cuda):
 
 import grain.tensor : Tensor;
 import grain.cuda : cudnnHandle;
-import grain.cuda.dpp.cudnn;
-import grain.cuda.dpp.driver : CUdeviceptr;
+import grain.dpp.cudnn;
+import grain.dpp.driver : CUdeviceptr;
 import grain.cuda.testing : checkCudnn;
 
 

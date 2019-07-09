@@ -2,12 +2,13 @@
 module grain.cuda;
 version(grain_cuda):
 
-import grain.cuda.dpp.cublas : cublasHandle_t, cublasCreate_v2, cublasDestroy_v2;
-import grain.cuda.dpp.cudnn : cudnnHandle_t, cudnnCreate, cudnnDestroy;
+import grain.dpp.cublas : cublasHandle_t, cublasCreate_v2, cublasDestroy_v2;
+import grain.dpp.cudnn : cudnnHandle_t, cudnnCreate, cudnnDestroy;
 
 public import grain.cuda.allocator;
-public import grain.cuda.device;
+public import grain.cuda.compiler;
 public import grain.cuda.cudnn;
+public import grain.cuda.device;
 public import grain.cuda.testing;
 
 __gshared cublasHandle_t cublasHandle;

@@ -9,11 +9,17 @@
         "mir-random": "~>2.2.4",
 	"stdx-allocator": "~>3.0.2"
     },
+    "importPaths": ["source", "dpp/build"],
     "buildTypes": {
         "cuda-unittest": {
             "buildOptions": ["unittests", "debugMode", "debugInfo"],
             "versions": ["grain_cuda", "grain_debug"],
             "libs": ["cuda", "cudart", "cublas", "cudnn", "nvrtc"]
+        },
+        "opencl-unittest": {
+            "buildOptions": ["unittests", "debugMode", "debugInfo"],
+            "versions": ["grain_opencl", "grain_debug"],
+            "libs": ["OpenCL"]
         }
     },
     "dflags": ["-dip25", "-dip1000", "-dip1008"],

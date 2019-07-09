@@ -27,7 +27,7 @@ struct CPUMallocator
             version (grain_cuda)
             {
                 import grain.cuda.testing : checkCuda;
-                import grain.cuda.dpp.runtime_api : cudaMallocHost;
+                import grain.dpp.runtime_api : cudaMallocHost;
                 checkCuda(
                     cudaMallocHost(&p, bytes)
                 );
@@ -54,7 +54,7 @@ struct CPUMallocator
             version (grain_cuda)
             {
                 import grain.cuda.testing : checkCuda;
-                import grain.cuda.dpp.runtime_api : cudaFreeHost;
+                import grain.dpp.runtime_api : cudaFreeHost;
                 checkCuda(
                     cudaFreeHost(b.ptr)
                 );

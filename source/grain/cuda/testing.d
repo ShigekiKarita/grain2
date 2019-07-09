@@ -7,9 +7,9 @@ import std.string : fromStringz;
 
 import mir.format : stringBuf, getData;
 
-import grain.cuda.dpp.driver;
-import grain.cuda.dpp.cublas;
-import grain.cuda.dpp.nvrtc;
+import grain.dpp.driver;
+import grain.dpp.cublas;
+import grain.dpp.nvrtc;
 
 
 /// emit error message string from enum
@@ -62,7 +62,7 @@ void checkCublas(
 }
 
 
-import grain.cuda.dpp.cudnn : cudnnStatus_t, CUDNN_STATUS_SUCCESS, cudnnGetErrorString;
+import grain.dpp.cudnn : cudnnStatus_t, CUDNN_STATUS_SUCCESS, cudnnGetErrorString;
 
 /// cudnn error checker
 @nogc
@@ -105,7 +105,7 @@ void checkCuda(
            << getData);
 }
 
-import R = grain.cuda.dpp.runtime_api;
+import R = grain.dpp.runtime_api;
 @nogc
 void checkCuda(
     string file = __FILE__,

@@ -48,7 +48,7 @@ struct Copy(size_t N, T, Src, Dst)
         }
         else
         {
-            import grain.cuda.dpp.runtime_api : cudaMemcpyAsync, cudaMemcpyDeviceToDevice;
+            import grain.dpp.runtime_api : cudaMemcpyAsync, cudaMemcpyDeviceToDevice;
             import grain.cuda.device : CuDevice;
             import grain.cuda.testing : checkCuda;
             
@@ -62,7 +62,7 @@ struct Copy(size_t N, T, Src, Dst)
     static if (dsrc == "cpu" && ddst == "cuda")
     Tensor!(N, T, Dst) forward(Tensor!(N, T, Src) x)
     {
-        import grain.cuda.dpp.runtime_api;
+        import grain.dpp.runtime_api;
         import grain.cuda.device : CuDevice;
         import grain.cuda.testing : checkCuda;
         
@@ -87,7 +87,7 @@ struct Copy(size_t N, T, Src, Dst)
     Tensor!(N, T, Dst) forward(Tensor!(N, T, Src) x)        
     {
         import grain.cuda.device : CuDevice;
-        import grain.cuda.dpp.runtime_api;
+        import grain.dpp.runtime_api;
         import grain.cuda.testing : checkCuda;
 
         this.srcOpt = x.opt;
