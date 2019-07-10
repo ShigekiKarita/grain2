@@ -48,13 +48,19 @@ struct Copy(size_t N, T, Src, Dst)
         }
         else
         {
-            import grain.dpp.cuda_runtime_api : cudaMemcpyAsync, cudaMemcpyDeviceToDevice;
+            import grain.dpp.cuda_runtime_api; // : cudaMemcpyAsync, cudaMemcpyDeviceToDevice;
             import grain.cuda.device : CuDevice;
             import grain.cuda.testing : checkCuda;
             
             x = x.contiguous;
+            // x -> y dependency
+            cudaEvent_t event;
+            cudaEventCreateWithFlags(&event, cudaEventDisableTiming);
+            cudaEventRecord(event, CuDevice.get(x.deviceId).stream);
+            auto dstStream = CuDevice.get(y.deviceId).stream;
+            cudaStreamWaitEvent(dstStream, event, 0);
             cudaMemcpyAsync(y.ptr, x.ptr, T.sizeof * x.numel,
-                            cudaMemcpyDeviceToDevice, CuDevice.get(x.deviceId).stream);
+                            cudaMemcpyDeviceToDevice, dstStream);
             return y;
         }
     }
