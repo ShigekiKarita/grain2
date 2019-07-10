@@ -1,6 +1,7 @@
 module grain.dpp.cl;
 
 
+
         import core.stdc.config;
         import core.stdc.stdarg: va_list;
         static import core.simd;
@@ -694,7 +695,7 @@ extern(C)
         void lo(_T_)(auto ref _T_ val) @property @nogc pure nothrow { _anonymous_53.lo = val; }
         auto hi() @property @nogc pure nothrow { return _anonymous_53.hi; }
         void hi(_T_)(auto ref _T_ val) @property @nogc pure nothrow { _anonymous_53.hi = val; }
-        core.simd.c_ulong8[8] v2;
+        core.simd.ulong2[8] v2;
     }
     union cl_ulong8
     {
@@ -753,7 +754,7 @@ extern(C)
         void lo(_T_)(auto ref _T_ val) @property @nogc pure nothrow { _anonymous_59.lo = val; }
         auto hi() @property @nogc pure nothrow { return _anonymous_59.hi; }
         void hi(_T_)(auto ref _T_ val) @property @nogc pure nothrow { _anonymous_59.hi = val; }
-        core.simd.c_ulong8[4] v2;
+        core.simd.ulong2[4] v2;
     }
     alias cl_ulong3 = cl_ulong4;
     union cl_ulong4
@@ -801,7 +802,7 @@ extern(C)
         void lo(_T_)(auto ref _T_ val) @property @nogc pure nothrow { _anonymous_65.lo = val; }
         auto hi() @property @nogc pure nothrow { return _anonymous_65.hi; }
         void hi(_T_)(auto ref _T_ val) @property @nogc pure nothrow { _anonymous_65.hi = val; }
-        core.simd.c_ulong8[2] v2;
+        core.simd.ulong2[2] v2;
     }
     union cl_ulong2
     {
@@ -836,7 +837,7 @@ extern(C)
         void lo(_T_)(auto ref _T_ val) @property @nogc pure nothrow { _anonymous_71.lo = val; }
         auto hi() @property @nogc pure nothrow { return _anonymous_71.hi; }
         void hi(_T_)(auto ref _T_ val) @property @nogc pure nothrow { _anonymous_71.hi = val; }
-        core.simd.c_ulong8 v2;
+        core.simd.ulong2 v2;
     }
     union cl_long16
     {
@@ -955,7 +956,7 @@ extern(C)
         void lo(_T_)(auto ref _T_ val) @property @nogc pure nothrow { _anonymous_77.lo = val; }
         auto hi() @property @nogc pure nothrow { return _anonymous_77.hi; }
         void hi(_T_)(auto ref _T_ val) @property @nogc pure nothrow { _anonymous_77.hi = val; }
-        core.simd.c_long8[8] v2;
+        core.simd.long2[8] v2;
     }
     union cl_long8
     {
@@ -1014,7 +1015,7 @@ extern(C)
         void lo(_T_)(auto ref _T_ val) @property @nogc pure nothrow { _anonymous_83.lo = val; }
         auto hi() @property @nogc pure nothrow { return _anonymous_83.hi; }
         void hi(_T_)(auto ref _T_ val) @property @nogc pure nothrow { _anonymous_83.hi = val; }
-        core.simd.c_long8[4] v2;
+        core.simd.long2[4] v2;
     }
     alias cl_long3 = cl_long4;
     union cl_long4
@@ -1062,7 +1063,7 @@ extern(C)
         void lo(_T_)(auto ref _T_ val) @property @nogc pure nothrow { _anonymous_89.lo = val; }
         auto hi() @property @nogc pure nothrow { return _anonymous_89.hi; }
         void hi(_T_)(auto ref _T_ val) @property @nogc pure nothrow { _anonymous_89.hi = val; }
-        core.simd.c_long8[2] v2;
+        core.simd.long2[2] v2;
     }
     union cl_long2
     {
@@ -1097,7 +1098,7 @@ extern(C)
         void lo(_T_)(auto ref _T_ val) @property @nogc pure nothrow { _anonymous_95.lo = val; }
         auto hi() @property @nogc pure nothrow { return _anonymous_95.hi; }
         void hi(_T_)(auto ref _T_ val) @property @nogc pure nothrow { _anonymous_95.hi = val; }
-        core.simd.c_long8 v2;
+        core.simd.long2 v2;
     }
     union cl_uint16
     {
@@ -2672,8 +2673,8 @@ extern(C)
         void hi(_T_)(auto ref _T_ val) @property @nogc pure nothrow { _anonymous_239.hi = val; }
     }
     alias __cl_float2 = core.simd.float4;
-    alias __cl_long1 = core.simd.c_long8;
-    alias __cl_ulong1 = core.simd.c_ulong8;
+    alias __cl_long1 = core.simd.long2;
+    alias __cl_ulong1 = core.simd.ulong2;
     alias __cl_int2 = core.simd.int4;
     alias __cl_uint2 = core.simd.uint4;
     alias __cl_short4 = int ;
@@ -2824,8 +2825,8 @@ extern(C)
     static int _mm_andnot_si128(int , int ) @nogc nothrow;
     static int _mm_or_si128(int , int ) @nogc nothrow;
     static int _mm_xor_si128(int , int ) @nogc nothrow;
-    alias __cl_long2 = core.simd.c_long8;
-    alias __cl_ulong2 = core.simd.c_ulong8;
+    alias __cl_long2 = core.simd.long2;
+    alias __cl_ulong2 = core.simd.ulong2;
     static int _mm_slli_epi16(int , int) @nogc nothrow;
     static int _mm_sll_epi16(int , int ) @nogc nothrow;
     static int _mm_slli_epi32(int , int) @nogc nothrow;
