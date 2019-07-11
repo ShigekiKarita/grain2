@@ -7,7 +7,7 @@ import grain.allocator : CPUMallocator;
 import grain.cuda.testing : checkCuda;
 import grain.dpp.cuda_runtime_api;
 
-struct PinnedAllocator
+struct PinnedMallocator
 {
     Opt opt;
     alias opt this;
@@ -102,4 +102,5 @@ import grain.tensor : Tensor;
 
 alias DefaultCuStorage = RCStorage!CuMallocator;
 alias cuda = RCStorage!CuMallocator;
+alias pinned = RCStorage!PinnedMallocator;
 alias CuTensor(size_t dim, T) = Tensor!(dim, T, DefaultCuStorage);

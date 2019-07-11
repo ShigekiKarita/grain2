@@ -22,15 +22,8 @@ struct CPUMallocator
         if (!bytes) return null;
 
         void* p;
-        if (this.pinMemory)
-        {
-            assert(false, "cannot allocate PIN memory without cuda support. add \"grain2:cuda\" to dependencies");
-        }
-        else
-        {
-            import core.memory : pureMalloc;
-            p = pureMalloc(bytes);
-        }
+        import core.memory : pureMalloc;
+        p = pureMalloc(bytes);
         return p ? p[0 .. bytes] : null;
     }
 
@@ -38,15 +31,8 @@ struct CPUMallocator
     @system @nogc nothrow
     bool deallocate()(void[] b)
     {
-        if (this.pinMemory)
-        {
-            assert(false, "cannot allocate PIN memory without cuda support. add \"grain2:cuda\" to dependencies");
-        }
-        else
-        {
-            import core.memory : pureFree;
-            pureFree(b.ptr);
-        }
+        import core.memory : pureFree;
+        pureFree(b.ptr);
         return true;
     }
 

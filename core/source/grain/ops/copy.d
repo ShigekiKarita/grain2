@@ -25,18 +25,18 @@ struct Copy(size_t N, T, Src, Dst)
     alias ddst = Dst.deviceof;
     Opt opt, srcOpt;
 
-    // Tensor!(N, T, Src) backward(Tensor!(N, T, Dst) gy)
-    // {
-    //     static if (dsrc == ddst)
-    //     {
-    //         if (this.opt == this.srcOpt)
-    //             return gy;
-    //         else
-    //             return gy.copy!Src(this.srcOpt);
-    //     }
-    //     else
-    //         return gy.copy!Src(this.srcOpt);
-    // }
+    Tensor!(N, T, Src) backward(Tensor!(N, T, Dst) gy)
+    {
+        static if (dsrc == ddst)
+        {
+            if (this.opt == this.srcOpt)
+                return gy;
+            else
+                return gy.copy!Src(this.srcOpt);
+        }
+        else
+            return gy.copy!Src(this.srcOpt);
+    }
 }
 
 
@@ -122,34 +122,6 @@ unittest
             assert(y.asSlice == x.asSlice);
             x.asSlice[0, 0] = 1;
             assert(y.asSlice != x.asSlice);
-
-        //     version (grain_cuda)
-        //     {
-        //         assert(false);
-        //         // FIXME: int/long is supported when transposed
-        //         foreach (pin; tuple(true, false))
-        //         {
-        //             Opt opt = {pinMemory: pin};
-        //             auto c = x.copy!"cuda"(opt); // .transposed;
-        //             static assert(c.deviceof == "cuda");
-        //             assert(c.deviceId == 0);
-        //             auto xt = c.copy!"cpu"; // .transposed;
-        //             assert(xt.pinMemory == pin);
-        //             assert(xt.asSlice == x.asSlice);
-        //             assert(xt.ptr != x.ptr);
-
-        //             import grain.cuda.device : CuDevice;
-        //             if (CuDevice.count > 1)
-        //             {
-        //                 opt.pinMemory = pin;
-        //                 opt.deviceId = 1;
-        //                 auto d1 = c.copy!"cuda"(opt);
-        //                 assert(d1.deviceId == 1);
-        //                 assert(d1.pinMemory == pin);
-        //                 assert(d1.copy!"cpu".asSlice == x.asSlice);
-        //             }
-        //         }
-        //     }
         }
     }
 }

@@ -16,7 +16,6 @@ debug import grain.testing : assertAllClose, assertEqual;
 struct Opt
 {
     bool requireGrad = false;
-    bool pinMemory = false;
     int deviceId = 0;
 
     pure @nogc nothrow @safe
@@ -26,7 +25,6 @@ struct Opt
         return (stringBuf()
                 << "Opt("
                 << "requireGrad=" << this.requireGrad
-                << ", pinMemory=" << this.pinMemory
                 << ", deviceId=" << this.deviceId
                 << ")"
                 << getData);
