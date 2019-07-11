@@ -1,28 +1,34 @@
 {
+    "description": "autograd library",
+    "license": "BSL-1.0",
+    "name": "grain2",
     "authors": [
         "karita"
     ],
     "copyright": "Copyright © 2019, karita",
-    "dependencies": {
-        "mir-blas": "~>1.1.4",
-        "mir-runtime": "~>0.0.22",
-        "mir-random": "~>2.2.4"
-    },
-    "importPaths": ["source", "dpp/build"],
-    "buildTypes": {
-        "cuda-unittest": {
-            "buildOptions": ["unittests", "debugMode", "debugInfo"],
-            "versions": ["grain_cuda", "grain_debug"],
-            "libs": ["cuda", "cudart", "cublas", "cudnn", "nvrtc"]
-        },
-        "opencl-unittest": {
-            "buildOptions": ["unittests", "debugMode", "debugInfo"],
-            "versions": ["grain_opencl", "grain_debug"],
-            "libs": ["OpenCL"]
-        }
-    },
     "dflags": ["-dip25", "-dip1000", "-dip1008"],
-    "description": "autograd library",
-    "license": "BSL-1.0",
-    "name": "grain2"
+    "subPackages": [
+	{
+	    "name": "core",
+	    "targetType": "library",
+	    "sourcePaths": ["core/source"],
+	    "importPaths": ["core/source"],
+	    "dependencies": {
+		"mir-blas": "~>1.1.4",
+		"mir-runtime": "~>0.0.22",
+		"mir-random": "~>2.2.4",
+	    },
+	},
+	{
+	    "name": "cuda",
+	    "targetType": "library",
+	    "dependencies": {
+		"grain2:core": "*"
+	    },
+	    "libs": ["cuda", "cudart", "cublas", "cudnn", "nvrtc"],
+	    "sourcePaths": ["cuda/source"],
+	    "importPaths": ["cuda/source", "dpp/build"],
+	    "preBuildCommands": ["cd dpp; make cuda -j"],
+	}
+    ]
 }

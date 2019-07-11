@@ -1,8 +1,6 @@
 /// High-level wrapper of cudnn library
 module grain.cuda.cudnn;
 
-version (grain_cuda):
-
 import grain.tensor : Tensor;
 import grain.cuda : cudnnHandle;
 import grain.dpp.cudnn;

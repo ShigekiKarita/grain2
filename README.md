@@ -14,8 +14,10 @@ This project is a successor of [grain](https://github.com/ShigekiKarita/grain).
 - CPU backend
   - BLAS library (e.g., OpenBLAS, MKL)
 - CUDA backend
-  - CUDA SDK v10-
-  - CUDNN Library v7-
+  - CUDA header/library v10-
+  - CUDNN header/library v7-
+- OpenCL backend
+  - OpenCL header/library v1.2
 
 ## roadmap
 
@@ -31,4 +33,4 @@ This project is a successor of [grain](https://github.com/ShigekiKarita/grain).
 ## trouble shooting
 
 - Q. My local CUDA/OpenCL libraries are different from files under `grain2/dpp/build`
-  A. Install [dpp](https://github.com/atilaneves/dpp) and regenerate them by `$ cd dpp; make -j CUDA_ROOT=... CUDNN_ROOT=...`
+  - A. Install [dpp](https://github.com/atilaneves/dpp) (commit 821a5d4) and regenerate them by `$ cd dpp; make -j cuda (or opencl)`

@@ -15,9 +15,8 @@ debug import grain.testing : assertAllClose, assertEqual;
 
 struct Opt
 {
-    bool requireGrad = false;
-    bool pinMemory = false;
     int deviceId = 0;
+    bool requireGrad = false;
 
     pure @nogc nothrow @safe
     const(char)[] toString() const
@@ -26,7 +25,6 @@ struct Opt
         return (stringBuf()
                 << "Opt("
                 << "requireGrad=" << this.requireGrad
-                << ", pinMemory=" << this.pinMemory
                 << ", deviceId=" << this.deviceId
                 << ")"
                 << getData);
@@ -95,23 +93,26 @@ struct Tensor(size_t _dim, T, Storage = DefaultCPUStorage)
         return payload.iterator!(T*) + offset;
     }
     
-    Slice!(typeof(this.iterator()), dim, Universal) asSlice()()
-    {
-        import std.meta : AliasSeq;
-        alias structure = AliasSeq!(this.lengths, this.strides);
-        return typeof(return)(structure, this.iterator);
-    }
-    
-    Slice!(T*, dim, Universal) lightScope()() scope return @property @trusted
-    {
-        import std.meta : AliasSeq;
-        alias structure = AliasSeq!(this.lengths, this.strides);
-        return typeof(return)(structure, this.ptr);
-    }
-    
     T* ptr()() scope return @property @trusted
     {
         return this.iterator.lightScope;
+    }
+
+    static if (Storage.deviceof == "cpu")
+    {
+        Slice!(typeof(this.iterator()), dim, Universal) asSlice()()
+        {
+            import std.meta : AliasSeq;
+            alias structure = AliasSeq!(this.lengths, this.strides);
+            return typeof(return)(structure, this.iterator);
+        }
+    
+        Slice!(T*, dim, Universal) lightScope()() scope return @property @trusted
+        {
+            import std.meta : AliasSeq;
+            alias structure = AliasSeq!(this.lengths, this.strides);
+            return typeof(return)(structure, this.ptr);
+        }
     }
 }
 

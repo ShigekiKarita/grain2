@@ -1,10 +1,7 @@
 /// Test functions for CUDA
 module grain.cuda.testing;
 
-version (grain_cuda):
-
 import std.string : fromStringz;
-
 import mir.format : stringBuf, getData;
 
 import grain.dpp.cuda_driver;

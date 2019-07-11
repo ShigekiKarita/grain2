@@ -1,8 +1,6 @@
 /// CUdevice wrapper
 module grain.cuda.device;
 
-version (grain_cuda):
-
 import grain.cuda.testing : checkCuda;
 import grain.dpp.cuda_runtime_api;
 
@@ -18,15 +16,15 @@ struct CuDevice
 
     static this()
     {
-        import core.stdc.stdio : printf;
-
+        debug import core.stdc.stdio : printf;
+        
         scope (exit) cudaSetDevice(0);
         
         // init cuda devices
         checkCuda(cudaGetDeviceCount(&devicesLength));
-        version (grain_debug)
+        debug
         {
-            printf("[grain_debug,info]: device count %d\n", devicesLength);
+            printf("[grain.info]: device count %d\n", devicesLength);
         }
         import core.memory : pureMalloc;
         devicesPtr = cast(CuDevice*) pureMalloc(CuDevice.sizeof * devicesLength);
@@ -43,9 +41,9 @@ struct CuDevice
                 checkCuda(cudaDeviceCanAccessPeer(&ok, i, j));
                 if (!ok)
                 {
-                    version (grain_debug)
+                    debug
                     {
-                        printf("[grain_debug,warn]: no GPU P2P: %d -> %d\n", i, j);
+                        printf("[grain.warn]: no GPU P2P: %d -> %d\n", i, j);
                     }
                     continue;
                 }
