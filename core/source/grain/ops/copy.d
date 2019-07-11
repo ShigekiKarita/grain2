@@ -42,7 +42,7 @@ struct Copy(size_t N, T, Src, Dst)
 
 Tensor!(N, T, Dst)
 forward(size_t N, T, Src, Dst)(
-    Copy!(N, T, Src, Dst) self,
+    ref Copy!(N, T, Src, Dst) self,
     Tensor!(N, T, Src) x)
 if (Src.deviceof == "cpu" && Dst.deviceof == "cpu")
 {
@@ -58,25 +58,6 @@ import grain.storage : DefaultCPUStorage;
 @nogc nothrow
 auto copy(Dst, size_t N, T, Src)(Tensor!(N, T, Src) x, Opt opt)
 {
-    // static if (is(typeof(Dst) == string))
-    // {
-    //     static if (Dst == "cpu")
-    //     {
-    //         import grain.storage : DefaultCPUStorage;
-    //         alias D = DefaultCPUStorage;
-    //     }
-    //     static if (Dst == "cuda")
-    //     {
-    //         import grain.cuda.allocator : DefaultCuStorage;
-    //         alias D = DefaultCuStorage;
-    //     }
-    //     else
-    //     {
-    //         static assert("unsupported string Dst: " ~ Dst);
-    //     }
-    // }
-    // else
-    
     static if (Dst.deviceof != "cpu")
     {
         // update the default device id (-1 is CPU)

@@ -13,6 +13,7 @@ struct PinnedMallocator
     alias opt this;
     
     enum deviceof = "cpu";
+    enum pinned = true;
 
     /**
     Standard allocator methods per the semantics defined above. The
@@ -54,6 +55,7 @@ struct CuMallocator
     
     /// device indicator
     enum deviceof = "cuda";
+    enum pinned = false;
     
     /**
     Standard allocator methods per the semantics defined above. The

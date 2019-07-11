@@ -8,6 +8,7 @@ struct CPUMallocator
     alias opt this;
     
     enum deviceof = "cpu";
+    enum pinned = false;
 
     /**
     Standard allocator methods per the semantics defined above. The

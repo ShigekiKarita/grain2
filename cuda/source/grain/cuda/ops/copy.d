@@ -1,12 +1,13 @@
 module grain.cuda.ops.copy;
 
+import grain.storage : Storage;
 import grain.tensor;
 import grain.ops.copy;
 
 
 Tensor!(N, T, Dst)
 forward(size_t N, T, Src, Dst)(
-    Copy!(N, T, Src, Dst) self,
+    ref Copy!(N, T, Src, Dst) self,
     Tensor!(N, T, Src) x
 )
 if (Src.deviceof == "cuda" && Dst.deviceof == "cuda")
@@ -25,7 +26,7 @@ if (Src.deviceof == "cuda" && Dst.deviceof == "cuda")
         import grain.dpp.cuda_runtime_api; // : cudaMemcpyAsync, cudaMemcpyDeviceToDevice;
         import grain.cuda.device : CuDevice;
         import grain.cuda.testing : checkCuda;
-            
+
         x = x.contiguous;
         // x -> y dependency
         cudaEvent_t event;
@@ -42,7 +43,7 @@ if (Src.deviceof == "cuda" && Dst.deviceof == "cuda")
 
 Tensor!(N, T, Dst)
 forward(size_t N, T, Src, Dst)(
-    Copy!(N, T, Src, Dst) self,
+    ref Copy!(N, T, Src, Dst) self,
     Tensor!(N, T, Src) x
 )
 if (Src.deviceof == "cpu" && Dst.deviceof == "cuda")
@@ -54,21 +55,22 @@ if (Src.deviceof == "cpu" && Dst.deviceof == "cuda")
     self.srcOpt = x.opt;
     auto y = typeof(return)(self.opt, x.shape);
     x = x.contiguous;
-    // if (x.pinMemory)
-    // {
-    //     cudaMemcpyAsync(y.ptr, x.ptr, T.sizeof * x.numel,
-    //                     cudaMemcpyHostToDevice,
-    //                     CuDevice.get(this.opt.deviceId).stream);
-    //     return y;
-    // }
-    // else
-    cudaMemcpy(y.ptr, x.ptr, T.sizeof * x.numel, cudaMemcpyHostToDevice);
+    static if (Src.pinned)
+    {
+        cudaMemcpyAsync(y.ptr, x.ptr, T.sizeof * x.numel,
+                        cudaMemcpyHostToDevice,
+                        CuDevice.get(self.opt.deviceId).stream);
+    }
+    else
+    {
+        cudaMemcpy(y.ptr, x.ptr, T.sizeof * x.numel, cudaMemcpyHostToDevice);
+    }
     return y;
 }
 
 Tensor!(N, T, Dst)
 forward(size_t N, T, Src, Dst)(
-    Copy!(N, T, Src, Dst) self,
+    ref Copy!(N, T, Src, Dst) self,
     Tensor!(N, T, Src) x
 )
 if (Src.deviceof == "cuda" && Dst.deviceof == "cpu")
@@ -80,15 +82,17 @@ if (Src.deviceof == "cuda" && Dst.deviceof == "cpu")
     self.srcOpt = x.opt;
     auto y = typeof(return)(self.opt, x.shape);
     x = x.contiguous;
-    // if (x.pinMemory)
-    // {
-    //     auto s = CuDevice.get(x.deviceId).stream;
-    //     cudaMemcpyAsync(y.ptr, x.ptr, T.sizeof * x.numel,
-    //                     cudaMemcpyDeviceToHost, s);
-    //     cudaStreamSynchronize(s);
-    //     return y;
-    // }
-    checkCuda(cudaMemcpy(y.ptr, x.ptr, T.sizeof * x.numel, cudaMemcpyDeviceToHost));
+    static if (Src.pinned)
+    {
+        auto s = CuDevice.get(x.deviceId).stream;
+        cudaMemcpyAsync(y.ptr, x.ptr, T.sizeof * x.numel,
+                        cudaMemcpyDeviceToHost, s);
+        cudaStreamSynchronize(s);
+    }
+    else
+    {
+        checkCuda(cudaMemcpy(y.ptr, x.ptr, T.sizeof * x.numel, cudaMemcpyDeviceToHost));
+    }
     return y;
 }
 
@@ -97,7 +101,9 @@ if (Src.deviceof == "cuda" && Dst.deviceof == "cpu")
 @nogc
 unittest
 {
-     import grain.ops.transposed : transposed;
+    import grain.allocator : cpu;
+    import grain.cuda.allocator : pinned, cuda;
+    import grain.ops.transposed : transposed;
     import mir.ndslice.topology : iota, as;
     import grain.tensor;
     import std.meta : AliasSeq;
@@ -114,14 +120,12 @@ unittest
             assert(y.asSlice != x.asSlice);
 
             // FIXME: int/long is supported when transposed
-            foreach (pin; tuple(true, false))
+            foreach (host; AliasSeq!(cpu, pinned))
             {
-                import grain.allocator;
-                import grain.cuda.allocator;
                 auto c = x.copy!cuda; // .transposed;
                 static assert(c.deviceof == "cuda");
                 assert(c.deviceId == 0);
-                auto xt = c.copy!cpu; // .transposed;
+                auto xt = c.copy!host; // .transposed;
                 assert(xt.asSlice == x.asSlice);
                 assert(xt.ptr != x.ptr);
 
@@ -131,7 +135,7 @@ unittest
                     Opt opt = {deviceId: 1};
                     auto d1 = c.copy!cuda(opt);
                     assert(d1.deviceId == 1);
-                    assert(d1.copy!cpu.asSlice == x.asSlice);
+                    assert(d1.copy!host.asSlice == x.asSlice);
                 }
             }
         }

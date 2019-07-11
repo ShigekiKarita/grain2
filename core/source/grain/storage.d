@@ -12,6 +12,12 @@ struct Storage(Allocator_)
     } else {
         enum deviceof = "cpu";
     }
+
+    static if(is(typeof(Allocator.pinned))) {
+        enum pinned = Allocator.pinned;
+    } else {
+        enum pinned = false;
+    }
     
     void[] payload;
     Allocator allocator;
@@ -31,6 +37,7 @@ struct Storage(Allocator_)
         this.allocator.deallocate(this.payload);
     }
 }
+
 
 /// Reference count storage
 struct RCStorage(Allocator_)
