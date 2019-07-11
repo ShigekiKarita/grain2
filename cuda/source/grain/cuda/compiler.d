@@ -1,7 +1,5 @@
 module grain.cuda.compiler;
 
-version (grain_cuda):
-
 import grain.storage : RCString;
 import grain.cuda.testing : checkNvrtc, checkCuda;
 import grain.dpp.cuda_driver : CUmodule, CUfunction;

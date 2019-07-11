@@ -18,12 +18,6 @@
 		"mir-runtime": "~>0.0.22",
 		"mir-random": "~>2.2.4",
 	    },
-	    "buildTypes": {
-		"unittest": {
-		    "buildOptions": ["unittests", "debugMode", "debugInfo"],
-		    "versions": ["grain_debug"]
-		}
-	    }
 	},
 	{
 	    "name": "cuda",
@@ -32,16 +26,9 @@
 		"grain2:core": "*"
 	    },
 	    "libs": ["cuda", "cudart", "cublas", "cudnn", "nvrtc"],
-	    "versions": ["grain_cuda"],
 	    "sourcePaths": ["cuda/source"],
 	    "importPaths": ["cuda/source", "dpp/build"],
 	    "preBuildCommands": ["cd dpp; make cuda -j"],
-	    "buildTypes": {
-		"unittest": {
-		    "buildOptions": ["unittests", "debugMode", "debugInfo"],
-		    "versions": ["grain_cuda", "grain_debug"]
-		}
-	    }
 	}
     ]
 }

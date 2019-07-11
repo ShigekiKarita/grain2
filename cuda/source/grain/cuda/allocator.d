@@ -1,7 +1,5 @@
 module grain.cuda.allocator;
 
-version (grain_cuda):
-
 import grain.tensor : Opt;
 import grain.allocator : CPUMallocator;
 import grain.cuda.testing : checkCuda;

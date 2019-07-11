@@ -1,6 +1,5 @@
 /// CUDA module
 module grain.cuda;
-version(grain_cuda):
 
 import grain.dpp.cublas : cublasHandle_t, cublasCreate_v2, cublasDestroy_v2;
 import grain.dpp.cudnn : cudnnHandle_t, cudnnCreate, cudnnDestroy;
