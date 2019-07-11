@@ -9,6 +9,7 @@ public import grain.cuda.allocator;
 public import grain.cuda.compiler;
 public import grain.cuda.cudnn;
 public import grain.cuda.device;
+public import grain.cuda.ops;
 public import grain.cuda.testing;
 
 __gshared cublasHandle_t cublasHandle;

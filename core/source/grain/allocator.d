@@ -52,3 +52,6 @@ struct CPUMallocator
 
     enum instance =  typeof(this)();
 }
+
+import grain.storage;
+alias cpu = RCStorage!CPUMallocator;

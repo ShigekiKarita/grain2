@@ -3,8 +3,48 @@ module grain.cuda.allocator;
 version (grain_cuda):
 
 import grain.tensor : Opt;
+import grain.allocator : CPUMallocator;
 import grain.cuda.testing : checkCuda;
 import grain.dpp.cuda_runtime_api;
+
+struct PinnedAllocator
+{
+    Opt opt;
+    alias opt this;
+    
+    enum deviceof = "cpu";
+
+    /**
+    Standard allocator methods per the semantics defined above. The
+    $(D deallocate) method is $(D @system) because it
+    may move memory around, leaving dangling pointers in user code. Somewhat
+    paradoxically, $(D malloc) is $(D @safe) but that's only useful to safe
+    programs that can afford to leak memory allocated.
+    */
+    @trusted @nogc nothrow
+    void[] allocate()(size_t bytes)
+    {
+        import grain.dpp.cuda_runtime_api : cudaMallocHost;
+        
+        if (!bytes) return null;
+
+        void* p;
+        checkCuda(cudaMallocHost(&p, bytes));
+        return p ? p[0 .. bytes] : null;
+    }
+
+    /// Ditto
+    @system @nogc nothrow
+    bool deallocate()(void[] b)
+    {
+        import grain.dpp.cuda_runtime_api : cudaFreeHost;
+        checkCuda(cudaFreeHost(b.ptr));
+        return true;
+    }
+
+    enum instance =  typeof(this)();
+}
+
 
 /// CUDA heap allocator
 struct CuMallocator
@@ -61,4 +101,5 @@ import grain.storage : RCStorage;
 import grain.tensor : Tensor;
 
 alias DefaultCuStorage = RCStorage!CuMallocator;
+alias cuda = RCStorage!CuMallocator;
 alias CuTensor(size_t dim, T) = Tensor!(dim, T, DefaultCuStorage);
