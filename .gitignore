@@ -1,5 +1,7 @@
 *
 
+!*.yml
+!.sh
 !*/
 !*.d
 !*.di
@@ -30,3 +32,4 @@ grain2-test-*
 *.o
 *.obj
 *.lst
+adrdox

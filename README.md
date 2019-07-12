@@ -6,11 +6,12 @@ This project is a successor of [grain](https://github.com/ShigekiKarita/grain).
 ## features
 
 - @nogc support
-- heterogeneous device (CPU/CUDA) support
+- heterogeneous device (CPU/CUDA/OpenCL) support
 - multiple CUDA device support
 
 ## requirements
 
+- [dpp](https://github.com/atilaneves/dpp) master
 - CPU backend
   - BLAS library (e.g., OpenBLAS, MKL)
 - CUDA backend
@@ -18,6 +19,11 @@ This project is a successor of [grain](https://github.com/ShigekiKarita/grain).
   - CUDNN header/library v7-
 - OpenCL backend
   - OpenCL header/library v1.2
+
+## development
+
+- test `dub test grain2:core` and `dub test grain2:cuda`
+- generate ddoc `make doc`
 
 ## roadmap
 
@@ -34,3 +40,4 @@ This project is a successor of [grain](https://github.com/ShigekiKarita/grain).
 
 - Q. My local CUDA/OpenCL libraries are different from files under `grain2/dpp/build`
   - A. Install [dpp](https://github.com/atilaneves/dpp) (commit 821a5d4) and regenerate them by `$ cd dpp; make -j cuda (or opencl)`
+
