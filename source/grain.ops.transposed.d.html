@@ -29,8 +29,8 @@
 		<pre class="d_code highlighted with-line-wrappers"><a class="br" href="#L1" id="L1">1 </a><span class="com">/// matrix transpose ops</span>
 <a class="br" href="#L2" id="L2">2 </a><span class="kwrd">module</span> <span class="hid">grain.ops.transposed</span>;
 <a class="br" href="#L3" id="L3">3 </a>
-<a class="br" href="#L4" id="L4">4 </a><span class="kwrd">import</span> <span class="hid">grain.tensor</span> : <span class="hid">Tensor</span>;
-<a class="br" href="#L5" id="L5">5 </a><span class="kwrd">import</span> <span class="hid">grain.ops.common</span> : <a class="hid" href="grain.ops.common.d.html#L3" title="grain.ops.common.apply">apply</a>;
+<a class="br" href="#L4" id="L4">4 </a><span class="kwrd">import</span> <span class="hid">grain.tensor</span> : <a class="hid" href="grain.tensor.d.html#L35" title="grain.tensor.Tensor">Tensor</a>;
+<a class="br" href="#L5" id="L5">5 </a><span class="kwrd">import</span> <span class="hid">grain.ops.common</span> : <span class="hid">apply</span>;
 <a class="br" href="#L6" id="L6">6 </a>
 <a class="br" href="#L7" id="L7">7 </a>
 <a class="br" href="#L8" id="L8">8 </a><span class="com">/// transpose last two dim</span>
@@ -38,7 +38,7 @@
 <a class="br" href="#L10" id="L10">10 </a>{
 <a class="br" href="#L11" id="L11">11 </a>    <span class="kwrd">static</span> <span class="kwrd">assert</span>(<span class="hid">N</span> &gt;= <span class="num">2</span>);
 <a class="br" href="#L12" id="L12">12 </a>
-<a class="br" href="#L13" id="L13">13 </a>    <span class="kwrd">static</span> <span class="hid">Tensor</span>!(<span class="hid">N</span>, <span class="hid">T</span>, <span class="hid">Storage</span>) <span class="hid">forward</span>(<span class="hid">Tensor</span>!(<span class="hid">N</span>, <span class="hid">T</span>, <span class="hid">Storage</span>) <span class="hid">x</span>)
+<a class="br" href="#L13" id="L13">13 </a>    <span class="kwrd">static</span> <a class="hid" href="grain.tensor.d.html#L35" title="grain.tensor.Tensor">Tensor</a>!(<span class="hid">N</span>, <span class="hid">T</span>, <span class="hid">Storage</span>) <span class="hid">forward</span>(<a class="hid" href="grain.tensor.d.html#L35" title="grain.tensor.Tensor">Tensor</a>!(<span class="hid">N</span>, <span class="hid">T</span>, <span class="hid">Storage</span>) <span class="hid">x</span>)
 <a class="br" href="#L14" id="L14">14 </a>    {
 <a class="br" href="#L15" id="L15">15 </a>        <span class="kwrd">auto</span> <span class="hid">n1</span> = <span class="hid">x.lengths</span>[$-<span class="num">1</span>];
 <a class="br" href="#L16" id="L16">16 </a>        <span class="kwrd">auto</span> <span class="hid">n2</span> = <span class="hid">x.lengths</span>[$-<span class="num">2</span>];
@@ -51,16 +51,16 @@
 <a class="br" href="#L23" id="L23">23 </a>        <span class="kwrd">return</span> <span class="hid">x</span>;
 <a class="br" href="#L24" id="L24">24 </a>    }
 <a class="br" href="#L25" id="L25">25 </a>
-<a class="br" href="#L26" id="L26">26 </a>    <span class="kwrd">static</span> <span class="hid">Tensor</span>!(<span class="hid">N</span>, <span class="hid">T</span>, <span class="hid">Storage</span>) <span class="hid">backward</span>(<span class="hid">Tensor</span>!(<span class="hid">N</span>, <span class="hid">T</span>, <span class="hid">Storage</span>) <span class="hid">gy</span>)
+<a class="br" href="#L26" id="L26">26 </a>    <span class="kwrd">static</span> <a class="hid" href="grain.tensor.d.html#L35" title="grain.tensor.Tensor">Tensor</a>!(<span class="hid">N</span>, <span class="hid">T</span>, <span class="hid">Storage</span>) <span class="hid">backward</span>(<a class="hid" href="grain.tensor.d.html#L35" title="grain.tensor.Tensor">Tensor</a>!(<span class="hid">N</span>, <span class="hid">T</span>, <span class="hid">Storage</span>) <span class="hid">gy</span>)
 <a class="br" href="#L27" id="L27">27 </a>    {
 <a class="br" href="#L28" id="L28">28 </a>        <span class="kwrd">return</span> <span class="hid">gy.transposed</span>;
 <a class="br" href="#L29" id="L29">29 </a>    }
 <a class="br" href="#L30" id="L30">30 </a>}
 <a class="br" href="#L31" id="L31">31 </a>
 <a class="br" href="#L32" id="L32">32 </a><span class="com">/// ditto</span>
-<a class="br" href="#L33" id="L33">33 </a><span class="kwrd">auto</span> <a class="hid" href="grain.ops.transposed.d.html#L33" title="grain.ops.transposed.transposed">transposed</a>(<span class="hid">size_t</span> <span class="hid">N</span>, <span class="hid">T</span>, <span class="hid">Storage</span>)(<span class="hid">Tensor</span>!(<span class="hid">N</span>, <span class="hid">T</span>, <span class="hid">Storage</span>) <span class="hid">x</span>)
+<a class="br" href="#L33" id="L33">33 </a><span class="kwrd">auto</span> <a class="hid" href="grain.ops.transposed.d.html#L33" title="grain.ops.transposed.transposed">transposed</a>(<span class="hid">size_t</span> <span class="hid">N</span>, <span class="hid">T</span>, <span class="hid">Storage</span>)(<a class="hid" href="grain.tensor.d.html#L35" title="grain.tensor.Tensor">Tensor</a>!(<span class="hid">N</span>, <span class="hid">T</span>, <span class="hid">Storage</span>) <span class="hid">x</span>)
 <a class="br" href="#L34" id="L34">34 </a>{
-<a class="br" href="#L35" id="L35">35 </a>    <span class="kwrd">return</span> <a class="hid" href="grain.ops.transposed.d.html#L9" title="grain.ops.transposed.Transposed">Transposed</a>!(<span class="hid">N</span>, <span class="hid">T</span>, <span class="hid">Storage</span>)().<a class="hid" href="grain.ops.common.d.html#L3" title="grain.ops.common.apply">apply</a>(<span class="hid">x</span>);
+<a class="br" href="#L35" id="L35">35 </a>    <span class="kwrd">return</span> <a class="hid" href="grain.ops.transposed.d.html#L9" title="grain.ops.transposed.Transposed">Transposed</a>!(<span class="hid">N</span>, <span class="hid">T</span>, <span class="hid">Storage</span>)().<span class="hid">apply</span>(<span class="hid">x</span>);
 <a class="br" href="#L36" id="L36">36 </a>}
 <a class="br" href="#L37" id="L37">37 </a>
 <a class="br" href="#L38" id="L38">38 </a><span class="com">///</span>
@@ -73,7 +73,7 @@
 <a class="br" href="#L45" id="L45">45 </a>    <span class="com">// iter   = p</span>
 <a class="br" href="#L46" id="L46">46 </a>    <span class="com">// lengths  = [2, 3]</span>
 <a class="br" href="#L47" id="L47">47 </a>    <span class="com">// strides = [3, 1]</span>
-<a class="br" href="#L48" id="L48">48 </a>    <span class="kwrd">auto</span> <span class="hid">x</span> = <span class="hid">Tensor</span>!(<span class="num">2</span>, <span class="hid">size_t</span>)(<span class="num">2</span>, <span class="num">3</span>);
+<a class="br" href="#L48" id="L48">48 </a>    <span class="kwrd">auto</span> <span class="hid">x</span> = <a class="hid" href="grain.tensor.d.html#L35" title="grain.tensor.Tensor">Tensor</a>!(<span class="num">2</span>, <span class="hid">size_t</span>)(<span class="num">2</span>, <span class="num">3</span>);
 <a class="br" href="#L49" id="L49">49 </a>    <span class="hid">x.asSlice</span>[] = <span class="hid">iota</span>(<span class="num">2</span>, <span class="num">3</span>);
 <a class="br" href="#L50" id="L50">50 </a>
 <a class="br" href="#L51" id="L51">51 </a>    <span class="com">// [0, 3]</span>
