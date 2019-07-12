@@ -1,5 +1,8 @@
 # grain2
 
+[![CircleCI](https://circleci.com/gh/ShigekiKarita/grain2.svg?style=svg)](https://circleci.com/gh/ShigekiKarita/grain2)
+[![codecov](https://codecov.io/gh/ShigekiKarita/grain2/branch/master/graph/badge.svg)](https://codecov.io/gh/ShigekiKarita/grain2)
+
 Autograd and GPGPU library for dynamic neural networks in D.
 This project is a successor of [grain](https://github.com/ShigekiKarita/grain).
 
@@ -8,6 +11,7 @@ This project is a successor of [grain](https://github.com/ShigekiKarita/grain).
 - @nogc support
 - heterogeneous device (CPU/CUDA/OpenCL) support
 - multiple CUDA device support
+- see also [document]([![CircleCI](https://circleci.com/gh/ShigekiKarita/grain2.svg?style=svg)](https://circleci.com/gh/ShigekiKarita/grain2))
 
 ## requirements
 
