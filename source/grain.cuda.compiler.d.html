@@ -29,7 +29,7 @@
 		<pre class="d_code highlighted with-line-wrappers"><a class="br" href="#L1" id="L1">1 </a><span class="kwrd">module</span> <span class="hid">grain.cuda.compiler</span>;
 <a class="br" href="#L2" id="L2">2 </a>
 <a class="br" href="#L3" id="L3">3 </a><span class="kwrd">import</span> <span class="hid">grain.storage</span> : <a class="hid" href="grain.storage.d.html#L164" title="grain.storage.RCString">RCString</a>;
-<a class="br" href="#L4" id="L4">4 </a><span class="kwrd">import</span> <span class="hid">grain.cuda.testing</span> : <a class="hid" href="grain.cuda.testing.d.html#L130" title="grain.cuda.testing.checkNvrtc">checkNvrtc</a>, <a class="hid" href="grain.cuda.testing.d.html#L85" title="grain.cuda.testing.checkCuda">checkCuda</a>;
+<a class="br" href="#L4" id="L4">4 </a><span class="kwrd">import</span> <span class="hid">grain.cuda.testing</span> : <span class="hid">checkNvrtc</span>, <span class="hid">checkCuda</span>;
 <a class="br" href="#L5" id="L5">5 </a><span class="kwrd">import</span> <span class="hid">grain.dpp.cuda_driver</span> : <span class="hid">CUmodule</span>, <span class="hid">CUfunction</span>;
 <a class="br" href="#L6" id="L6">6 </a>
 <a class="br" href="#L7" id="L7">7 </a><span class="kwrd">struct</span> <a class="hid" href="grain.cuda.compiler.d.html#L7" title="grain.cuda.compiler.CompileOpt">CompileOpt</a>
@@ -93,8 +93,8 @@
 <a class="br" href="#L65" id="L65">65 </a>        <span class="hid">hss</span>[<span class="hid">i</span>] = <span class="hid">opt.headerSources</span>[<span class="hid">i</span>].<span class="hid">ptr</span>;
 <a class="br" href="#L66" id="L66">66 </a>        <span class="hid">hns</span>[<span class="hid">i</span>] = <span class="hid">opt.headerNames</span>[<span class="hid">i</span>].<span class="hid">ptr</span>;
 <a class="br" href="#L67" id="L67">67 </a>    }
-<a class="br" href="#L68" id="L68">68 </a>    <a class="hid" href="grain.cuda.testing.d.html#L130" title="grain.cuda.testing.checkNvrtc">checkNvrtc</a>(<span class="hid">nvrtcCreateProgram</span>(&amp;<span class="hid">prog</span>, <span class="hid">src.ptr</span>, <span class="hid">name.ptr</span>, <span class="hid">opt.numHeaders</span>, <span class="hid">hss</span>, <span class="hid">hns</span>));
-<a class="br" href="#L69" id="L69">69 </a>    <span class="kwrd">scope</span> (<span class="hid">exit</span>) <a class="hid" href="grain.cuda.testing.d.html#L130" title="grain.cuda.testing.checkNvrtc">checkNvrtc</a>(<span class="hid">nvrtcDestroyProgram</span>(&amp;<span class="hid">prog</span>));
+<a class="br" href="#L68" id="L68">68 </a>    <span class="hid">checkNvrtc</span>(<span class="hid">nvrtcCreateProgram</span>(&amp;<span class="hid">prog</span>, <span class="hid">src.ptr</span>, <span class="hid">name.ptr</span>, <span class="hid">opt.numHeaders</span>, <span class="hid">hss</span>, <span class="hid">hns</span>));
+<a class="br" href="#L69" id="L69">69 </a>    <span class="kwrd">scope</span> (<span class="hid">exit</span>) <span class="hid">checkNvrtc</span>(<span class="hid">nvrtcDestroyProgram</span>(&amp;<span class="hid">prog</span>));
 <a class="br" href="#L70" id="L70">70 </a>
 <a class="br" href="#L71" id="L71">71 </a>    <span class="com">// compile PTX</span>
 <a class="br" href="#L72" id="L72">72 </a>    <span class="kwrd">auto</span> <span class="hid">opts</span> = <span class="kwrd">cast</span>(<span class="hid">P</span>*) <span class="hid">pureMalloc</span>(<span class="hid">P.sizeof</span> * <span class="hid">opt.numOptions</span>);
@@ -107,22 +107,22 @@
 <a class="br" href="#L79" id="L79">79 </a>
 <a class="br" href="#L80" id="L80">80 </a>    <span class="com">// dump log</span>
 <a class="br" href="#L81" id="L81">81 </a>    <span class="hid">size_t</span> <span class="hid">logSize</span>;
-<a class="br" href="#L82" id="L82">82 </a>    <a class="hid" href="grain.cuda.testing.d.html#L130" title="grain.cuda.testing.checkNvrtc">checkNvrtc</a>(<span class="hid">nvrtcGetProgramLogSize</span>(<span class="hid">prog</span>, &amp;<span class="hid">logSize</span>));
+<a class="br" href="#L82" id="L82">82 </a>    <span class="hid">checkNvrtc</span>(<span class="hid">nvrtcGetProgramLogSize</span>(<span class="hid">prog</span>, &amp;<span class="hid">logSize</span>));
 <a class="br" href="#L83" id="L83">83 </a>    <span class="type">char</span> *<span class="hid">log</span> = <span class="kwrd">cast</span>(<span class="type">char</span>*) <span class="hid">pureMalloc</span>(<span class="type">char</span>.<span class="hid">sizeof</span> * (<span class="hid">logSize</span> + <span class="num">1</span>));
 <a class="br" href="#L84" id="L84">84 </a>    <span class="hid">log</span>[<span class="hid">logSize</span>] = <span class="str">'\0'</span>;
 <a class="br" href="#L85" id="L85">85 </a>    <span class="kwrd">scope</span> (<span class="hid">exit</span>) <span class="hid">pureFree</span>(<span class="hid">log</span>);
-<a class="br" href="#L86" id="L86">86 </a>    <a class="hid" href="grain.cuda.testing.d.html#L130" title="grain.cuda.testing.checkNvrtc">checkNvrtc</a>(<span class="hid">res</span>, <span class="hid">log</span>[<span class="num">0</span> .. <span class="hid">logSize</span>]);
+<a class="br" href="#L86" id="L86">86 </a>    <span class="hid">checkNvrtc</span>(<span class="hid">res</span>, <span class="hid">log</span>[<span class="num">0</span> .. <span class="hid">logSize</span>]);
 <a class="br" href="#L87" id="L87">87 </a>
 <a class="br" href="#L88" id="L88">88 </a>    <span class="com">// fetch PTX</span>
 <a class="br" href="#L89" id="L89">89 </a>    <span class="hid">size_t</span> <span class="hid">ptxSize</span>;
-<a class="br" href="#L90" id="L90">90 </a>    <a class="hid" href="grain.cuda.testing.d.html#L130" title="grain.cuda.testing.checkNvrtc">checkNvrtc</a>(<span class="hid">nvrtcGetPTXSize</span>(<span class="hid">prog</span>, &amp;<span class="hid">ptxSize</span>));
+<a class="br" href="#L90" id="L90">90 </a>    <span class="hid">checkNvrtc</span>(<span class="hid">nvrtcGetPTXSize</span>(<span class="hid">prog</span>, &amp;<span class="hid">ptxSize</span>));
 <a class="br" href="#L91" id="L91">91 </a>    <span class="type">char</span> *<span class="hid">ptx</span> = <span class="kwrd">cast</span>(<span class="type">char</span>*) <span class="hid">pureMalloc</span>(<span class="type">char</span>.<span class="hid">sizeof</span> * <span class="hid">ptxSize</span>);
 <a class="br" href="#L92" id="L92">92 </a>    <span class="kwrd">scope</span> (<span class="hid">exit</span>) <span class="hid">pureFree</span>(<span class="hid">ptx</span>);
-<a class="br" href="#L93" id="L93">93 </a>    <a class="hid" href="grain.cuda.testing.d.html#L130" title="grain.cuda.testing.checkNvrtc">checkNvrtc</a>(<span class="hid">nvrtcGetPTX</span>(<span class="hid">prog</span>, <span class="hid">ptx</span>));
+<a class="br" href="#L93" id="L93">93 </a>    <span class="hid">checkNvrtc</span>(<span class="hid">nvrtcGetPTX</span>(<span class="hid">prog</span>, <span class="hid">ptx</span>));
 <a class="br" href="#L94" id="L94">94 </a>
 <a class="br" href="#L95" id="L95">95 </a>    <span class="com">// load PTX</span>
 <a class="br" href="#L96" id="L96">96 </a>    <span class="hid">CUmodule</span> <span class="hid">m</span>;
-<a class="br" href="#L97" id="L97">97 </a>    <a class="hid" href="grain.cuda.testing.d.html#L85" title="grain.cuda.testing.checkCuda">checkCuda</a>(<span class="hid">cuModuleLoadDataEx</span>(
+<a class="br" href="#L97" id="L97">97 </a>    <span class="hid">checkCuda</span>(<span class="hid">cuModuleLoadDataEx</span>(
 <a class="br" href="#L98" id="L98">98 </a>        &amp;<span class="hid">m</span>, <span class="hid">ptx</span>,
 <a class="br" href="#L99" id="L99">99 </a>        <span class="kwrd">cast</span>(<span class="type">int</span>) <span class="hid">opt.jitOptions.length</span>,
 <a class="br" href="#L100" id="L100">100 </a>        <span class="hid">opt.jitOptions.ptr</span>,
@@ -149,7 +149,7 @@
 <a class="br" href="#L121" id="L121">121 </a>               &lt;&lt; <span class="hid">getData</span>;
 <a class="br" href="#L122" id="L122">122 </a>    <span class="kwrd">auto</span> <span class="hid">m</span> = <a class="hid" href="grain.cuda.compiler.d.html#L46" title="grain.cuda.compiler.compileModule">compileModule</a>(<span class="hid">src</span>, <span class="hid">name</span>, <span class="hid">opt</span>);
 <a class="br" href="#L123" id="L123">123 </a>    <span class="hid">CUfunction</span> <span class="hid">kernel</span>;
-<a class="br" href="#L124" id="L124">124 </a>    <a class="hid" href="grain.cuda.testing.d.html#L85" title="grain.cuda.testing.checkCuda">checkCuda</a>(<span class="hid">cuModuleGetFunction</span>(&amp;<span class="hid">kernel</span>, <span class="hid">m</span>, <span class="hid">name.ptr</span>));
+<a class="br" href="#L124" id="L124">124 </a>    <span class="hid">checkCuda</span>(<span class="hid">cuModuleGetFunction</span>(&amp;<span class="hid">kernel</span>, <span class="hid">m</span>, <span class="hid">name.ptr</span>));
 <a class="br" href="#L125" id="L125">125 </a>    <span class="kwrd">return</span> <span class="hid">kernel</span>;
 <a class="br" href="#L126" id="L126">126 </a>}
 <a class="br" href="#L127" id="L127">127 </a>
