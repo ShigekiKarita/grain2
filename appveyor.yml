@@ -4,9 +4,13 @@ environment:
   - DC: dmd
     DVersion: 2.087.0
     arch: x64
-  # - DC: ldc
-  #   DVersion: '1.16.0'
-  #   arch: x64
+  - DC: ldc
+    DVersion: '1.16.0'
+    arch: x64
+
+matrix:
+  allow_failures:
+    - {DC: ldc, arch: x64}
 
 skip_tags: true
 branches:
