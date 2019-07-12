@@ -17,18 +17,7 @@
 		"mir-blas": "~>1.1.4",
 		"mir-runtime": "~>0.0.22",
 		"mir-random": "~>2.2.4",
-	    },
-	    "configurations": [
-		{
-		    "name": "windows-nuget-mkl",
-		    "targetType": "library",
-		    "platforms": ["windows"],
-		    "libs": ["MklImports"],
-		    "subConfigurations": {
-			"mkl-blas": "zerolib"
-		    }
-		}
-	    ]
+	    }
 	},
 	{
 	    "name": "cuda",

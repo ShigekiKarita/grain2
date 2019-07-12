@@ -55,6 +55,8 @@ install:
   - 7z x dub.zip -odub > nul
   - set PATH=%CD%\%binpath%;%CD%\dub;%PATH%
   - dub --version
+  - ps: nuget install OpenBLASLibs
+  - ps: cp OpenBLASLibs.0.2.19.3/build/native/x64/sandybridge/lib/libopenblas.a openblas.lib
 
 before_build:
   - ps: if($env:arch -eq "x86"){
@@ -75,11 +77,6 @@ before_build:
          }
   - ps: $env:compilersetup = "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall";
   - '"%compilersetup%" %compilersetupargs%'
-  - ps: nuget install Microsoft.ML.Mkl.Redist
-  - ps: cp Microsoft.ML.Mkl.Redist.1.2.0/runtimes/win-x64/native/MklImports.dll .
-  - ps: implib /system MklImports.lib Mklimports.dll
-  - ps: nuget install OpenBLAS -o "${env:APPVEYOR_BUILD_FOLDER}"
-  - ps: cp OpenBLAS.0.2.14.1/lib/native/lib/x64/libopenblas.dll.a .
 
 build_script:
  - echo dummy build script - dont remove me
@@ -90,4 +87,4 @@ test_script:
  - echo %DC%
  - echo %PATH%
  - '%DC% --version'
- - dub test grain2:core --arch=%Darch% --compiler=%DC%
+ - dub test grain2:core --override-config=mir-blas/openblas --arch=%Darch% --compiler=%DC%
