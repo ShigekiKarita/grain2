@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+        <title>makeCudnnTensor (grain.cuda.cudnn.makeCudnnTensor)</title>
+	<meta charset="utf-8" />
+	<meta content="width=device-width, initial-scale=1" name="viewport" />
+        <link href="style.css" rel="stylesheet" />
+        <script src="script.js" type="text/javascript"></script>
+
+	
+	<link href="search-results.html" rel="prefetch" />
+</head>
+<body>
+	<div id="page-header">
+		<div id="logotype">
+		<span>Documentation</span>
+		<nav>
+			<a href="http://dlang.org/">Dlang.org</a>
+		</nav>
+		</div>
+
+		<form action="search-docs.html" id="search">
+			<input name="searchTerm" placeholder="Find a symbol name..." type="search" />
+			<input type="submit" value="Go" />
+		</form>
+	</div>
+	<div id="page-body">
+		<div id="page-content">
+		<h1>makeCudnnTensor</h1><div class="breadcrumbs"><a class="breadcrumb" href="grain.html">grain</a><a class="breadcrumb" href="grain.cuda.html">cuda</a><a class="breadcrumb" href="grain.cuda.cudnn.html">cudnn</a></div><div><div class="documentation-comment synopsis"><div><p>convert variable to cudnn tensor discriptor object</p></div></div></div><div class="annotated-prototype"><div class="function-prototype"><div class="attributes"></div><div class="return-type"><a class="name" data-ident="TensorDesc" href="grain.cuda.cudnn.TensorDesc.html" title="grain.cuda.cudnn.TensorDesc">TensorDesc</a></div><div class="function-name">makeCudnnTensor</div><div class="template-parameters">(<div class="parameters-list toplevel"><div class="template-parameter-item parameter-item">	<span><span class="builtin-type">bool</span> <span class="name" data-ident="allowSameSize">allowSameSize</span> = false</span></div><div class="template-parameter-item parameter-item">	<span><span class="name" data-ident="T">T</span></span></div><div class="template-parameter-item parameter-item">	<span><span class="name" data-ident="size_t">size_t</span> <span class="name" data-ident="dim">dim</span></span></div><div class="template-parameter-item parameter-item">	<span><span class="name" data-ident="Storage">Storage</span></span></div></div>)</div><div class="runtime-parameters">(<div class="parameters-list toplevel"><div class="runtime-parameter-item parameter-item"><span class="parameter-type-holder"><span class="parameter-type"><span class="name" data-ident="Tensor">Tensor</span>!(<span class="name" data-ident="dim">dim</span>, <span class="name" data-ident="T">T</span>, <span class="name" data-ident="Storage">Storage</span>)</span></span> <span class="parameter-name name" data-ident="x"><a href="#param-x">x</a></span></div></div>)</div><div class="function-contracts"></div></div></div><div><h2 id="examples"><a class="header-anchor" href="#examples">Examples</a></h2><div class="documentation-comment"><div></div></div><div class="unittest-example-holder"><div class="documentation-comment"></div><pre class="d_code highlighted with-line-wrappers"><span class="br">1 </span><span class="kwrd">import</span> <span class="hid">grain</span>.<span class="hid">cuda</span>.<span class="hid">allocator</span> : <span class="hid">CuTensor</span>;
+<span class="br">2 </span><span class="kwrd">import</span> <span class="hid">grain</span>.<span class="hid">ops</span>.<span class="hid">transposed</span> : <span class="hid">transposed</span>;
+<span class="br">3 </span><span class="kwrd">import</span> <span class="hid">grain</span>.<span class="hid">testing</span> : <span class="hid">assertEqual</span>;
+<span class="br">4 </span>
+<span class="br">5 </span><span class="kwrd">auto</span> <span class="hid">x</span> = <span class="hid">CuTensor</span>!(<span class="num">3</span>, <span class="type">float</span>)(<span class="num">2</span>, <span class="num">3</span>, <span class="num">4</span>).<span class="hid">transposed</span>;
+<span class="br">6 </span><span class="kwrd">auto</span> <span class="hid">t</span> = <span class="hid">x</span>.<span class="hid">makeCudnnTensor</span>;
+<span class="br">7 </span>
+<span class="br">8 </span><span class="hid">cudnnDataType_t</span> <span class="hid">dtype</span>;
+<span class="br">9 </span><span class="type">int</span> <span class="hid">dim</span>;
+<span class="br">10 </span><span class="type">int</span>[<span class="num">3</span>] <span class="hid">shape</span>;
+<span class="br">11 </span><span class="type">int</span>[<span class="num">3</span>] <span class="hid">strides</span>;
+<span class="br">12 </span><span class="hid">cudnnGetTensorNdDescriptor</span>(<span class="hid">t</span>.<span class="hid">desc</span>, <span class="num">3</span>, &amp;<span class="hid">dtype</span>, &amp;<span class="hid">dim</span>, <span class="hid">shape</span>.<span class="hid">ptr</span>, <span class="hid">strides</span>.<span class="hid">ptr</span>);
+<span class="br">13 </span><span class="kwrd">assert</span>(<span class="hid">dtype</span> == <span class="hid">CUDNN_DATA_FLOAT</span>);
+<span class="br">14 </span><span class="hid">assertEqual</span>(<span class="hid">dim</span>, <span class="num">4</span>, <span class="str">&quot;dim &lt; 4 will be 4&quot;</span>);
+<span class="br">15 </span><span class="kwrd">assert</span>(<span class="hid">shape</span> == <span class="hid">x</span>.<span class="hid">shape</span>);
+<span class="br">16 </span><span class="kwrd">assert</span>(<span class="hid">strides</span> == <span class="hid">x</span>.<span class="hid">strides</span>);</pre></div><h2 id="meta"><a class="header-anchor" href="#meta">Meta</a></h2><div class="documentation-comment source-section other-section"><h3 id="source"><a class="header-anchor" href="#source">Source</a></h3><div><p><a href="source/grain.cuda.cudnn.d.html#L67">See Implementation</a><br /></p></div></div></div></div>
+		<div id="page-nav"><a class="parent" href="grain.html">grain</a><a class="parent" href="grain.cuda.html">cuda</a><a class="parent" href="grain.cuda.cudnn.html">cudnn</a>
+		<span class="type-separator">functions</span><ul><li><a class="function" href="grain.cuda.cudnn.isDeterministic.html">isDeterministic</a></li><li><a class="function" href="grain.cuda.cudnn.isNanProp.html">isNanProp</a></li><li><a class="function current" href="grain.cuda.cudnn.makeCudnnTensor.html">makeCudnnTensor</a></li><li><a class="function" href="grain.cuda.cudnn.transform.html">transform</a></li></ul><span class="type-separator">structs</span><ul><li><a class="struct" href="grain.cuda.cudnn.TensorDesc.html">TensorDesc</a></li></ul><span class="type-separator">templates</span><ul><li><a class="template" href="grain.cuda.cudnn.cudnnDataType.html">cudnnDataType</a></li></ul></div>
+	</div>
+	<div id="page-footer">Page generated by <a href="https://github.com/adamdruppe/adrdox">adrdox</a></div>
+</body>
+</html>

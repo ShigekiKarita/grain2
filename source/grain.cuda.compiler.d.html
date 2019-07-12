@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+<head>
+        <title>grain.cuda.compiler source code</title>
+	<meta charset="utf-8" />
+	<meta content="width=device-width, initial-scale=1" name="viewport" />
+        <link href="../style.css" rel="stylesheet" />
+        <script src="../script.js" type="text/javascript"></script>
+
+	
+	<link href="../search-results.html" rel="prefetch" />
+</head>
+<body>
+	<div id="page-header">
+		<div id="logotype">
+		<span>Documentation</span>
+		<nav>
+			<a href="http://dlang.org/">Dlang.org</a>
+		</nav>
+		</div>
+
+		<form action="../search-docs.html" id="search">
+			<input name="searchTerm" placeholder="Find a symbol name..." type="search" />
+			<input type="submit" value="Go" />
+		</form>
+	</div>
+	<div id="page-body">
+		<div id="page-content">
+		<pre class="d_code highlighted with-line-wrappers"><a class="br" href="#L1" id="L1">1 </a><span class="kwrd">module</span> <span class="hid">grain.cuda.compiler</span>;
+<a class="br" href="#L2" id="L2">2 </a>
+<a class="br" href="#L3" id="L3">3 </a><span class="kwrd">import</span> <span class="hid">grain.storage</span> : <a class="hid" href="grain.storage.d.html#L164" title="grain.storage.RCString">RCString</a>;
+<a class="br" href="#L4" id="L4">4 </a><span class="kwrd">import</span> <span class="hid">grain.cuda.testing</span> : <a class="hid" href="grain.cuda.testing.d.html#L130" title="grain.cuda.testing.checkNvrtc">checkNvrtc</a>, <a class="hid" href="grain.cuda.testing.d.html#L85" title="grain.cuda.testing.checkCuda">checkCuda</a>;
+<a class="br" href="#L5" id="L5">5 </a><span class="kwrd">import</span> <span class="hid">grain.dpp.cuda_driver</span> : <span class="hid">CUmodule</span>, <span class="hid">CUfunction</span>;
+<a class="br" href="#L6" id="L6">6 </a>
+<a class="br" href="#L7" id="L7">7 </a><span class="kwrd">struct</span> <a class="hid" href="grain.cuda.compiler.d.html#L7" title="grain.cuda.compiler.CompileOpt">CompileOpt</a>
+<a class="br" href="#L8" id="L8">8 </a>{
+<a class="br" href="#L9" id="L9">9 </a>    <span class="kwrd">import</span> <span class="hid">grain.dpp.cuda_driver</span> : <span class="hid">CUjit_option</span>;
+<a class="br" href="#L10" id="L10">10 </a>
+<a class="br" href="#L11" id="L11">11 </a>    <span class="type">string</span>[] <span class="hid">headerSources</span>;
+<a class="br" href="#L12" id="L12">12 </a>    <span class="type">string</span>[] <span class="hid">headerNames</span>;
+<a class="br" href="#L13" id="L13">13 </a>    <span class="type">string</span>[] <span class="hid">options</span>;
+<a class="br" href="#L14" id="L14">14 </a>    <span class="hid">CUjit_option</span>[] <span class="hid">jitOptions</span>;
+<a class="br" href="#L15" id="L15">15 </a>    <span class="type">void</span>** <span class="hid">jitOptionValues</span>;
+<a class="br" href="#L16" id="L16">16 </a>
+<a class="br" href="#L17" id="L17">17 </a>    <span class="type">int</span> <span class="hid">deviceId</span> = <span class="num">0</span>;
+<a class="br" href="#L18" id="L18">18 </a>
+<a class="br" href="#L19" id="L19">19 </a>    <span class="type">int</span> <span class="hid">numHeaders</span>() <span class="kwrd">const</span> <span class="kwrd">pure</span> <span class="kwrd">nothrow</span> @<span class="hid">nogc</span> @<span class="hid">safe</span>
+<a class="br" href="#L20" id="L20">20 </a>    {
+<a class="br" href="#L21" id="L21">21 </a>        <span class="kwrd">assert</span>(<span class="hid">headerSources.length</span> == <span class="hid">headerNames.length</span>);
+<a class="br" href="#L22" id="L22">22 </a>        <span class="kwrd">return</span> <span class="kwrd">cast</span>(<span class="type">int</span>) <span class="hid">headerSources.length</span>;
+<a class="br" href="#L23" id="L23">23 </a>    }
+<a class="br" href="#L24" id="L24">24 </a>
+<a class="br" href="#L25" id="L25">25 </a>    <span class="type">int</span> <span class="hid">numOptions</span>() <span class="kwrd">const</span> <span class="kwrd">pure</span> <span class="kwrd">nothrow</span> @<span class="hid">nogc</span> @<span class="hid">safe</span>
+<a class="br" href="#L26" id="L26">26 </a>    {
+<a class="br" href="#L27" id="L27">27 </a>        <span class="kwrd">return</span> <span class="kwrd">cast</span>(<span class="type">int</span>) <span class="hid">options.length</span>;
+<a class="br" href="#L28" id="L28">28 </a>    }
+<a class="br" href="#L29" id="L29">29 </a>}
+<a class="br" href="#L30" id="L30">30 </a>
+<a class="br" href="#L31" id="L31">31 </a><span class="com">/** compile kernel string (input) to PTX
+<a class="br" href="#L32" id="L32">32 </a>
+<a class="br" href="#L33" id="L33">33 </a> TODO type check, better default option
+<a class="br" href="#L34" id="L34">34 </a>
+<a class="br" href="#L35" id="L35">35 </a> * \brief   nvrtcCreateProgram creates an instance of nvrtcProgram with the
+<a class="br" href="#L36" id="L36">36 </a> *          given input parameters, and sets the output parameter \p prog with
+<a class="br" href="#L37" id="L37">37 </a> *          it.
+<a class="br" href="#L38" id="L38">38 </a> *
+<a class="br" href="#L39" id="L39">39 </a> * \param   [in]  src          CUDA program source.
+<a class="br" href="#L40" id="L40">40 </a> * \param   [in]  name         CUDA program name.\n
+<a class="br" href="#L41" id="L41">41 </a> *                             \p name can be \c NULL; \c &quot;default_program&quot; is
+<a class="br" href="#L42" id="L42">42 </a> *                             used when \p name is \c NULL.
+<a class="br" href="#L43" id="L43">43 </a> *
+<a class="br" href="#L44" id="L44">44 </a> */</span>
+<a class="br" href="#L45" id="L45">45 </a><span class="kwrd">nothrow</span> @<span class="hid">nogc</span>
+<a class="br" href="#L46" id="L46">46 </a><span class="hid">CUmodule</span> <a class="hid" href="grain.cuda.compiler.d.html#L46" title="grain.cuda.compiler.compileModule">compileModule</a>(
+<a class="br" href="#L47" id="L47">47 </a>    <span class="kwrd">scope</span> <span class="kwrd">const</span>(<span class="type">char</span>)[] <span class="hid">src</span>,
+<a class="br" href="#L48" id="L48">48 </a>    <span class="kwrd">scope</span> <span class="kwrd">const</span>(<span class="type">char</span>)[] <span class="hid">name</span> = <span class="str">&quot;&quot;</span>,
+<a class="br" href="#L49" id="L49">49 </a>    <a class="hid" href="grain.cuda.compiler.d.html#L7" title="grain.cuda.compiler.CompileOpt">CompileOpt</a> <span class="hid">opt</span> = <a class="hid" href="grain.cuda.compiler.d.html#L7" title="grain.cuda.compiler.CompileOpt">CompileOpt.init</a>)
+<a class="br" href="#L50" id="L50">50 </a>{
+<a class="br" href="#L51" id="L51">51 </a>    <span class="kwrd">import</span> <span class="hid">std.</span>.<span class="type">string</span> : <span class="hid">fromStringz</span>;
+<a class="br" href="#L52" id="L52">52 </a>    <span class="kwrd">import</span> <span class="hid">core.memory</span> : <span class="hid">pureMalloc</span>, <span class="hid">pureFree</span>;
+<a class="br" href="#L53" id="L53">53 </a>    <span class="kwrd">import</span> <span class="hid">grain.dpp.nvrtc</span>;
+<a class="br" href="#L54" id="L54">54 </a>    <span class="kwrd">import</span> <span class="hid">grain.dpp.cuda_driver</span>;
+<a class="br" href="#L55" id="L55">55 </a>
+<a class="br" href="#L56" id="L56">56 </a>    <span class="hid">nvrtcProgram</span> <span class="hid">prog</span>;
+<a class="br" href="#L57" id="L57">57 </a>    <span class="kwrd">auto</span> <span class="hid">nh</span> = <span class="hid">opt.numHeaders</span>;
+<a class="br" href="#L58" id="L58">58 </a>    <span class="kwrd">alias</span> <span class="hid">P</span> = <span class="kwrd">immutable</span>(<span class="type">char</span>)*;
+<a class="br" href="#L59" id="L59">59 </a>    <span class="kwrd">auto</span> <span class="hid">hss</span> = <span class="kwrd">cast</span>(<span class="hid">P</span>*) <span class="hid">pureMalloc</span>(<span class="hid">P.sizeof</span> * <span class="hid">opt.numHeaders</span>);
+<a class="br" href="#L60" id="L60">60 </a>    <span class="kwrd">scope</span> (<span class="hid">exit</span>) <span class="hid">pureFree</span>(<span class="hid">hss</span>);
+<a class="br" href="#L61" id="L61">61 </a>    <span class="kwrd">auto</span> <span class="hid">hns</span> = <span class="kwrd">cast</span>(<span class="hid">P</span>*) <span class="hid">pureMalloc</span>(<span class="hid">P.sizeof</span> * <span class="hid">opt.numHeaders</span>);
+<a class="br" href="#L62" id="L62">62 </a>    <span class="kwrd">scope</span> (<span class="hid">exit</span>) <span class="hid">pureFree</span>(<span class="hid">hns</span>);
+<a class="br" href="#L63" id="L63">63 </a>    <span class="kwrd">foreach</span> (<span class="hid">i</span>; <span class="num">0</span> .. <span class="hid">opt.numHeaders</span>)
+<a class="br" href="#L64" id="L64">64 </a>    {
+<a class="br" href="#L65" id="L65">65 </a>        <span class="hid">hss</span>[<span class="hid">i</span>] = <span class="hid">opt.headerSources</span>[<span class="hid">i</span>].<span class="hid">ptr</span>;
+<a class="br" href="#L66" id="L66">66 </a>        <span class="hid">hns</span>[<span class="hid">i</span>] = <span class="hid">opt.headerNames</span>[<span class="hid">i</span>].<span class="hid">ptr</span>;
+<a class="br" href="#L67" id="L67">67 </a>    }
+<a class="br" href="#L68" id="L68">68 </a>    <a class="hid" href="grain.cuda.testing.d.html#L130" title="grain.cuda.testing.checkNvrtc">checkNvrtc</a>(<span class="hid">nvrtcCreateProgram</span>(&amp;<span class="hid">prog</span>, <span class="hid">src.ptr</span>, <span class="hid">name.ptr</span>, <span class="hid">opt.numHeaders</span>, <span class="hid">hss</span>, <span class="hid">hns</span>));
+<a class="br" href="#L69" id="L69">69 </a>    <span class="kwrd">scope</span> (<span class="hid">exit</span>) <a class="hid" href="grain.cuda.testing.d.html#L130" title="grain.cuda.testing.checkNvrtc">checkNvrtc</a>(<span class="hid">nvrtcDestroyProgram</span>(&amp;<span class="hid">prog</span>));
+<a class="br" href="#L70" id="L70">70 </a>
+<a class="br" href="#L71" id="L71">71 </a>    <span class="com">// compile PTX</span>
+<a class="br" href="#L72" id="L72">72 </a>    <span class="kwrd">auto</span> <span class="hid">opts</span> = <span class="kwrd">cast</span>(<span class="hid">P</span>*) <span class="hid">pureMalloc</span>(<span class="hid">P.sizeof</span> * <span class="hid">opt.numOptions</span>);
+<a class="br" href="#L73" id="L73">73 </a>    <span class="kwrd">scope</span> (<span class="hid">exit</span>) <span class="hid">pureFree</span>(<span class="hid">opts</span>);
+<a class="br" href="#L74" id="L74">74 </a>    <span class="kwrd">foreach</span> (<span class="hid">i</span>; <span class="num">0</span> .. <span class="hid">opt.numOptions</span>)
+<a class="br" href="#L75" id="L75">75 </a>    {
+<a class="br" href="#L76" id="L76">76 </a>        <span class="hid">opts</span>[<span class="hid">i</span>] = <span class="hid">opt.options</span>[<span class="hid">i</span>].<span class="hid">ptr</span>;
+<a class="br" href="#L77" id="L77">77 </a>    }
+<a class="br" href="#L78" id="L78">78 </a>    <span class="hid">nvrtcResult</span> <span class="hid">res</span> = <span class="hid">nvrtcCompileProgram</span>(<span class="hid">prog</span>, <span class="hid">opt.numOptions</span>, <span class="hid">opts</span>);
+<a class="br" href="#L79" id="L79">79 </a>
+<a class="br" href="#L80" id="L80">80 </a>    <span class="com">// dump log</span>
+<a class="br" href="#L81" id="L81">81 </a>    <span class="hid">size_t</span> <span class="hid">logSize</span>;
+<a class="br" href="#L82" id="L82">82 </a>    <a class="hid" href="grain.cuda.testing.d.html#L130" title="grain.cuda.testing.checkNvrtc">checkNvrtc</a>(<span class="hid">nvrtcGetProgramLogSize</span>(<span class="hid">prog</span>, &amp;<span class="hid">logSize</span>));
+<a class="br" href="#L83" id="L83">83 </a>    <span class="type">char</span> *<span class="hid">log</span> = <span class="kwrd">cast</span>(<span class="type">char</span>*) <span class="hid">pureMalloc</span>(<span class="type">char</span>.<span class="hid">sizeof</span> * (<span class="hid">logSize</span> + <span class="num">1</span>));
+<a class="br" href="#L84" id="L84">84 </a>    <span class="hid">log</span>[<span class="hid">logSize</span>] = <span class="str">'\0'</span>;
+<a class="br" href="#L85" id="L85">85 </a>    <span class="kwrd">scope</span> (<span class="hid">exit</span>) <span class="hid">pureFree</span>(<span class="hid">log</span>);
+<a class="br" href="#L86" id="L86">86 </a>    <a class="hid" href="grain.cuda.testing.d.html#L130" title="grain.cuda.testing.checkNvrtc">checkNvrtc</a>(<span class="hid">res</span>, <span class="hid">log</span>[<span class="num">0</span> .. <span class="hid">logSize</span>]);
+<a class="br" href="#L87" id="L87">87 </a>
+<a class="br" href="#L88" id="L88">88 </a>    <span class="com">// fetch PTX</span>
+<a class="br" href="#L89" id="L89">89 </a>    <span class="hid">size_t</span> <span class="hid">ptxSize</span>;
+<a class="br" href="#L90" id="L90">90 </a>    <a class="hid" href="grain.cuda.testing.d.html#L130" title="grain.cuda.testing.checkNvrtc">checkNvrtc</a>(<span class="hid">nvrtcGetPTXSize</span>(<span class="hid">prog</span>, &amp;<span class="hid">ptxSize</span>));
+<a class="br" href="#L91" id="L91">91 </a>    <span class="type">char</span> *<span class="hid">ptx</span> = <span class="kwrd">cast</span>(<span class="type">char</span>*) <span class="hid">pureMalloc</span>(<span class="type">char</span>.<span class="hid">sizeof</span> * <span class="hid">ptxSize</span>);
+<a class="br" href="#L92" id="L92">92 </a>    <span class="kwrd">scope</span> (<span class="hid">exit</span>) <span class="hid">pureFree</span>(<span class="hid">ptx</span>);
+<a class="br" href="#L93" id="L93">93 </a>    <a class="hid" href="grain.cuda.testing.d.html#L130" title="grain.cuda.testing.checkNvrtc">checkNvrtc</a>(<span class="hid">nvrtcGetPTX</span>(<span class="hid">prog</span>, <span class="hid">ptx</span>));
+<a class="br" href="#L94" id="L94">94 </a>
+<a class="br" href="#L95" id="L95">95 </a>    <span class="com">// load PTX</span>
+<a class="br" href="#L96" id="L96">96 </a>    <span class="hid">CUmodule</span> <span class="hid">m</span>;
+<a class="br" href="#L97" id="L97">97 </a>    <a class="hid" href="grain.cuda.testing.d.html#L85" title="grain.cuda.testing.checkCuda">checkCuda</a>(<span class="hid">cuModuleLoadDataEx</span>(
+<a class="br" href="#L98" id="L98">98 </a>        &amp;<span class="hid">m</span>, <span class="hid">ptx</span>,
+<a class="br" href="#L99" id="L99">99 </a>        <span class="kwrd">cast</span>(<span class="type">int</span>) <span class="hid">opt.jitOptions.length</span>,
+<a class="br" href="#L100" id="L100">100 </a>        <span class="hid">opt.jitOptions.ptr</span>,
+<a class="br" href="#L101" id="L101">101 </a>        <span class="hid">opt.jitOptionValues</span>));
+<a class="br" href="#L102" id="L102">102 </a>    <span class="kwrd">return</span> <span class="hid">m</span>;
+<a class="br" href="#L103" id="L103">103 </a>}
+<a class="br" href="#L104" id="L104">104 </a>
+<a class="br" href="#L105" id="L105">105 </a>
+<a class="br" href="#L106" id="L106">106 </a><span class="com">/// runtime function compiler</span>
+<a class="br" href="#L107" id="L107">107 </a><span class="com">/// TODO type check version (pick up d-nv impl)</span>
+<a class="br" href="#L108" id="L108">108 </a>@<span class="hid">nogc</span> <span class="kwrd">nothrow</span>
+<a class="br" href="#L109" id="L109">109 </a><span class="hid">CUfunction</span> <a class="hid" href="grain.cuda.compiler.d.html#L109" title="grain.cuda.compiler.compile">compile</a>(
+<a class="br" href="#L110" id="L110">110 </a>    <span class="kwrd">scope</span> <span class="type">string</span> <span class="hid">name</span>, <span class="kwrd">scope</span> <span class="type">string</span> <span class="hid">args</span>, <span class="kwrd">scope</span> <span class="type">string</span> <span class="hid">proc</span>,
+<a class="br" href="#L111" id="L111">111 </a>    <a class="hid" href="grain.cuda.compiler.d.html#L7" title="grain.cuda.compiler.CompileOpt">CompileOpt</a> <span class="hid">opt</span> = <a class="hid" href="grain.cuda.compiler.d.html#L7" title="grain.cuda.compiler.CompileOpt">CompileOpt.init</a>
+<a class="br" href="#L112" id="L112">112 </a>) {
+<a class="br" href="#L113" id="L113">113 </a>    <span class="kwrd">import</span> <span class="hid">grain.dpp.cuda_driver</span> : <span class="hid">cuModuleGetFunction</span>;
+<a class="br" href="#L114" id="L114">114 </a>    <span class="kwrd">import</span> <span class="hid">mir.format</span> : <span class="hid">stringBuf</span>, <span class="hid">getData</span>;
+<a class="br" href="#L115" id="L115">115 </a>    <span class="kwrd">enum</span> <span class="hid">attr</span> = <span class="token-string-literal"><span class="str">q{</span><span class="kwrd">extern</span> <span class="str">&quot;C&quot;</span> <span class="hid">__global__</span> <span class="type">void</span> <span class="str">}</span></span>;
+<a class="br" href="#L116" id="L116">116 </a>    <span class="kwrd">auto</span> <span class="hid">src</span> = <span class="hid">stringBuf</span>()
+<a class="br" href="#L117" id="L117">117 </a>               &lt;&lt; <span class="hid">attr</span>
+<a class="br" href="#L118" id="L118">118 </a>               &lt;&lt; <span class="hid">name</span> &lt;&lt; <span class="str">&quot;(&quot;</span> &lt;&lt; <span class="hid">args</span> &lt;&lt; <span class="str">&quot;) {\n&quot;</span>
+<a class="br" href="#L119" id="L119">119 </a>               &lt;&lt; <span class="hid">proc</span>
+<a class="br" href="#L120" id="L120">120 </a>               &lt;&lt; <span class="str">&quot;\n}&quot;</span>
+<a class="br" href="#L121" id="L121">121 </a>               &lt;&lt; <span class="hid">getData</span>;
+<a class="br" href="#L122" id="L122">122 </a>    <span class="kwrd">auto</span> <span class="hid">m</span> = <a class="hid" href="grain.cuda.compiler.d.html#L46" title="grain.cuda.compiler.compileModule">compileModule</a>(<span class="hid">src</span>, <span class="hid">name</span>, <span class="hid">opt</span>);
+<a class="br" href="#L123" id="L123">123 </a>    <span class="hid">CUfunction</span> <span class="hid">kernel</span>;
+<a class="br" href="#L124" id="L124">124 </a>    <a class="hid" href="grain.cuda.testing.d.html#L85" title="grain.cuda.testing.checkCuda">checkCuda</a>(<span class="hid">cuModuleGetFunction</span>(&amp;<span class="hid">kernel</span>, <span class="hid">m</span>, <span class="hid">name.ptr</span>));
+<a class="br" href="#L125" id="L125">125 </a>    <span class="kwrd">return</span> <span class="hid">kernel</span>;
+<a class="br" href="#L126" id="L126">126 </a>}
+<a class="br" href="#L127" id="L127">127 </a>
+<a class="br" href="#L128" id="L128">128 </a><span class="com">///</span>
+<a class="br" href="#L129" id="L129">129 </a>@<span class="hid">system</span> <span class="kwrd">nothrow</span>
+<a class="br" href="#L130" id="L130">130 </a><span class="kwrd">unittest</span>
+<a class="br" href="#L131" id="L131">131 </a>{
+<a class="br" href="#L132" id="L132">132 </a>    <span class="kwrd">import</span> <span class="hid">grain.testing</span> : <span class="hid">assertAllClose</span>;
+<a class="br" href="#L133" id="L133">133 </a>    <span class="kwrd">import</span> <span class="hid">grain.tensor</span> : <span class="hid">Tensor</span>, <span class="hid">Opt</span>;
+<a class="br" href="#L134" id="L134">134 </a>    <span class="kwrd">import</span> <span class="hid">grain.cuda</span> : <span class="hid">CuTensor</span>, <span class="hid">CuDevice</span>;
+<a class="br" href="#L135" id="L135">135 </a>    <span class="kwrd">import</span> <span class="hid">grain.random</span> : <span class="hid">normal_</span>;
+<a class="br" href="#L136" id="L136">136 </a>    <span class="kwrd">import</span> <span class="hid">grain.ops</span> : <span class="hid">copy</span>;
+<a class="br" href="#L137" id="L137">137 </a>    <span class="kwrd">import</span> <span class="hid">grain.dpp.cuda_driver</span> : <span class="hid">cuLaunchKernel</span>, <span class="hid">CUstream</span>;
+<a class="br" href="#L138" id="L138">138 </a>    
+<a class="br" href="#L139" id="L139">139 </a>    <span class="kwrd">auto</span> <span class="hid">cufun</span> = <a class="hid" href="grain.cuda.compiler.d.html#L109" title="grain.cuda.compiler.compile">compile</a>(
+<a class="br" href="#L140" id="L140">140 </a>        <span class="str">&quot;vectorAdd&quot;</span>,
+<a class="br" href="#L141" id="L141">141 </a>        <span class="token-string-literal"><span class="str">q{</span><span class="kwrd">const</span> <span class="type">float</span> *<span class="hid">A</span>, <span class="kwrd">const</span> <span class="type">float</span> *<span class="hid">B</span>, <span class="type">float</span> *<span class="hid">C</span>, <span class="type">int</span> <span class="hid">numElements</span><span class="str">}</span></span>,
+<a class="br" href="#L142" id="L142">142 </a>        <span class="token-string-literal"><span class="str">q{</span>
+<a class="br" href="#L143" id="L143">143 </a>            <span class="type">int</span> <span class="hid">i</span> = <span class="hid">blockDim.x</span> * <span class="hid">blockIdx.x</span> + <span class="hid">threadIdx.x</span>;
+<a class="br" href="#L144" id="L144">144 </a>            <span class="kwrd">if</span> (<span class="hid">i</span> &lt; <span class="hid">numElements</span>) {
+<a class="br" href="#L145" id="L145">145 </a>                <span class="hid">C</span>[<span class="hid">i</span>] = <span class="hid">A</span>[<span class="hid">i</span>] + <span class="hid">B</span>[<span class="hid">i</span>];
+<a class="br" href="#L146" id="L146">146 </a>            }
+<a class="br" href="#L147" id="L147">147 </a>        <span class="str">}</span></span>);
+<a class="br" href="#L148" id="L148">148 </a>
+<a class="br" href="#L149" id="L149">149 </a>    <span class="kwrd">scope</span> <span class="kwrd">auto</span> <span class="hid">n</span> = <span class="num">50000</span>;
+<a class="br" href="#L150" id="L150">150 </a>    <span class="kwrd">auto</span> <span class="hid">ha</span> = <span class="hid">Tensor</span>!(<span class="num">1</span>, <span class="type">float</span>)(<span class="hid">n</span>).<span class="hid">normal_</span>;
+<a class="br" href="#L151" id="L151">151 </a>    <span class="kwrd">auto</span> <span class="hid">hb</span> = <span class="hid">Tensor</span>!(<span class="num">1</span>, <span class="type">float</span>)(<span class="hid">n</span>).<span class="hid">normal_</span>;
+<a class="br" href="#L152" id="L152">152 </a>
+<a class="br" href="#L153" id="L153">153 </a>    <span class="com">// auto da = ha.copy!&quot;cuda&quot;;</span>
+<a class="br" href="#L154" id="L154">154 </a>    <span class="com">// auto db = hb.copy!&quot;cuda&quot;;</span>
+<a class="br" href="#L155" id="L155">155 </a>    <span class="com">// auto dc = CuTensor!(1, float)(n);</span>
+<a class="br" href="#L156" id="L156">156 </a>
+<a class="br" href="#L157" id="L157">157 </a>    <span class="com">// int threadPerBlock = 256;</span>
+<a class="br" href="#L158" id="L158">158 </a>    <span class="com">// int sharedMemBytes = 0;</span>
+<a class="br" href="#L159" id="L159">159 </a>    <span class="com">// auto stream = CuDevice.get(dc.deviceId).stream;</span>
+<a class="br" href="#L160" id="L160">160 </a>    <span class="com">// auto ps = [da.ptr, db.ptr, dc.ptr];</span>
+<a class="br" href="#L161" id="L161">161 </a>    <span class="com">// scope void*[4] args = [</span>
+<a class="br" href="#L162" id="L162">162 </a>    <span class="com">//     cast(void*) &amp;ps[0],</span>
+<a class="br" href="#L163" id="L163">163 </a>    <span class="com">//     cast(void*) &amp;ps[1],</span>
+<a class="br" href="#L164" id="L164">164 </a>    <span class="com">//     cast(void*) &amp;ps[2],</span>
+<a class="br" href="#L165" id="L165">165 </a>    <span class="com">//     cast(void*) &amp;n</span>
+<a class="br" href="#L166" id="L166">166 </a>    <span class="com">// ];</span>
+<a class="br" href="#L167" id="L167">167 </a>    <span class="com">// void*[] config;</span>
+<a class="br" href="#L168" id="L168">168 </a>    <span class="com">// // NOTE runtime api failed</span>
+<a class="br" href="#L169" id="L169">169 </a>    <span class="com">// // import grain.dpp.cuda_runtime_api;</span>
+<a class="br" href="#L170" id="L170">170 </a>    <span class="com">// // checkCuda(cudaLaunchKernel(</span>
+<a class="br" href="#L171" id="L171">171 </a>    <span class="com">// //     cufun,</span>
+<a class="br" href="#L172" id="L172">172 </a>    <span class="com">// //     // grid</span>
+<a class="br" href="#L173" id="L173">173 </a>    <span class="com">// //     dim3(threadPerBlock, 1, 1),</span>
+<a class="br" href="#L174" id="L174">174 </a>    <span class="com">// //     // block</span>
+<a class="br" href="#L175" id="L175">175 </a>    <span class="com">// //     dim3((n + threadPerBlock - 1) / threadPerBlock, 1, 1),</span>
+<a class="br" href="#L176" id="L176">176 </a>    <span class="com">// //     args.ptr,</span>
+<a class="br" href="#L177" id="L177">177 </a>    <span class="com">// //     sharedMemBytes, stream));</span>
+<a class="br" href="#L178" id="L178">178 </a>
+<a class="br" href="#L179" id="L179">179 </a>    <span class="com">// // device api</span>
+<a class="br" href="#L180" id="L180">180 </a>    <span class="com">// checkCuda(cuLaunchKernel(</span>
+<a class="br" href="#L181" id="L181">181 </a>    <span class="com">//     cufun,</span>
+<a class="br" href="#L182" id="L182">182 </a>    <span class="com">//     // grid</span>
+<a class="br" href="#L183" id="L183">183 </a>    <span class="com">//     threadPerBlock, 1, 1,</span>
+<a class="br" href="#L184" id="L184">184 </a>    <span class="com">//     // block</span>
+<a class="br" href="#L185" id="L185">185 </a>    <span class="com">//     (n + threadPerBlock - 1) / threadPerBlock, 1, 1,</span>
+<a class="br" href="#L186" id="L186">186 </a>    <span class="com">//     sharedMemBytes, cast(CUstream) stream, args.ptr, config.ptr));</span>
+<a class="br" href="#L187" id="L187">187 </a>
+<a class="br" href="#L188" id="L188">188 </a>    <span class="com">// auto hc = dc.copy!&quot;cpu&quot;;</span>
+<a class="br" href="#L189" id="L189">189 </a>    <span class="com">// assertAllClose(ha.asSlice + hb.asSlice, hc.asSlice);</span>
+<a class="br" href="#L190" id="L190">190 </a>}</pre></div>
+		<div id="page-nav">
+		<div id="source-navigation"><div class="list-holder"><ul><li><a class="docs" href="../grain.cuda.compiler.html">[Docs] </a><a href="#L1">grain.cuda.compiler</a><ul><li><a href="#L3">grain.storage</a></li><li><a href="#L4">grain.cuda.testing</a></li><li><a href="#L5">grain.dpp.cuda_driver</a></li><li><a href="#L7">CompileOpt</a><ul><li><a href="#L9">grain.dpp.cuda_driver</a></li><li><a href="#L11">headerSources</a></li><li><a href="#L12">headerNames</a></li><li><a href="#L13">options</a></li><li><a href="#L14">jitOptions</a></li><li><a href="#L15">jitOptionValues</a></li><li><a href="#L17">deviceId</a></li><li><a href="#L19">numHeaders</a></li><li><a href="#L25">numOptions</a></li></ul></li><li><a class="docs" href="../grain.cuda.compiler.compileModule.html">[Docs] </a><a href="#L46">compileModule</a></li><li><a class="docs" href="../grain.cuda.compiler.compile.html">[Docs] </a><a href="#L109">compile</a></li></ul></li></ul></div></div></div>
+	</div>
+	<div id="page-footer">Page generated by <a href="https://github.com/adamdruppe/adrdox">adrdox</a></div>
+</body>
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+        <title>copy (grain.ops.copy.copy)</title>
+	<meta charset="utf-8" />
+	<meta content="width=device-width, initial-scale=1" name="viewport" />
+        <link href="style.css" rel="stylesheet" />
+        <script src="script.js" type="text/javascript"></script>
+
+	
+	<link href="search-results.html" rel="prefetch" />
+</head>
+<body>
+	<div id="page-header">
+		<div id="logotype">
+		<span>Documentation</span>
+		<nav>
+			<a href="http://dlang.org/">Dlang.org</a>
+		</nav>
+		</div>
+
+		<form action="search-docs.html" id="search">
+			<input name="searchTerm" placeholder="Find a symbol name..." type="search" />
+			<input type="submit" value="Go" />
+		</form>
+	</div>
+	<div id="page-body">
+		<div id="page-content">
+		<h1>copy</h1><div class="breadcrumbs"><a class="breadcrumb" href="grain.html">grain</a><a class="breadcrumb" href="grain.ops.html">ops</a><a class="breadcrumb" href="grain.ops.copy.html">copy</a></div><div><div class="documentation-comment synopsis"><div><p>copy tensor between devices</p></div></div></div><div class="annotated-prototype"><ol class="overloads"><li class="overload-option"><a href="grain.ops.copy.copy.1.html"><span class="overload-signature"><span class="lang-feature">auto</span>  <span class="name">copy</span><tt class="highlighted">(<span class="hid">Tensor</span>!(<span class="hid">N</span>, <span class="hid">T</span>, <span class="hid">Src</span>) <span class="hid">x</span>, <span class="hid">Opt</span> <span class="hid">opt</span>)</tt></span></a></li><li class="active-overload-option"><span class="overload-signature"><span class="lang-feature">auto</span>  <span class="name">copy</span><tt class="highlighted">(<span class="hid">Tensor</span>!(<span class="hid">N</span>, <span class="hid">T</span>, <span class="hid">Src</span>) <span class="hid">x</span>)</tt></span><div class="function-prototype"><div class="attributes"></div><div class="return-type"><a class="lang-feature" href="http://dpldocs.info/auto-function-return-prototype">auto</a> </div><div class="function-name">copy</div><div class="template-parameters">(<div class="parameters-list toplevel"><div class="template-parameter-item parameter-item">	<span><span class="name" data-ident="Dst">Dst</span></span></div><div class="template-parameter-item parameter-item">	<span><span class="name" data-ident="size_t">size_t</span> <span class="name" data-ident="N">N</span></span></div><div class="template-parameter-item parameter-item">	<span><span class="name" data-ident="T">T</span></span></div><div class="template-parameter-item parameter-item">	<span><span class="name" data-ident="Src">Src</span></span></div></div>)</div><div class="runtime-parameters">(<div class="parameters-list toplevel"><div class="runtime-parameter-item parameter-item"><span class="parameter-type-holder"><span class="parameter-type"><span class="name" data-ident="Tensor">Tensor</span>!(<span class="name" data-ident="N">N</span>, <span class="name" data-ident="T">T</span>, <span class="name" data-ident="Src">Src</span>)</span></span> <span class="parameter-name name" data-ident="x"><a href="#param-x">x</a></span></div></div>)</div><div class="function-contracts"></div></div></li><li class="overload-option"><a href="grain.ops.copy.copy.3.html"><span class="overload-signature"><span class="lang-feature">auto</span>  <span class="name">copy</span><tt class="highlighted">(<span class="hid">Tensor</span>!(<span class="hid">N</span>, <span class="hid">T</span>, <span class="hid">Src</span>) <span class="hid">x</span>)</tt></span></a></li><li class="overload-option ditto-option"><a href="grain.storage.html"><span class="overload-signature"><tt class="highlighted">
+<span class="kwrd">import</span> <span class="hid">grain</span>.<span class="hid">storage</span> : <span class="hid">DefaultCPUStorage</span>;</tt></span></a></li></ol></div><div><h2 id="examples"><a class="header-anchor" href="#examples">Examples</a></h2><div class="documentation-comment"><div></div></div><div class="unittest-example-holder"><div class="documentation-comment"></div><pre class="d_code highlighted with-line-wrappers"><span class="br">1 </span><span class="kwrd">import</span> <span class="hid">grain</span>.<span class="hid">ops</span>.<span class="hid">transposed</span> : <span class="hid">transposed</span>;
+<span class="br">2 </span><span class="kwrd">import</span> <span class="hid">mir</span>.<span class="hid">ndslice</span>.<span class="hid">topology</span> : <span class="hid">iota</span>, <span class="hid">as</span>;
+<span class="br">3 </span><span class="kwrd">import</span> <span class="hid">grain</span>.<span class="hid">tensor</span>;
+<span class="br">4 </span><span class="kwrd">import</span> <span class="hid">std</span>.<span class="hid">meta</span> : <span class="hid">AliasSeq</span>;
+<span class="br">5 </span><span class="kwrd">import</span> <span class="hid">std</span>.<span class="hid">typecons</span> : <span class="hid">tuple</span>;
+<span class="br">6 </span>
+<span class="br">7 </span><span class="kwrd">static</span> <span class="kwrd">foreach</span> (<span class="hid">dtype</span>; <span class="hid">AliasSeq</span>!(<span class="type">float</span>, <span class="type">double</span>, <span class="type">int</span>, <span class="type">long</span>))
+<span class="br">8 </span>{
+<span class="br">9 </span>    {
+<span class="br">10 </span>        <span class="kwrd">auto</span> <span class="hid">x</span> = <span class="hid">Tensor</span>!(<span class="num">2</span>, <span class="hid">dtype</span>)(<span class="num">2</span>, <span class="num">3</span>);
+<span class="br">11 </span>        <span class="hid">x</span>.<span class="hid">asSlice</span>[] = <span class="hid">iota</span>(<span class="hid">x</span>.<span class="hid">shape</span>).<span class="hid">as</span>!<span class="hid">dtype</span>;
+<span class="br">12 </span>        <span class="kwrd">auto</span> <span class="hid">y</span> = <span class="hid">x</span>.<span class="hid">copy</span>;
+<span class="br">13 </span>        <span class="kwrd">assert</span>(<span class="hid">y</span>.<span class="hid">asSlice</span> == <span class="hid">x</span>.<span class="hid">asSlice</span>);
+<span class="br">14 </span>        <span class="hid">x</span>.<span class="hid">asSlice</span>[<span class="num">0</span>, <span class="num">0</span>] = <span class="num">1</span>;
+<span class="br">15 </span>        <span class="kwrd">assert</span>(<span class="hid">y</span>.<span class="hid">asSlice</span> != <span class="hid">x</span>.<span class="hid">asSlice</span>);
+<span class="br">16 </span>    }
+<span class="br">17 </span>}</pre></div><h2 id="meta"><a class="header-anchor" href="#meta">Meta</a></h2><div class="documentation-comment source-section other-section"><h3 id="source"><a class="header-anchor" href="#source">Source</a></h3><div><p><a href="source/grain.ops.copy.d.html#L71">See Implementation</a><br /></p></div></div></div></div>
+		<div id="page-nav"><a class="parent" href="grain.html">grain</a><a class="parent" href="grain.ops.html">ops</a><a class="parent" href="grain.ops.copy.html">copy</a>
+		<span class="type-separator">functions</span><ul><li><a class="function current" href="grain.ops.copy.copy.1.html">copy</a></li></ul><span class="type-separator">structs</span><ul><li><a class="struct" href="grain.ops.copy.Copy.html">Copy</a></li></ul></div>
+	</div>
+	<div id="page-footer">Page generated by <a href="https://github.com/adamdruppe/adrdox">adrdox</a></div>
+</body>
+</html>

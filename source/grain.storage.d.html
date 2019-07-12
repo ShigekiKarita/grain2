@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+<head>
+        <title>grain.storage source code</title>
+	<meta charset="utf-8" />
+	<meta content="width=device-width, initial-scale=1" name="viewport" />
+        <link href="../style.css" rel="stylesheet" />
+        <script src="../script.js" type="text/javascript"></script>
+
+	
+	<link href="../search-results.html" rel="prefetch" />
+</head>
+<body>
+	<div id="page-header">
+		<div id="logotype">
+		<span>Documentation</span>
+		<nav>
+			<a href="http://dlang.org/">Dlang.org</a>
+		</nav>
+		</div>
+
+		<form action="../search-docs.html" id="search">
+			<input name="searchTerm" placeholder="Find a symbol name..." type="search" />
+			<input type="submit" value="Go" />
+		</form>
+	</div>
+	<div id="page-body">
+		<div id="page-content">
+		<pre class="d_code highlighted with-line-wrappers"><a class="br" href="#L1" id="L1">1 </a><span class="com">/// Storage</span>
+<a class="br" href="#L2" id="L2">2 </a><span class="kwrd">module</span> <span class="hid">grain.storage</span>;
+<a class="br" href="#L3" id="L3">3 </a>
+<a class="br" href="#L4" id="L4">4 </a>
+<a class="br" href="#L5" id="L5">5 </a><span class="com">/// Basic storage</span>
+<a class="br" href="#L6" id="L6">6 </a><span class="kwrd">struct</span> <a class="hid" href="grain.storage.d.html#L6" title="grain.storage.Storage">Storage</a>(<span class="hid">Allocator_</span>)
+<a class="br" href="#L7" id="L7">7 </a>{
+<a class="br" href="#L8" id="L8">8 </a>    <span class="kwrd">alias</span> <span class="hid">Allocator</span> = <span class="hid">Allocator_</span>;
+<a class="br" href="#L9" id="L9">9 </a>    
+<a class="br" href="#L10" id="L10">10 </a>    <span class="kwrd">static</span> <span class="kwrd">if</span>(<span class="kwrd">is</span>(<span class="kwrd">typeof</span>(<span class="hid">Allocator.deviceof</span>))) {
+<a class="br" href="#L11" id="L11">11 </a>        <span class="kwrd">enum</span> <span class="hid">deviceof</span> = <span class="hid">Allocator.deviceof</span>;
+<a class="br" href="#L12" id="L12">12 </a>    } <span class="kwrd">else</span> {
+<a class="br" href="#L13" id="L13">13 </a>        <span class="kwrd">enum</span> <span class="hid">deviceof</span> = <span class="str">&quot;cpu&quot;</span>;
+<a class="br" href="#L14" id="L14">14 </a>    }
+<a class="br" href="#L15" id="L15">15 </a>
+<a class="br" href="#L16" id="L16">16 </a>    <span class="kwrd">static</span> <span class="kwrd">if</span>(<span class="kwrd">is</span>(<span class="kwrd">typeof</span>(<span class="hid">Allocator.pinned</span>))) {
+<a class="br" href="#L17" id="L17">17 </a>        <span class="kwrd">enum</span> <span class="hid">pinned</span> = <span class="hid">Allocator.pinned</span>;
+<a class="br" href="#L18" id="L18">18 </a>    } <span class="kwrd">else</span> {
+<a class="br" href="#L19" id="L19">19 </a>        <span class="kwrd">enum</span> <span class="hid">pinned</span> = <span class="kwrd">false</span>;
+<a class="br" href="#L20" id="L20">20 </a>    }
+<a class="br" href="#L21" id="L21">21 </a>    
+<a class="br" href="#L22" id="L22">22 </a>    <span class="type">void</span>[] <span class="hid">payload</span>;
+<a class="br" href="#L23" id="L23">23 </a>    <span class="hid">Allocator</span> <span class="hid">allocator</span>;
+<a class="br" href="#L24" id="L24">24 </a>    <span class="kwrd">alias</span> <span class="hid">payload</span> <span class="kwrd">this</span>;
+<a class="br" href="#L25" id="L25">25 </a>
+<a class="br" href="#L26" id="L26">26 </a>    @<span class="hid">disable</span> <span class="kwrd">this</span>(<span class="kwrd">this</span>);
+<a class="br" href="#L27" id="L27">27 </a>    @<span class="hid">disable</span> <span class="kwrd">new</span>(<span class="hid">size_t</span>);
+<a class="br" href="#L28" id="L28">28 </a>    
+<a class="br" href="#L29" id="L29">29 </a>    <span class="kwrd">this</span>(<span class="hid">size_t</span> <span class="hid">bytes</span>, <span class="hid">Allocator</span> <span class="hid">a</span> = <span class="hid">Allocator.instance</span>)
+<a class="br" href="#L30" id="L30">30 </a>    {
+<a class="br" href="#L31" id="L31">31 </a>        <span class="kwrd">this</span>.<span class="hid">allocator</span> = <span class="hid">a</span>;
+<a class="br" href="#L32" id="L32">32 </a>        <span class="kwrd">this</span>.<span class="hid">payload</span> = <span class="hid">a.allocate</span>(<span class="hid">bytes</span>);
+<a class="br" href="#L33" id="L33">33 </a>    }
+<a class="br" href="#L34" id="L34">34 </a>
+<a class="br" href="#L35" id="L35">35 </a>    ~<span class="kwrd">this</span>()
+<a class="br" href="#L36" id="L36">36 </a>    {
+<a class="br" href="#L37" id="L37">37 </a>        <span class="kwrd">this</span>.<span class="hid">allocator.deallocate</span>(<span class="kwrd">this</span>.<span class="hid">payload</span>);
+<a class="br" href="#L38" id="L38">38 </a>    }
+<a class="br" href="#L39" id="L39">39 </a>}
+<a class="br" href="#L40" id="L40">40 </a>
+<a class="br" href="#L41" id="L41">41 </a>
+<a class="br" href="#L42" id="L42">42 </a><span class="com">/// Reference count storage</span>
+<a class="br" href="#L43" id="L43">43 </a><span class="kwrd">struct</span> <a class="hid" href="grain.storage.d.html#L43" title="grain.storage.RCStorage">RCStorage</a>(<span class="hid">Allocator_</span>)
+<a class="br" href="#L44" id="L44">44 </a>{
+<a class="br" href="#L45" id="L45">45 </a>    <span class="kwrd">import</span> <span class="hid">mir.rc.ptr</span> : <span class="hid">RCPtr</span>, <span class="hid">createRC</span>;
+<a class="br" href="#L46" id="L46">46 </a>
+<a class="br" href="#L47" id="L47">47 </a>    <span class="kwrd">alias</span> <span class="hid">Allocator</span> = <span class="hid">Allocator_</span>;
+<a class="br" href="#L48" id="L48">48 </a>    <span class="kwrd">alias</span> <span class="hid">Base</span> = <a class="hid" href="grain.storage.d.html#L6" title="grain.storage.Storage">Storage</a>!<span class="hid">Allocator</span>;
+<a class="br" href="#L49" id="L49">49 </a>
+<a class="br" href="#L50" id="L50">50 </a>    <span class="hid">RCPtr</span>!<span class="hid">Base</span> <span class="hid">base</span>;
+<a class="br" href="#L51" id="L51">51 </a>    <span class="kwrd">alias</span> <span class="hid">base</span> <span class="kwrd">this</span>;
+<a class="br" href="#L52" id="L52">52 </a>    
+<a class="br" href="#L53" id="L53">53 </a>    <span class="kwrd">this</span>(<span class="hid">size_t</span> <span class="hid">bytes</span>, <span class="hid">Allocator</span> <span class="hid">a</span> = <span class="hid">Allocator.instance</span>)
+<a class="br" href="#L54" id="L54">54 </a>    {
+<a class="br" href="#L55" id="L55">55 </a>        <span class="kwrd">this</span>.<span class="hid">base</span> = <span class="hid">createRC</span>!<span class="hid">Base</span>(<span class="hid">bytes</span>, <span class="hid">a</span>);
+<a class="br" href="#L56" id="L56">56 </a>    }
+<a class="br" href="#L57" id="L57">57 </a>
+<a class="br" href="#L58" id="L58">58 </a>    <a class="hid" href="grain.storage.d.html#L70" title="grain.storage.RCIter">RCIter</a>!(<span class="hid">It</span>, <span class="kwrd">typeof</span>(<span class="kwrd">this</span>)) <span class="hid">iterator</span>(<span class="hid">It</span>)()
+<a class="br" href="#L59" id="L59">59 </a>    {
+<a class="br" href="#L60" id="L60">60 </a>        <span class="kwrd">return</span> <span class="kwrd">typeof</span>(<span class="kwrd">return</span>)(<span class="kwrd">cast</span>(<span class="hid">It</span>) <span class="kwrd">this</span>.<span class="hid">base.ptr</span>, <span class="kwrd">this</span>);
+<a class="br" href="#L61" id="L61">61 </a>    }
+<a class="br" href="#L62" id="L62">62 </a>
+<a class="br" href="#L63" id="L63">63 </a>    <a class="hid" href="grain.storage.d.html#L70" title="grain.storage.RCIter">RCIter</a>!(<span class="hid">It</span>, <span class="kwrd">const</span> <span class="kwrd">typeof</span>(<span class="kwrd">this</span>)) <span class="hid">iterator</span>(<span class="hid">It</span>)() <span class="kwrd">const</span>
+<a class="br" href="#L64" id="L64">64 </a>    {
+<a class="br" href="#L65" id="L65">65 </a>        <span class="kwrd">return</span> <span class="kwrd">typeof</span>(<span class="kwrd">return</span>)(<span class="kwrd">cast</span>(<span class="hid">It</span>) <span class="kwrd">this</span>.<span class="hid">base.ptr</span>, <span class="kwrd">this</span>);
+<a class="br" href="#L66" id="L66">66 </a>    }
+<a class="br" href="#L67" id="L67">67 </a>}
+<a class="br" href="#L68" id="L68">68 </a>
+<a class="br" href="#L69" id="L69">69 </a><span class="com">/// Iterator for RCStorage that shares ownership by itself</span>
+<a class="br" href="#L70" id="L70">70 </a><span class="kwrd">struct</span> <a class="hid" href="grain.storage.d.html#L70" title="grain.storage.RCIter">RCIter</a>(<span class="hid">It</span>, <span class="hid">Rc</span>)
+<a class="br" href="#L71" id="L71">71 </a>{
+<a class="br" href="#L72" id="L72">72 </a>    <span class="kwrd">import</span> <span class="hid">mir.ndslice.traits</span> : <span class="hid">isIterator</span>;
+<a class="br" href="#L73" id="L73">73 </a>    <span class="kwrd">static</span> <span class="kwrd">assert</span>(<span class="hid">isIterator</span>!<span class="hid">It</span>);
+<a class="br" href="#L74" id="L74">74 </a>    
+<a class="br" href="#L75" id="L75">75 </a>    <span class="hid">It</span> <span class="hid">_iterator</span>;
+<a class="br" href="#L76" id="L76">76 </a>    <span class="hid">Rc</span> <span class="hid">_rc</span>;  <span class="com">// hold ownership here</span>
+<a class="br" href="#L77" id="L77">77 </a>
+<a class="br" href="#L78" id="L78">78 </a>    <span class="kwrd">alias</span> <span class="hid">T</span> = <span class="kwrd">typeof</span>(*<span class="hid">It.init</span>);
+<a class="br" href="#L79" id="L79">79 </a>
+<a class="br" href="#L80" id="L80">80 </a>    <span class="kwrd">private</span> <span class="kwrd">inout</span> <span class="hid">payload</span>()
+<a class="br" href="#L81" id="L81">81 </a>    {
+<a class="br" href="#L82" id="L82">82 </a>        <span class="kwrd">return</span> <span class="kwrd">cast</span>(<span class="hid">It</span>) <span class="hid">_rc.payload</span>;
+<a class="br" href="#L83" id="L83">83 </a>    }
+<a class="br" href="#L84" id="L84">84 </a>
+<a class="br" href="#L85" id="L85">85 </a>    <span class="com">///</span>
+<a class="br" href="#L86" id="L86">86 </a>    <span class="kwrd">inout</span>(<span class="hid">T</span>)* <span class="hid">lightScope</span>()() <span class="kwrd">scope</span> <span class="kwrd">return</span> <span class="kwrd">inout</span> @<span class="hid">property</span> @<span class="hid">trusted</span>
+<a class="br" href="#L87" id="L87">87 </a>    {
+<a class="br" href="#L88" id="L88">88 </a>        <span class="kwrd">debug</span>
+<a class="br" href="#L89" id="L89">89 </a>        {
+<a class="br" href="#L90" id="L90">90 </a>            <span class="kwrd">assert</span>(<span class="hid">payload</span> &lt;= <span class="hid">_iterator</span>);
+<a class="br" href="#L91" id="L91">91 </a>            <span class="kwrd">assert</span>(<span class="hid">_iterator</span> <span class="kwrd">is</span> <span class="kwrd">null</span> || <span class="hid">_iterator</span> &lt;= <span class="hid">payload</span> + <span class="hid">_rc.length</span> / <span class="hid">T.sizeof</span>);
+<a class="br" href="#L92" id="L92">92 </a>        }
+<a class="br" href="#L93" id="L93">93 </a>        <span class="kwrd">return</span> <span class="hid">_iterator</span>;
+<a class="br" href="#L94" id="L94">94 </a>    }
+<a class="br" href="#L95" id="L95">95 </a>    
+<a class="br" href="#L96" id="L96">96 </a>    <span class="com">///   </span>
+<a class="br" href="#L97" id="L97">97 </a>    <span class="kwrd">ref</span> <span class="kwrd">inout</span>(<span class="hid">T</span>) <span class="hid">opUnary</span>(<span class="type">string</span> <span class="hid">op</span> : <span class="str">&quot;*&quot;</span>)() <span class="kwrd">inout</span> <span class="kwrd">scope</span> <span class="kwrd">return</span>
+<a class="br" href="#L98" id="L98">98 </a>    {
+<a class="br" href="#L99" id="L99">99 </a>        <span class="kwrd">debug</span>
+<a class="br" href="#L100" id="L100">100 </a>        {
+<a class="br" href="#L101" id="L101">101 </a>            <span class="kwrd">assert</span>(<span class="hid">_iterator</span>);
+<a class="br" href="#L102" id="L102">102 </a>            <span class="kwrd">assert</span>(<span class="hid">payload</span>);
+<a class="br" href="#L103" id="L103">103 </a>            <span class="kwrd">assert</span>(<span class="hid">payload</span> &lt;= <span class="hid">_iterator</span>);
+<a class="br" href="#L104" id="L104">104 </a>            <span class="kwrd">assert</span>(<span class="hid">_iterator</span> &lt;= <span class="hid">payload</span> + <span class="hid">_rc.length</span> / <span class="hid">T.sizeof</span>);
+<a class="br" href="#L105" id="L105">105 </a>        }
+<a class="br" href="#L106" id="L106">106 </a>        <span class="kwrd">return</span> *<span class="hid">_iterator</span>;
+<a class="br" href="#L107" id="L107">107 </a>    }
+<a class="br" href="#L108" id="L108">108 </a>
+<a class="br" href="#L109" id="L109">109 </a>    <span class="com">///   </span>
+<a class="br" href="#L110" id="L110">110 </a>    <span class="kwrd">ref</span> <span class="kwrd">inout</span>(<span class="hid">T</span>) <span class="hid">opIndex</span>(<span class="hid">ptrdiff_t</span> <span class="hid">index</span>) <span class="kwrd">inout</span> <span class="kwrd">scope</span> <span class="kwrd">return</span> @<span class="hid">trusted</span>
+<a class="br" href="#L111" id="L111">111 </a>    {
+<a class="br" href="#L112" id="L112">112 </a>        <span class="kwrd">debug</span>
+<a class="br" href="#L113" id="L113">113 </a>        {
+<a class="br" href="#L114" id="L114">114 </a>            <span class="kwrd">assert</span>(<span class="hid">_iterator</span>);
+<a class="br" href="#L115" id="L115">115 </a>            <span class="kwrd">assert</span>(<span class="hid">payload</span>);
+<a class="br" href="#L116" id="L116">116 </a>            <span class="kwrd">assert</span>(<span class="hid">payload</span> &lt;= <span class="hid">_iterator</span> + <span class="hid">index</span>);
+<a class="br" href="#L117" id="L117">117 </a>            <span class="kwrd">assert</span>(<span class="hid">_iterator</span> + <span class="hid">index</span> &lt;= <span class="hid">payload</span> + <span class="hid">_rc.length</span> / <span class="hid">T.sizeof</span>);
+<a class="br" href="#L118" id="L118">118 </a>        }
+<a class="br" href="#L119" id="L119">119 </a>        <span class="kwrd">return</span> <span class="hid">_iterator</span>[<span class="hid">index</span>];
+<a class="br" href="#L120" id="L120">120 </a>    }
+<a class="br" href="#L121" id="L121">121 </a>
+<a class="br" href="#L122" id="L122">122 </a>    <span class="com">///   </span>
+<a class="br" href="#L123" id="L123">123 </a>    <span class="type">void</span> <span class="hid">opUnary</span>(<span class="type">string</span> <span class="hid">op</span>)() <span class="kwrd">scope</span>
+<a class="br" href="#L124" id="L124">124 </a>        <span class="kwrd">if</span> (<span class="hid">op</span> == <span class="str">&quot;--&quot;</span> || <span class="hid">op</span> == <span class="str">&quot;++&quot;</span>)
+<a class="br" href="#L125" id="L125">125 </a>    { <span class="kwrd">mixin</span>(<span class="hid">op</span> ~ <span class="str">&quot;_iterator;&quot;</span>); }
+<a class="br" href="#L126" id="L126">126 </a>
+<a class="br" href="#L127" id="L127">127 </a>    <span class="com">///   </span>
+<a class="br" href="#L128" id="L128">128 </a>    <span class="type">void</span> <span class="hid">opOpAssign</span>(<span class="type">string</span> <span class="hid">op</span>)(<span class="hid">ptrdiff_t</span> <span class="hid">index</span>) <span class="kwrd">scope</span>
+<a class="br" href="#L129" id="L129">129 </a>        <span class="kwrd">if</span> (<span class="hid">op</span> == <span class="str">&quot;-&quot;</span> || <span class="hid">op</span> == <span class="str">&quot;+&quot;</span>)
+<a class="br" href="#L130" id="L130">130 </a>    { <span class="kwrd">mixin</span>(<span class="str">&quot;_iterator &quot;</span> ~ <span class="hid">op</span> ~ <span class="str">&quot;= index;&quot;</span>); }
+<a class="br" href="#L131" id="L131">131 </a>
+<a class="br" href="#L132" id="L132">132 </a>    <span class="com">///</span>
+<a class="br" href="#L133" id="L133">133 </a>    <a class="hid" href="grain.storage.d.html#L70" title="grain.storage.RCIter">RCIter</a>!(<span class="hid">It</span>, <span class="hid">Rc</span>) <span class="hid">opBinary</span>(<span class="type">string</span> <span class="hid">op</span>)(<span class="hid">ptrdiff_t</span> <span class="hid">index</span>)
+<a class="br" href="#L134" id="L134">134 </a>        <span class="kwrd">if</span> (<span class="hid">op</span> == <span class="str">&quot;+&quot;</span> || <span class="hid">op</span> == <span class="str">&quot;-&quot;</span>)
+<a class="br" href="#L135" id="L135">135 </a>    { <span class="kwrd">return</span> <span class="kwrd">typeof</span>(<span class="kwrd">return</span>)(<span class="hid">_iterator</span> + <span class="hid">index</span>, <span class="hid">_rc</span>); }
+<a class="br" href="#L136" id="L136">136 </a>
+<a class="br" href="#L137" id="L137">137 </a>    <span class="com">///   </span>
+<a class="br" href="#L138" id="L138">138 </a>    <a class="hid" href="grain.storage.d.html#L70" title="grain.storage.RCIter">RCIter</a>!(<span class="kwrd">const</span> <span class="hid">It</span>, <span class="hid">RC</span>) <span class="hid">opBinary</span>(<span class="type">string</span> <span class="hid">op</span>)(<span class="hid">ptrdiff_t</span> <span class="hid">index</span>) <span class="kwrd">const</span>
+<a class="br" href="#L139" id="L139">139 </a>        <span class="kwrd">if</span> (<span class="hid">op</span> == <span class="str">&quot;+&quot;</span> || <span class="hid">op</span> == <span class="str">&quot;-&quot;</span>)
+<a class="br" href="#L140" id="L140">140 </a>    { <span class="kwrd">return</span> <span class="kwrd">typeof</span>(<span class="kwrd">return</span>)(<span class="hid">_iterator</span> + <span class="hid">index</span>, <span class="hid">_rc</span>); }
+<a class="br" href="#L141" id="L141">141 </a>
+<a class="br" href="#L142" id="L142">142 </a>    <span class="com">///   </span>
+<a class="br" href="#L143" id="L143">143 </a>    <a class="hid" href="grain.storage.d.html#L70" title="grain.storage.RCIter">RCIter</a>!(<span class="kwrd">immutable</span> <span class="hid">It</span>, <span class="hid">RC</span>) <span class="hid">opBinary</span>(<span class="type">string</span> <span class="hid">op</span>)(<span class="hid">ptrdiff_t</span> <span class="hid">index</span>) <span class="kwrd">immutable</span>
+<a class="br" href="#L144" id="L144">144 </a>        <span class="kwrd">if</span> (<span class="hid">op</span> == <span class="str">&quot;+&quot;</span> || <span class="hid">op</span> == <span class="str">&quot;-&quot;</span>)
+<a class="br" href="#L145" id="L145">145 </a>    { <span class="kwrd">return</span> <span class="kwrd">typeof</span>(<span class="kwrd">return</span>)(<span class="hid">_iterator</span> + <span class="hid">index</span>, <span class="hid">_rc</span>); }
+<a class="br" href="#L146" id="L146">146 </a>
+<a class="br" href="#L147" id="L147">147 </a>    <span class="com">///   </span>
+<a class="br" href="#L148" id="L148">148 </a>    <span class="hid">ptrdiff_t</span> <span class="hid">opBinary</span>(<span class="type">string</span> <span class="hid">op</span> : <span class="str">&quot;-&quot;</span>)(<span class="kwrd">scope</span> <span class="kwrd">ref</span> <span class="kwrd">const</span> <span class="kwrd">typeof</span>(<span class="kwrd">this</span>) <span class="hid">right</span>) <span class="kwrd">scope</span> <span class="kwrd">const</span>
+<a class="br" href="#L149" id="L149">149 </a>    { <span class="kwrd">return</span> <span class="kwrd">this</span>.<span class="hid">_iterator</span> - <span class="hid">right._iterator</span>; }
+<a class="br" href="#L150" id="L150">150 </a>
+<a class="br" href="#L151" id="L151">151 </a>    <span class="com">///   </span>
+<a class="br" href="#L152" id="L152">152 </a>    <span class="type">bool</span> <span class="hid">opEquals</span>()(<span class="kwrd">scope</span> <span class="kwrd">ref</span> <span class="kwrd">const</span> <span class="kwrd">typeof</span>(<span class="kwrd">this</span>) <span class="hid">right</span>) <span class="kwrd">scope</span> <span class="kwrd">const</span>
+<a class="br" href="#L153" id="L153">153 </a>    { <span class="kwrd">return</span> <span class="kwrd">this</span>.<span class="hid">_iterator</span> == <span class="hid">right._iterator</span>; }
+<a class="br" href="#L154" id="L154">154 </a>
+<a class="br" href="#L155" id="L155">155 </a>    <span class="com">///   </span>
+<a class="br" href="#L156" id="L156">156 </a>    <span class="hid">ptrdiff_t</span> <span class="hid">opCmp</span>()(<span class="kwrd">scope</span> <span class="kwrd">ref</span> <span class="kwrd">const</span> <span class="kwrd">typeof</span>(<span class="kwrd">this</span>) <span class="hid">right</span>) <span class="kwrd">scope</span> <span class="kwrd">const</span>
+<a class="br" href="#L157" id="L157">157 </a>    { <span class="kwrd">return</span> <span class="kwrd">this</span>.<span class="hid">_iterator</span> - <span class="hid">right._iterator</span>; }
+<a class="br" href="#L158" id="L158">158 </a>}
+<a class="br" href="#L159" id="L159">159 </a>
+<a class="br" href="#L160" id="L160">160 </a><span class="kwrd">import</span> <span class="hid">grain.allocator</span> : <span class="hid">CPUMallocator</span>;
+<a class="br" href="#L161" id="L161">161 </a><span class="kwrd">alias</span> <a class="hid" href="grain.storage.d.html#L161" title="grain.storage.DefaultCPUStorage">DefaultCPUStorage</a> = <a class="hid" href="grain.storage.d.html#L43" title="grain.storage.RCStorage">RCStorage</a>!<span class="hid">CPUMallocator</span>;
+<a class="br" href="#L162" id="L162">162 </a>
+<a class="br" href="#L163" id="L163">163 </a><span class="com">/// Refrence counting string</span>
+<a class="br" href="#L164" id="L164">164 </a><span class="kwrd">struct</span> <a class="hid" href="grain.storage.d.html#L164" title="grain.storage.RCString">RCString</a>
+<a class="br" href="#L165" id="L165">165 </a>{
+<a class="br" href="#L166" id="L166">166 </a>    <span class="kwrd">import</span> <span class="hid">mir.rc.array</span> : <span class="hid">RCArray</span>, <span class="hid">rcarray</span>;
+<a class="br" href="#L167" id="L167">167 </a>    <span class="hid">RCArray</span>!(<span class="kwrd">immutable</span> <span class="type">char</span>) <span class="hid">payload</span>;
+<a class="br" href="#L168" id="L168">168 </a>    <span class="kwrd">alias</span> <span class="hid">toString</span> <span class="kwrd">this</span>;
+<a class="br" href="#L169" id="L169">169 </a>    
+<a class="br" href="#L170" id="L170">170 </a>    <span class="kwrd">this</span>(<span class="kwrd">scope</span> <span class="kwrd">const</span>(<span class="type">char</span>)[] <span class="hid">s</span>) @<span class="hid">nogc</span> @<span class="hid">safe</span> <span class="kwrd">pure</span> <span class="kwrd">nothrow</span>
+<a class="br" href="#L171" id="L171">171 </a>    {
+<a class="br" href="#L172" id="L172">172 </a>        <span class="kwrd">this</span> = <span class="hid">s</span>;
+<a class="br" href="#L173" id="L173">173 </a>    }
+<a class="br" href="#L174" id="L174">174 </a>
+<a class="br" href="#L175" id="L175">175 </a>    <span class="type">void</span> <span class="hid">opAssign</span>(<span class="kwrd">scope</span> <span class="kwrd">const</span>(<span class="type">char</span>)[] <span class="hid">rhs</span>) @<span class="hid">nogc</span> @<span class="hid">safe</span> <span class="kwrd">pure</span> <span class="kwrd">nothrow</span>
+<a class="br" href="#L176" id="L176">176 </a>    {
+<a class="br" href="#L177" id="L177">177 </a>        <span class="kwrd">this</span>.<span class="hid">payload</span> = <span class="hid">rcarray</span>!(<span class="kwrd">immutable</span> <span class="type">char</span>)(<span class="hid">rhs</span>);
+<a class="br" href="#L178" id="L178">178 </a>    }
+<a class="br" href="#L179" id="L179">179 </a>    
+<a class="br" href="#L180" id="L180">180 </a>    <span class="type">string</span> <span class="hid">toString</span>() <span class="kwrd">return</span> <span class="kwrd">scope</span> @<span class="hid">nogc</span> @<span class="hid">safe</span> <span class="kwrd">pure</span> <span class="kwrd">nothrow</span> <span class="kwrd">const</span>
+<a class="br" href="#L181" id="L181">181 </a>    {
+<a class="br" href="#L182" id="L182">182 </a>        <span class="kwrd">return</span> <span class="kwrd">this</span>.<span class="hid">payload</span>[];
+<a class="br" href="#L183" id="L183">183 </a>    }
+<a class="br" href="#L184" id="L184">184 </a>
+<a class="br" href="#L185" id="L185">185 </a>}
+<a class="br" href="#L186" id="L186">186 </a>
+<a class="br" href="#L187" id="L187">187 </a><span class="com">///</span>
+<a class="br" href="#L188" id="L188">188 </a>@<span class="hid">safe</span> @<span class="hid">nogc</span> <span class="kwrd">pure</span> <span class="kwrd">nothrow</span>
+<a class="br" href="#L189" id="L189">189 </a><span class="kwrd">unittest</span>
+<a class="br" href="#L190" id="L190">190 </a>{
+<a class="br" href="#L191" id="L191">191 </a>    <span class="type">void</span> <span class="hid">f</span>(<span class="type">string</span>) {}
+<a class="br" href="#L192" id="L192">192 </a>    <a class="hid" href="grain.storage.d.html#L164" title="grain.storage.RCString">RCString</a> <span class="hid">r</span>;
+<a class="br" href="#L193" id="L193">193 </a>    {
+<a class="br" href="#L194" id="L194">194 </a>        <span class="kwrd">auto</span> <span class="hid">s1</span> = <span class="str">&quot;hello, world&quot;</span>;
+<a class="br" href="#L195" id="L195">195 </a>
+<a class="br" href="#L196" id="L196">196 </a>        <span class="com">// assign (copy)</span>
+<a class="br" href="#L197" id="L197">197 </a>        <span class="hid">r</span> = <span class="hid">s1</span>;
+<a class="br" href="#L198" id="L198">198 </a>        <span class="kwrd">assert</span>(&amp;<span class="hid">r</span>[<span class="num">0</span>] != &amp;<span class="hid">s1</span>[<span class="num">0</span>]);
+<a class="br" href="#L199" id="L199">199 </a>
+<a class="br" href="#L200" id="L200">200 </a>        <span class="com">// able to copy mutable string</span>
+<a class="br" href="#L201" id="L201">201 </a>        <span class="type">char</span>[<span class="num">100</span>] <span class="hid">s</span>;
+<a class="br" href="#L202" id="L202">202 </a>        <span class="hid">s</span>[<span class="num">0</span> .. <span class="hid">s1.length</span>] = <span class="hid">s1</span>;
+<a class="br" href="#L203" id="L203">203 </a>        <span class="hid">r</span> = <span class="hid">s</span>;
+<a class="br" href="#L204" id="L204">204 </a>        <span class="hid">r</span> = <a class="hid" href="grain.storage.d.html#L164" title="grain.storage.RCString">RCString</a>(<span class="hid">s</span>[<span class="num">0</span> .. <span class="hid">s1.length</span>]);
+<a class="br" href="#L205" id="L205">205 </a>    }
+<a class="br" href="#L206" id="L206">206 </a>    <span class="kwrd">assert</span>(<span class="hid">r</span> == <span class="str">&quot;hello, world&quot;</span>);
+<a class="br" href="#L207" id="L207">207 </a>}</pre></div>
+		<div id="page-nav">
+		<div id="source-navigation"><div class="list-holder"><ul><li><a class="docs" href="../grain.storage.html">[Docs] </a><a href="#L1">grain.storage</a><ul><li><a class="docs" href="../grain.storage.Storage.html">[Docs] </a><a href="#L6">Storage</a><ul><li><a href="#L8">Allocator</a></li><li><a href="#L1">deviceof</a></li><li><a href="#L1">deviceof</a></li><li><a href="#L1">pinned</a></li><li><a href="#L1">pinned</a></li><li><a href="#L22">payload</a></li><li><a href="#L23">allocator</a></li><li><a href="#L26">this(this)</a></li><li><a href="#L29">this</a></li><li><a href="#L35">~this</a></li></ul></li><li><a class="docs" href="../grain.storage.RCStorage.html">[Docs] </a><a href="#L43">RCStorage</a><ul><li><a href="#L45">mir.rc.ptr</a></li><li><a href="#L47">Allocator</a></li><li><a href="#L48">Base</a></li><li><a href="#L50">base</a></li><li><a href="#L53">this</a></li><li><a href="#L58">iterator</a></li><li><a href="#L63">iterator</a></li></ul></li><li><a class="docs" href="../grain.storage.RCIter.html">[Docs] </a><a href="#L70">RCIter</a><ul><li><a href="#L72">mir.ndslice.traits</a></li><li><a href="#L75">_iterator</a></li><li><a href="#L76">_rc</a></li><li><a href="#L78">T</a></li><li><a href="#L80">payload</a></li><li><a class="docs" href="../grain.storage.RCIter.lightScope.html">[Docs] </a><a href="#L86">lightScope</a></li><li><a class="docs" href="../grain.storage.RCIter.opUnary.1.html">[Docs] </a><a href="#L97">opUnary</a></li><li><a class="docs" href="../grain.storage.RCIter.opIndex.html">[Docs] </a><a href="#L110">opIndex</a></li><li><a class="docs" href="../grain.storage.RCIter.opUnary.2.html">[Docs] </a><a href="#L123">opUnary</a></li><li><a class="docs" href="../grain.storage.RCIter.opOpAssign.html">[Docs] </a><a href="#L128">opOpAssign</a></li><li><a class="docs" href="../grain.storage.RCIter.opBinary.1.html">[Docs] </a><a href="#L133">opBinary</a></li><li><a class="docs" href="../grain.storage.RCIter.opBinary.2.html">[Docs] </a><a href="#L138">opBinary</a></li><li><a class="docs" href="../grain.storage.RCIter.opBinary.3.html">[Docs] </a><a href="#L143">opBinary</a></li><li><a class="docs" href="../grain.storage.RCIter.opBinary.4.html">[Docs] </a><a href="#L148">opBinary</a></li><li><a class="docs" href="../grain.storage.RCIter.opEquals.html">[Docs] </a><a href="#L152">opEquals</a></li><li><a class="docs" href="../grain.storage.RCIter.opCmp.html">[Docs] </a><a href="#L156">opCmp</a></li></ul></li><li><a href="#L160">grain.allocator</a></li><li><a href="#L161">DefaultCPUStorage</a></li><li><a class="docs" href="../grain.storage.RCString.html">[Docs] </a><a href="#L164">RCString</a><ul><li><a href="#L166">mir.rc.array</a></li><li><a href="#L167">payload</a></li><li><a href="#L170">this</a></li><li><a href="#L175">opAssign</a></li><li><a href="#L180">toString</a></li></ul></li></ul></li></ul></div></div></div>
+	</div>
+	<div id="page-footer">Page generated by <a href="https://github.com/adamdruppe/adrdox">adrdox</a></div>
+</body>
+</html>
