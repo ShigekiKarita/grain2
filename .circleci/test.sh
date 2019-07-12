@@ -8,7 +8,7 @@ set -o pipefail
 # git submodule update --init
 
 source "$(curl -fsS  --retry 3 https://dlang.org/install.sh | bash -s $1 --activate)"
-dub test grain:core --build=unittest-cov
+dub test grain2:core --build=unittest-cov
 cat dub.selections.json
 
 # ldc2 causes linker error with drepl https://github.com/dlang-community/drepl/issues/39
