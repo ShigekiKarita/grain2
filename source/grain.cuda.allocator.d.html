@@ -30,7 +30,7 @@
 <a class="br" href="#L2" id="L2">2 </a>
 <a class="br" href="#L3" id="L3">3 </a><span class="kwrd">import</span> <span class="hid">grain.tensor</span> : <a class="hid" href="grain.tensor.d.html#L16" title="grain.tensor.Opt">Opt</a>;
 <a class="br" href="#L4" id="L4">4 </a><span class="kwrd">import</span> <span class="hid">grain.allocator</span> : <a class="hid" href="grain.allocator.d.html#L5" title="grain.allocator.CPUMallocator">CPUMallocator</a>;
-<a class="br" href="#L5" id="L5">5 </a><span class="kwrd">import</span> <span class="hid">grain.cuda.testing</span> : <a class="hid" href="grain.cuda.testing.d.html#L85" title="grain.cuda.testing.checkCuda">checkCuda</a>;
+<a class="br" href="#L5" id="L5">5 </a><span class="kwrd">import</span> <span class="hid">grain.cuda.testing</span> : <span class="hid">checkCuda</span>;
 <a class="br" href="#L6" id="L6">6 </a><span class="kwrd">import</span> <span class="hid">grain.dpp.cuda_runtime_api</span>;
 <a class="br" href="#L7" id="L7">7 </a>
 <a class="br" href="#L8" id="L8">8 </a><span class="kwrd">struct</span> <a class="hid" href="grain.cuda.allocator.d.html#L8" title="grain.cuda.allocator.PinnedMallocator">PinnedMallocator</a>
@@ -56,7 +56,7 @@
 <a class="br" href="#L28" id="L28">28 </a>        <span class="kwrd">if</span> (!<span class="hid">bytes</span>) <span class="kwrd">return</span> <span class="kwrd">null</span>;
 <a class="br" href="#L29" id="L29">29 </a>
 <a class="br" href="#L30" id="L30">30 </a>        <span class="type">void</span>* <span class="hid">p</span>;
-<a class="br" href="#L31" id="L31">31 </a>        <a class="hid" href="grain.cuda.testing.d.html#L85" title="grain.cuda.testing.checkCuda">checkCuda</a>(<span class="hid">cudaMallocHost</span>(&amp;<span class="hid">p</span>, <span class="hid">bytes</span>));
+<a class="br" href="#L31" id="L31">31 </a>        <span class="hid">checkCuda</span>(<span class="hid">cudaMallocHost</span>(&amp;<span class="hid">p</span>, <span class="hid">bytes</span>));
 <a class="br" href="#L32" id="L32">32 </a>        <span class="kwrd">return</span> <span class="hid">p</span> ? <span class="hid">p</span>[<span class="num">0</span> .. <span class="hid">bytes</span>] : <span class="kwrd">null</span>;
 <a class="br" href="#L33" id="L33">33 </a>    }
 <a class="br" href="#L34" id="L34">34 </a>
@@ -65,7 +65,7 @@
 <a class="br" href="#L37" id="L37">37 </a>    <span class="type">bool</span> <span class="hid">deallocate</span>()(<span class="type">void</span>[] <span class="hid">b</span>)
 <a class="br" href="#L38" id="L38">38 </a>    {
 <a class="br" href="#L39" id="L39">39 </a>        <span class="kwrd">import</span> <span class="hid">grain.dpp.cuda_runtime_api</span> : <span class="hid">cudaFreeHost</span>;
-<a class="br" href="#L40" id="L40">40 </a>        <a class="hid" href="grain.cuda.testing.d.html#L85" title="grain.cuda.testing.checkCuda">checkCuda</a>(<span class="hid">cudaFreeHost</span>(<span class="hid">b.ptr</span>));
+<a class="br" href="#L40" id="L40">40 </a>        <span class="hid">checkCuda</span>(<span class="hid">cudaFreeHost</span>(<span class="hid">b.ptr</span>));
 <a class="br" href="#L41" id="L41">41 </a>        <span class="kwrd">return</span> <span class="kwrd">true</span>;
 <a class="br" href="#L42" id="L42">42 </a>    }
 <a class="br" href="#L43" id="L43">43 </a>
@@ -98,7 +98,7 @@
 <a class="br" href="#L70" id="L70">70 </a>
 <a class="br" href="#L71" id="L71">71 </a>        <span class="type">void</span>* <span class="hid">p</span>;
 <a class="br" href="#L72" id="L72">72 </a>        <span class="hid">cudaSetDevice</span>(<span class="kwrd">this</span>.<span class="hid">opt.deviceId</span>);
-<a class="br" href="#L73" id="L73">73 </a>        <a class="hid" href="grain.cuda.testing.d.html#L85" title="grain.cuda.testing.checkCuda">checkCuda</a>(<span class="hid">cudaMalloc</span>(&amp;<span class="hid">p</span>, <span class="hid">bytes</span>));
+<a class="br" href="#L73" id="L73">73 </a>        <span class="hid">checkCuda</span>(<span class="hid">cudaMalloc</span>(&amp;<span class="hid">p</span>, <span class="hid">bytes</span>));
 <a class="br" href="#L74" id="L74">74 </a>        <span class="kwrd">return</span> <span class="hid">p</span> ? <span class="hid">p</span>[<span class="num">0</span> .. <span class="hid">bytes</span>] : <span class="kwrd">null</span>;
 <a class="br" href="#L75" id="L75">75 </a>    }
 <a class="br" href="#L76" id="L76">76 </a>
@@ -107,7 +107,7 @@
 <a class="br" href="#L79" id="L79">79 </a>    <span class="type">bool</span> <span class="hid">deallocate</span>()(<span class="type">void</span>[] <span class="hid">b</span>)
 <a class="br" href="#L80" id="L80">80 </a>    {
 <a class="br" href="#L81" id="L81">81 </a>        <span class="hid">cudaSetDevice</span>(<span class="kwrd">this</span>.<span class="hid">opt.deviceId</span>);
-<a class="br" href="#L82" id="L82">82 </a>        <a class="hid" href="grain.cuda.testing.d.html#L85" title="grain.cuda.testing.checkCuda">checkCuda</a>(<span class="hid">cudaFree</span>(<span class="hid">b.ptr</span>));
+<a class="br" href="#L82" id="L82">82 </a>        <span class="hid">checkCuda</span>(<span class="hid">cudaFree</span>(<span class="hid">b.ptr</span>));
 <a class="br" href="#L83" id="L83">83 </a>        <span class="kwrd">return</span> <span class="kwrd">true</span>;
 <a class="br" href="#L84" id="L84">84 </a>    }
 <a class="br" href="#L85" id="L85">85 </a>
