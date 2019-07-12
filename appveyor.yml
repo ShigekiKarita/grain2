@@ -15,7 +15,9 @@ branches:
     - stable
 
 install:
+  - ps: nuget install Microsoft.ML.Mkl.Redist
   - ps: nuget install Microsoft.ML.Mkl.Redist -o "${env:APPVEYOR_BUILD_FOLDER}"
+  - ps: ls Microsoft.ML.Mkl.Redist.1.2.0
   - ps: nuget install OpenBLAS -o "${env:APPVEYOR_BUILD_FOLDER}"
   - ps: cp OpenBLAS.0.2.14.1/lib/native/lib/x64/libopenblas.dll.a .
   - ps: function SetUpDCompiler
@@ -88,4 +90,4 @@ test_script:
  - echo %DC%
  - echo %PATH%
  - '%DC% --version'
- - dub test grain2:core --override-config=mir-blas/openblas --arch=%Darch% --compiler=%DC%
+ - dub test grain2:core --arch=%Darch% --compiler=%DC%
