@@ -16,9 +16,8 @@ branches:
 
 install:
   - ps: nuget install Microsoft.ML.Mkl.Redist
-  - ps: nuget install Microsoft.ML.Mkl.Redist -o "${env:APPVEYOR_BUILD_FOLDER}"
-  - ps: Get-ChildItem -Recurse
-  - ps: ls Microsoft.ML.Mkl.Redist.1.2.0
+  - ps: cp Microsoft.ML.Mkl.Redist.1.2.0/runtimes/win-x64/native/MklImports.dll .
+  - ps: implib /system MklImports.lib Mklimports.dll
   - ps: nuget install OpenBLAS -o "${env:APPVEYOR_BUILD_FOLDER}"
   - ps: cp OpenBLAS.0.2.14.1/lib/native/lib/x64/libopenblas.dll.a .
   - ps: function SetUpDCompiler
