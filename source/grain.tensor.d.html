@@ -32,7 +32,7 @@
 <a class="br" href="#L4" id="L4">4 </a>
 <a class="br" href="#L5" id="L5">5 </a>
 <a class="br" href="#L6" id="L6">6 </a><span class="kwrd">import</span> <span class="hid">grain.storage</span> : <a class="hid" href="grain.storage.d.html#L43" title="grain.storage.RCStorage">RCStorage</a>, <a class="hid" href="grain.storage.d.html#L70" title="grain.storage.RCIter">RCIter</a>, <a class="hid" href="grain.storage.d.html#L161" title="grain.storage.DefaultCPUStorage">DefaultCPUStorage</a>;
-<a class="br" href="#L7" id="L7">7 </a><span class="kwrd">debug</span> <span class="kwrd">import</span> <span class="hid">grain.testing</span> : <span class="hid">assertAllClose</span>, <span class="hid">assertEqual</span>;
+<a class="br" href="#L7" id="L7">7 </a><span class="kwrd">debug</span> <span class="kwrd">import</span> <span class="hid">grain.testing</span> : <a class="hid" href="grain.testing.d.html#L45" title="grain.testing.assertAllClose">assertAllClose</a>, <a class="hid" href="grain.testing.d.html#L6" title="grain.testing.assertEqual">assertEqual</a>;
 <a class="br" href="#L8" id="L8">8 </a>
 <a class="br" href="#L9" id="L9">9 </a>
 <a class="br" href="#L10" id="L10">10 </a><span class="com">// TODO fix this linker error</span>
@@ -159,8 +159,8 @@
 <a class="br" href="#L131" id="L131">131 </a>    <span class="kwrd">auto</span> <span class="hid">x</span> = <a class="hid" href="grain.tensor.d.html#L35" title="grain.tensor.Tensor">Tensor</a>!(<span class="num">2</span>, <span class="type">double</span>)(<span class="num">2</span>, <span class="num">3</span>);
 <a class="br" href="#L132" id="L132">132 </a>    <span class="kwrd">static</span> <span class="kwrd">assert</span>(<a class="hid" href="grain.tensor.d.html#L119" title="grain.tensor.isTensor">isTensor</a>!(<span class="kwrd">typeof</span>(<span class="hid">x</span>)));
 <a class="br" href="#L133" id="L133">133 </a>    <span class="kwrd">static</span> <span class="kwrd">assert</span>(<span class="hid">x.deviceof</span> == <span class="str">&quot;cpu&quot;</span>);
-<a class="br" href="#L134" id="L134">134 </a>    <span class="hid">assertEqual</span>(<span class="hid">x.strides</span>[<span class="num">0</span>], <span class="num">3</span>);
-<a class="br" href="#L135" id="L135">135 </a>    <span class="hid">assertEqual</span>(<span class="hid">x.strides</span>[<span class="num">1</span>], <span class="num">1</span>);
+<a class="br" href="#L134" id="L134">134 </a>    <a class="hid" href="grain.testing.d.html#L6" title="grain.testing.assertEqual">assertEqual</a>(<span class="hid">x.strides</span>[<span class="num">0</span>], <span class="num">3</span>);
+<a class="br" href="#L135" id="L135">135 </a>    <a class="hid" href="grain.testing.d.html#L6" title="grain.testing.assertEqual">assertEqual</a>(<span class="hid">x.strides</span>[<span class="num">1</span>], <span class="num">1</span>);
 <a class="br" href="#L136" id="L136">136 </a>    <span class="kwrd">assert</span>(<span class="hid">x.isContiguous</span>);
 <a class="br" href="#L137" id="L137">137 </a>    <span class="kwrd">assert</span>(<span class="hid">x.numel</span> == <span class="num">2</span> * <span class="num">3</span>);
 <a class="br" href="#L138" id="L138">138 </a>}

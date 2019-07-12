@@ -47,8 +47,8 @@
 <a class="br" href="#L19" id="L19">19 </a>@<span class="hid">nogc</span> <span class="kwrd">shared</span> <span class="kwrd">static</span> <span class="kwrd">this</span>()
 <a class="br" href="#L20" id="L20">20 </a>{
 <a class="br" href="#L21" id="L21">21 </a>    <span class="com">// init CUDA libraries</span>
-<a class="br" href="#L22" id="L22">22 </a>    <span class="hid">checkCublas</span>(<span class="hid">cublasCreate_v2</span>(&amp;<a class="hid" href="grain.cuda.d.html#L14" title="grain.cuda.cublasHandle">cublasHandle</a>));
-<a class="br" href="#L23" id="L23">23 </a>    <span class="hid">checkCudnn</span>( <span class="hid">cudnnCreate</span>(&amp;<a class="hid" href="grain.cuda.d.html#L15" title="grain.cuda.cudnnHandle">cudnnHandle</a>) );
+<a class="br" href="#L22" id="L22">22 </a>    <a class="hid" href="grain.cuda.testing.d.html#L45" title="grain.cuda.testing.checkCublas">checkCublas</a>(<span class="hid">cublasCreate_v2</span>(&amp;<a class="hid" href="grain.cuda.d.html#L14" title="grain.cuda.cublasHandle">cublasHandle</a>));
+<a class="br" href="#L23" id="L23">23 </a>    <a class="hid" href="grain.cuda.testing.d.html#L66" title="grain.cuda.testing.checkCudnn">checkCudnn</a>( <span class="hid">cudnnCreate</span>(&amp;<a class="hid" href="grain.cuda.d.html#L15" title="grain.cuda.cudnnHandle">cudnnHandle</a>) );
 <a class="br" href="#L24" id="L24">24 </a>}
 <a class="br" href="#L25" id="L25">25 </a>
 <a class="br" href="#L26" id="L26">26 </a>
@@ -56,7 +56,7 @@
 <a class="br" href="#L28" id="L28">28 </a>@<span class="hid">nogc</span> <span class="kwrd">shared</span> <span class="kwrd">static</span> ~<span class="kwrd">this</span>()
 <a class="br" href="#L29" id="L29">29 </a>{
 <a class="br" href="#L30" id="L30">30 </a>    <span class="hid">cublasDestroy_v2</span>(<a class="hid" href="grain.cuda.d.html#L14" title="grain.cuda.cublasHandle">cublasHandle</a>);
-<a class="br" href="#L31" id="L31">31 </a>    <span class="hid">checkCudnn</span>( <span class="hid">cudnnDestroy</span>(<a class="hid" href="grain.cuda.d.html#L15" title="grain.cuda.cudnnHandle">cudnnHandle</a>) );
+<a class="br" href="#L31" id="L31">31 </a>    <a class="hid" href="grain.cuda.testing.d.html#L66" title="grain.cuda.testing.checkCudnn">checkCudnn</a>( <span class="hid">cudnnDestroy</span>(<a class="hid" href="grain.cuda.d.html#L15" title="grain.cuda.cudnnHandle">cudnnHandle</a>) );
 <a class="br" href="#L32" id="L32">32 </a>}</pre></div>
 		<div id="page-nav">
 		<div id="source-navigation"><div class="list-holder"><ul><li><a class="docs" href="../grain.cuda.html">[Docs] </a><a href="#L1">grain.cuda</a><ul><li><a href="#L4">grain.dpp.cublas</a></li><li><a href="#L5">grain.dpp.cudnn</a></li><li><a class="docs" href="../grain.cuda.allocator.html">[Docs] </a><a href="#L7">grain.cuda.allocator</a></li><li><a class="docs" href="../grain.cuda.compiler.html">[Docs] </a><a href="#L8">grain.cuda.compiler</a></li><li><a class="docs" href="../grain.cuda.cudnn.html">[Docs] </a><a href="#L9">grain.cuda.cudnn</a></li><li><a class="docs" href="../grain.cuda.device.html">[Docs] </a><a href="#L10">grain.cuda.device</a></li><li><a class="docs" href="../grain.cuda.ops.html">[Docs] </a><a href="#L11">grain.cuda.ops</a></li><li><a class="docs" href="../grain.cuda.testing.html">[Docs] </a><a href="#L12">grain.cuda.testing</a></li><li><a href="#L14">cublasHandle</a></li><li><a href="#L15">cudnnHandle</a></li></ul></li></ul></div></div></div>
