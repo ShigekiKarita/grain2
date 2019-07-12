@@ -30,7 +30,7 @@
 <a class="br" href="#L2" id="L2">2 </a><span class="kwrd">module</span> <span class="hid">grain.ops.transposed</span>;
 <a class="br" href="#L3" id="L3">3 </a>
 <a class="br" href="#L4" id="L4">4 </a><span class="kwrd">import</span> <span class="hid">grain.tensor</span> : <a class="hid" href="grain.tensor.d.html#L35" title="grain.tensor.Tensor">Tensor</a>;
-<a class="br" href="#L5" id="L5">5 </a><span class="kwrd">import</span> <span class="hid">grain.ops.common</span> : <a class="hid" href="grain.ops.common.d.html#L3" title="grain.ops.common.apply">apply</a>;
+<a class="br" href="#L5" id="L5">5 </a><span class="kwrd">import</span> <span class="hid">grain.ops.common</span> : <span class="hid">apply</span>;
 <a class="br" href="#L6" id="L6">6 </a>
 <a class="br" href="#L7" id="L7">7 </a>
 <a class="br" href="#L8" id="L8">8 </a><span class="com">/// transpose last two dim</span>
@@ -60,7 +60,7 @@
 <a class="br" href="#L32" id="L32">32 </a><span class="com">/// ditto</span>
 <a class="br" href="#L33" id="L33">33 </a><span class="kwrd">auto</span> <a class="hid" href="grain.ops.transposed.d.html#L33" title="grain.ops.transposed.transposed">transposed</a>(<span class="hid">size_t</span> <span class="hid">N</span>, <span class="hid">T</span>, <span class="hid">Storage</span>)(<a class="hid" href="grain.tensor.d.html#L35" title="grain.tensor.Tensor">Tensor</a>!(<span class="hid">N</span>, <span class="hid">T</span>, <span class="hid">Storage</span>) <span class="hid">x</span>)
 <a class="br" href="#L34" id="L34">34 </a>{
-<a class="br" href="#L35" id="L35">35 </a>    <span class="kwrd">return</span> <a class="hid" href="grain.ops.transposed.d.html#L9" title="grain.ops.transposed.Transposed">Transposed</a>!(<span class="hid">N</span>, <span class="hid">T</span>, <span class="hid">Storage</span>)().<a class="hid" href="grain.ops.common.d.html#L3" title="grain.ops.common.apply">apply</a>(<span class="hid">x</span>);
+<a class="br" href="#L35" id="L35">35 </a>    <span class="kwrd">return</span> <a class="hid" href="grain.ops.transposed.d.html#L9" title="grain.ops.transposed.Transposed">Transposed</a>!(<span class="hid">N</span>, <span class="hid">T</span>, <span class="hid">Storage</span>)().<span class="hid">apply</span>(<span class="hid">x</span>);
 <a class="br" href="#L36" id="L36">36 </a>}
 <a class="br" href="#L37" id="L37">37 </a>
 <a class="br" href="#L38" id="L38">38 </a><span class="com">///</span>
