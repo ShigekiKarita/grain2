@@ -52,10 +52,9 @@ install:
         }
   - ps: SetUpDCompiler
   - powershell -Command Invoke-WebRequest https://code.dlang.org/files/dub-1.9.0-windows-x86.zip -OutFile dub.zip
+  - ps: Install-Package Microsoft.ML.Mkl.Redist -Version 1.2.0
   - 7z x dub.zip -odub > nul
   - ps: nuget install OpenBLAS -o "${env:APPVEYOR_BUILD_FOLDER}"
-  - ps: ls "OpenBLAS.0.2.14.1/lib/native/lib/x64/"
-  - ps: cp "OpenBLAS.0.2.14.1/lib/native/lib/x64/libopenblas.dll.a" .
   - set PATH=%CD%\%binpath%;%CD%\dub;%PATH%
   - dub --version
 
