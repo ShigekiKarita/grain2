@@ -15,6 +15,9 @@ branches:
     - stable
 
 install:
+  - ps: nuget install Microsoft.ML.Mkl.Redist -o "${env:APPVEYOR_BUILD_FOLDER}"
+  - ps: nuget install OpenBLAS -o "${env:APPVEYOR_BUILD_FOLDER}"
+  - ps: cp OpenBLAS.0.2.14.1/lib/native/lib/x64/libopenblas.dll.a .
   - ps: function SetUpDCompiler
         {
             if($env:DC -eq "dmd"){
@@ -52,9 +55,7 @@ install:
         }
   - ps: SetUpDCompiler
   - powershell -Command Invoke-WebRequest https://code.dlang.org/files/dub-1.9.0-windows-x86.zip -OutFile dub.zip
-  - ps: Install-Package Microsoft.ML.Mkl.Redist
   - 7z x dub.zip -odub > nul
-  - ps: nuget install OpenBLAS -o "${env:APPVEYOR_BUILD_FOLDER}"
   - set PATH=%CD%\%binpath%;%CD%\dub;%PATH%
   - dub --version
 
