@@ -38,10 +38,10 @@
 <a class="br" href="#L10" id="L10">10 </a>
 <a class="br" href="#L11" id="L11">11 </a>
 <a class="br" href="#L12" id="L12">12 </a>@<span class="hid">nogc</span> <span class="kwrd">nothrow</span>
-<a class="br" href="#L13" id="L13">13 </a><span class="kwrd">auto</span> <a class="hid" href="grain.ops.copy.d.html#L13" title="grain.ops.copy.contiguous">contiguous</a>(<span class="hid">size_t</span> <span class="hid">dim</span>, <span class="hid">T</span>, <a class="hid" href="grain.storage.d.html#L6" title="grain.storage.Storage">Storage</a>)(<a class="hid" href="grain.tensor.d.html#L35" title="grain.tensor.Tensor">Tensor</a>!(<span class="hid">dim</span>, <span class="hid">T</span>, <a class="hid" href="grain.storage.d.html#L6" title="grain.storage.Storage">Storage</a>) <span class="hid">x</span>)
+<a class="br" href="#L13" id="L13">13 </a><span class="kwrd">auto</span> <a class="hid" href="grain.ops.copy.d.html#L13" title="grain.ops.copy.contiguous">contiguous</a>(<span class="hid">size_t</span> <span class="hid">dim</span>, <span class="hid">T</span>, <span class="hid">Storage</span>)(<a class="hid" href="grain.tensor.d.html#L35" title="grain.tensor.Tensor">Tensor</a>!(<span class="hid">dim</span>, <span class="hid">T</span>, <span class="hid">Storage</span>) <span class="hid">x</span>)
 <a class="br" href="#L14" id="L14">14 </a>{
 <a class="br" href="#L15" id="L15">15 </a>    <span class="kwrd">if</span> (<span class="hid">x.isContiguous</span>) <span class="kwrd">return</span> <span class="hid">x</span>;
-<a class="br" href="#L16" id="L16">16 </a>    <span class="kwrd">return</span> <span class="hid">x.copy</span>!<a class="hid" href="grain.storage.d.html#L6" title="grain.storage.Storage">Storage</a>;
+<a class="br" href="#L16" id="L16">16 </a>    <span class="kwrd">return</span> <span class="hid">x.copy</span>!<span class="hid">Storage</span>;
 <a class="br" href="#L17" id="L17">17 </a>}
 <a class="br" href="#L18" id="L18">18 </a>
 <a class="br" href="#L19" id="L19">19 </a><span class="com">/// copy tensor between devices</span>
@@ -80,7 +80,7 @@
 <a class="br" href="#L52" id="L52">52 </a>    <span class="kwrd">return</span> <span class="hid">y</span>;
 <a class="br" href="#L53" id="L53">53 </a>}
 <a class="br" href="#L54" id="L54">54 </a>
-<a class="br" href="#L55" id="L55">55 </a><span class="kwrd">import</span> <span class="hid">grain.storage</span> : <a class="hid" href="grain.storage.d.html#L161" title="grain.storage.DefaultCPUStorage">DefaultCPUStorage</a>;
+<a class="br" href="#L55" id="L55">55 </a><span class="kwrd">import</span> <span class="hid">grain.storage</span> : <span class="hid">DefaultCPUStorage</span>;
 <a class="br" href="#L56" id="L56">56 </a>
 <a class="br" href="#L57" id="L57">57 </a><span class="com">/// ditto</span>
 <a class="br" href="#L58" id="L58">58 </a>@<span class="hid">nogc</span> <span class="kwrd">nothrow</span>
