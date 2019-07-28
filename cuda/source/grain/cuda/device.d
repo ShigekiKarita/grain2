@@ -1,4 +1,4 @@
-/// CUdevice wrapper
+/// CUDA device manager
 module grain.cuda.device;
 
 import grain.cuda.testing : checkCuda;
@@ -17,9 +17,9 @@ struct CuDevice
     static this()
     {
         debug import core.stdc.stdio : printf;
-        
+
         scope (exit) cudaSetDevice(0);
-        
+
         // init cuda devices
         checkCuda(cudaGetDeviceCount(&devicesLength));
         debug
@@ -58,17 +58,17 @@ struct CuDevice
         pureFree(devicesPtr);
         devicesPtr = null;
     }
-    
+
     static count()
     {
         return devicesLength;
     }
-    
+
     static CuDevice[] devices()
     {
         return devicesPtr[0 .. devicesLength];
     }
-    
+
     static get(int index)
     {
         assert(index >= 0);

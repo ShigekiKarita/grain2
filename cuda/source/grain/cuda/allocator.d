@@ -9,7 +9,7 @@ struct PinnedMallocator
 {
     Opt opt;
     alias opt this;
-    
+
     enum deviceof = "cpu";
     enum pinned = true;
 
@@ -24,7 +24,7 @@ struct PinnedMallocator
     void[] allocate()(size_t bytes)
     {
         import grain.dpp.cuda_runtime_api : cudaMallocHost;
-        
+
         if (!bytes) return null;
 
         void* p;
@@ -50,11 +50,11 @@ struct CuMallocator
 {
     Opt opt;
     alias opt this;
-    
+
     /// device indicator
     enum deviceof = "cuda";
     enum pinned = false;
-    
+
     /**
     Standard allocator methods per the semantics defined above. The
     $(D deallocate) method is $(D @system) because it

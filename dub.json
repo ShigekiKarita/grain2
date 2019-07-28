@@ -8,27 +8,38 @@
     "copyright": "Copyright © 2019, karita",
     "dflags": ["-dip25", "-dip1000", "-dip1008"],
     "subPackages": [
-	{
-	    "name": "core",
-	    "targetType": "library",
-	    "sourcePaths": ["core/source"],
-	    "importPaths": ["core/source"],
-	    "dependencies": {
-		"mir-blas": "~>1.1.4",
-		"mir-runtime": "~>0.0.22",
-		"mir-random": "~>2.2.4",
-	    }
-	},
-	{
-	    "name": "cuda",
-	    "targetType": "library",
-	    "dependencies": {
-		"grain2:core": "*"
-	    },
-	    "libs": ["cuda", "cudart", "cublas", "cudnn", "nvrtc"],
-	    "sourcePaths": ["cuda/source"],
-	    "importPaths": ["cuda/source", "dpp/build"],
-	    "preBuildCommands": ["cd dpp; make cuda -j"],
-	}
+        {
+            "name": "core",
+            "targetType": "library",
+            "sourcePaths": ["core/source"],
+            "importPaths": ["core/source"],
+            "dependencies": {
+                "mir-blas": "~>1.1.4",
+                "mir-runtime": "~>0.0.22",
+                "mir-random": "~>2.2.4",
+            }
+        },
+        {
+            "name": "cuda",
+            "targetType": "library",
+            "dependencies": {
+                "grain2:core": "*"
+            },
+            "libs": ["cuda", "cudart", "cublas", "cudnn", "nvrtc"],
+            "sourcePaths": ["cuda/source"],
+            "importPaths": ["cuda/source", "dpp/build"],
+            "preBuildCommands": ["cd dpp; make cuda -j"],
+        },
+        {
+            "name": "cl",
+            "targetType": "library",
+            "dependencies": {
+                "grain2:core": "*"
+            },
+            "libs": ["OpenCL"],
+            "sourcePaths": ["cl/source"],
+            "importPaths": ["cl/source", "dpp/build"],
+            "preBuildCommands": ["cd dpp; make cl -j"],
+        }
     ]
 }
