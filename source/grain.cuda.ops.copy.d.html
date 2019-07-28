@@ -33,10 +33,10 @@
 <a class="br" href="#L5" id="L5">5 </a><span class="kwrd">import</span> <span class="hid">grain.ops.copy</span>;
 <a class="br" href="#L6" id="L6">6 </a>
 <a class="br" href="#L7" id="L7">7 </a>
-<a class="br" href="#L8" id="L8">8 </a><a class="hid" href="grain.tensor.d.html#L35" title="grain.tensor.Tensor">Tensor</a>!(<span class="hid">N</span>, <span class="hid">T</span>, <span class="hid">Dst</span>)
+<a class="br" href="#L8" id="L8">8 </a><a class="hid" href="grain.tensor.d.html#L37" title="grain.tensor.Tensor">Tensor</a>!(<span class="hid">N</span>, <span class="hid">T</span>, <span class="hid">Dst</span>)
 <a class="br" href="#L9" id="L9">9 </a><a class="hid" href="grain.cuda.ops.copy.d.html#L72" title="grain.cuda.ops.copy.forward">forward</a>(<span class="hid">size_t</span> <span class="hid">N</span>, <span class="hid">T</span>, <span class="hid">Src</span>, <span class="hid">Dst</span>)(
 <a class="br" href="#L10" id="L10">10 </a>    <span class="kwrd">ref</span> <a class="hid" href="grain.ops.copy.d.html#L20" title="grain.ops.copy.Copy">Copy</a>!(<span class="hid">N</span>, <span class="hid">T</span>, <span class="hid">Src</span>, <span class="hid">Dst</span>) <span class="hid">self</span>,
-<a class="br" href="#L11" id="L11">11 </a>    <a class="hid" href="grain.tensor.d.html#L35" title="grain.tensor.Tensor">Tensor</a>!(<span class="hid">N</span>, <span class="hid">T</span>, <span class="hid">Src</span>) <span class="hid">x</span>
+<a class="br" href="#L11" id="L11">11 </a>    <a class="hid" href="grain.tensor.d.html#L37" title="grain.tensor.Tensor">Tensor</a>!(<span class="hid">N</span>, <span class="hid">T</span>, <span class="hid">Src</span>) <span class="hid">x</span>
 <a class="br" href="#L12" id="L12">12 </a>)
 <a class="br" href="#L13" id="L13">13 </a><span class="kwrd">if</span> (<span class="hid">Src.deviceof</span> == <span class="str">&quot;cuda&quot;</span> &amp;&amp; <span class="hid">Dst.deviceof</span> == <span class="str">&quot;cuda&quot;</span>)
 <a class="br" href="#L14" id="L14">14 </a>{
@@ -69,10 +69,10 @@
 <a class="br" href="#L41" id="L41">41 </a>}
 <a class="br" href="#L42" id="L42">42 </a>
 <a class="br" href="#L43" id="L43">43 </a>
-<a class="br" href="#L44" id="L44">44 </a><a class="hid" href="grain.tensor.d.html#L35" title="grain.tensor.Tensor">Tensor</a>!(<span class="hid">N</span>, <span class="hid">T</span>, <span class="hid">Dst</span>)
+<a class="br" href="#L44" id="L44">44 </a><a class="hid" href="grain.tensor.d.html#L37" title="grain.tensor.Tensor">Tensor</a>!(<span class="hid">N</span>, <span class="hid">T</span>, <span class="hid">Dst</span>)
 <a class="br" href="#L45" id="L45">45 </a><a class="hid" href="grain.cuda.ops.copy.d.html#L72" title="grain.cuda.ops.copy.forward">forward</a>(<span class="hid">size_t</span> <span class="hid">N</span>, <span class="hid">T</span>, <span class="hid">Src</span>, <span class="hid">Dst</span>)(
 <a class="br" href="#L46" id="L46">46 </a>    <span class="kwrd">ref</span> <a class="hid" href="grain.ops.copy.d.html#L20" title="grain.ops.copy.Copy">Copy</a>!(<span class="hid">N</span>, <span class="hid">T</span>, <span class="hid">Src</span>, <span class="hid">Dst</span>) <span class="hid">self</span>,
-<a class="br" href="#L47" id="L47">47 </a>    <a class="hid" href="grain.tensor.d.html#L35" title="grain.tensor.Tensor">Tensor</a>!(<span class="hid">N</span>, <span class="hid">T</span>, <span class="hid">Src</span>) <span class="hid">x</span>
+<a class="br" href="#L47" id="L47">47 </a>    <a class="hid" href="grain.tensor.d.html#L37" title="grain.tensor.Tensor">Tensor</a>!(<span class="hid">N</span>, <span class="hid">T</span>, <span class="hid">Src</span>) <span class="hid">x</span>
 <a class="br" href="#L48" id="L48">48 </a>)
 <a class="br" href="#L49" id="L49">49 </a><span class="kwrd">if</span> (<span class="hid">Src.deviceof</span> == <span class="str">&quot;cpu&quot;</span> &amp;&amp; <span class="hid">Dst.deviceof</span> == <span class="str">&quot;cuda&quot;</span>)
 <a class="br" href="#L50" id="L50">50 </a>{
@@ -96,10 +96,10 @@
 <a class="br" href="#L68" id="L68">68 </a>    <span class="kwrd">return</span> <span class="hid">y</span>;
 <a class="br" href="#L69" id="L69">69 </a>}
 <a class="br" href="#L70" id="L70">70 </a>
-<a class="br" href="#L71" id="L71">71 </a><a class="hid" href="grain.tensor.d.html#L35" title="grain.tensor.Tensor">Tensor</a>!(<span class="hid">N</span>, <span class="hid">T</span>, <span class="hid">Dst</span>)
+<a class="br" href="#L71" id="L71">71 </a><a class="hid" href="grain.tensor.d.html#L37" title="grain.tensor.Tensor">Tensor</a>!(<span class="hid">N</span>, <span class="hid">T</span>, <span class="hid">Dst</span>)
 <a class="br" href="#L72" id="L72">72 </a><a class="hid" href="grain.cuda.ops.copy.d.html#L72" title="grain.cuda.ops.copy.forward">forward</a>(<span class="hid">size_t</span> <span class="hid">N</span>, <span class="hid">T</span>, <span class="hid">Src</span>, <span class="hid">Dst</span>)(
 <a class="br" href="#L73" id="L73">73 </a>    <span class="kwrd">ref</span> <a class="hid" href="grain.ops.copy.d.html#L20" title="grain.ops.copy.Copy">Copy</a>!(<span class="hid">N</span>, <span class="hid">T</span>, <span class="hid">Src</span>, <span class="hid">Dst</span>) <span class="hid">self</span>,
-<a class="br" href="#L74" id="L74">74 </a>    <a class="hid" href="grain.tensor.d.html#L35" title="grain.tensor.Tensor">Tensor</a>!(<span class="hid">N</span>, <span class="hid">T</span>, <span class="hid">Src</span>) <span class="hid">x</span>
+<a class="br" href="#L74" id="L74">74 </a>    <a class="hid" href="grain.tensor.d.html#L37" title="grain.tensor.Tensor">Tensor</a>!(<span class="hid">N</span>, <span class="hid">T</span>, <span class="hid">Src</span>) <span class="hid">x</span>
 <a class="br" href="#L75" id="L75">75 </a>)
 <a class="br" href="#L76" id="L76">76 </a><span class="kwrd">if</span> (<span class="hid">Src.deviceof</span> == <span class="str">&quot;cuda&quot;</span> &amp;&amp; <span class="hid">Dst.deviceof</span> == <span class="str">&quot;cpu&quot;</span>)
 <a class="br" href="#L77" id="L77">77 </a>{
@@ -140,7 +140,7 @@
 <a class="br" href="#L112" id="L112">112 </a>    <span class="kwrd">static</span> <span class="kwrd">foreach</span> (<span class="hid">dtype</span>; <span class="hid">AliasSeq</span>!(<span class="type">float</span>, <span class="type">double</span>, <span class="type">int</span>, <span class="type">long</span>))
 <a class="br" href="#L113" id="L113">113 </a>    {
 <a class="br" href="#L114" id="L114">114 </a>        {
-<a class="br" href="#L115" id="L115">115 </a>            <span class="kwrd">auto</span> <span class="hid">x</span> = <a class="hid" href="grain.tensor.d.html#L35" title="grain.tensor.Tensor">Tensor</a>!(<span class="num">2</span>, <span class="hid">dtype</span>)(<span class="num">2</span>, <span class="num">3</span>);
+<a class="br" href="#L115" id="L115">115 </a>            <span class="kwrd">auto</span> <span class="hid">x</span> = <a class="hid" href="grain.tensor.d.html#L37" title="grain.tensor.Tensor">Tensor</a>!(<span class="num">2</span>, <span class="hid">dtype</span>)(<span class="num">2</span>, <span class="num">3</span>);
 <a class="br" href="#L116" id="L116">116 </a>            <span class="hid">x.asSlice</span>[] = <span class="hid">iota</span>(<span class="hid">x.shape</span>).<span class="hid">as</span>!<span class="hid">dtype</span>;
 <a class="br" href="#L117" id="L117">117 </a>            <span class="kwrd">auto</span> <span class="hid">y</span> = <span class="hid">x.copy</span>;
 <a class="br" href="#L118" id="L118">118 </a>            <span class="kwrd">assert</span>(<span class="hid">y.asSlice</span> == <span class="hid">x.asSlice</span>);
