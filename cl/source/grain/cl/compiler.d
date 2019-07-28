@@ -2,6 +2,8 @@ module grain.opencl.compiler;
 
 import grain.cl.testing : checkCl, checkClFun;
 import grain.cl.device;
+import grain.cl.allocator;
+
 import grain.dpp.cl;
 import grain.dpp.cl_enum : CL_DEVICE_TYPE_DEFAULT, CL_MEM_READ_WRITE;
 
@@ -29,8 +31,8 @@ unittest
     ha[] = 1;
     hb[] = 10;
 
-    auto da = checkClFun!clCreateBuffer(context, CL_MEM_READ_WRITE, float.sizeof * ha.length, null);
-    scope (exit) checkCl(clReleaseMemObject(da));
+    auto da = ClMallocator.instance.allocate(float.sizeof * ha.length);
+    scope (exit) ClMallocator.instance.deallocate(da);
     checkCl(clEnqueueWriteBuffer(command_queue, da, CL_TRUE, 0, float.sizeof * ha.length, ha.ptr, 0, null, null));
     auto db = checkClFun!clCreateBuffer(context, CL_MEM_READ_WRITE, float.sizeof * hb.length, null);
     scope (exit) checkCl(clReleaseMemObject(db));

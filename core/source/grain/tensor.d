@@ -15,8 +15,9 @@ debug import grain.testing : assertAllClose, assertEqual;
 
 struct Opt
 {
-    int deviceId = 0;
-    bool requireGrad = false;
+    int deviceId = 0;           // for CUDA and CL
+    int platformId = 0;         // for CL
+    bool requireGrad = false;   // autograd
 
     pure @nogc nothrow @safe
     const(char)[] toString() const
@@ -26,6 +27,7 @@ struct Opt
                 << "Opt("
                 << "requireGrad=" << this.requireGrad
                 << ", deviceId=" << this.deviceId
+                << ", platformId=" << this.platformId
                 << ")"
                 << getData);
     }
@@ -39,7 +41,7 @@ struct Tensor(size_t _dim, T, Storage = DefaultCPUStorage)
     alias dim = _dim;
     alias deviceof = Storage.deviceof;
     alias shape = lengths;
-    
+
     size_t[dim] lengths;
     ptrdiff_t[dim] strides;
     Storage payload;
@@ -53,7 +55,7 @@ struct Tensor(size_t _dim, T, Storage = DefaultCPUStorage)
         this.opt = opt;
         this(lengths);
     }
-    
+
     this(size_t[dim] lengths...)
     {
         import mir.ndslice.topology : iota;
@@ -92,7 +94,7 @@ struct Tensor(size_t _dim, T, Storage = DefaultCPUStorage)
         }
         return payload.iterator!(T*) + offset;
     }
-    
+
     T* ptr()() scope return @property @trusted
     {
         return this.iterator.lightScope;
@@ -106,7 +108,7 @@ struct Tensor(size_t _dim, T, Storage = DefaultCPUStorage)
             alias structure = AliasSeq!(this.lengths, this.strides);
             return typeof(return)(structure, this.iterator);
         }
-    
+
         Slice!(T*, dim, Universal) lightScope()() scope return @property @trusted
         {
             import std.meta : AliasSeq;
@@ -136,4 +138,3 @@ template isTensor(T)
     assert(x.isContiguous);
     assert(x.numel == 2 * 3);
 }
-

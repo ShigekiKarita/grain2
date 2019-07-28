@@ -97,7 +97,7 @@ auto checkClFun(
     string file = __FILE__,
     size_t line = __LINE__,
     Args ...
-)(auto return ref Args args)
+)(Args args)
 {
     import std.functional : forward;
     cl_int err;
