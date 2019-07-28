@@ -26,10 +26,10 @@
 	</div>
 	<div id="page-body">
 		<div id="page-content">
-		<pre class="d_code highlighted with-line-wrappers"><a class="br" href="#L1" id="L1">1 </a><span class="com">/// CUdevice wrapper</span>
+		<pre class="d_code highlighted with-line-wrappers"><a class="br" href="#L1" id="L1">1 </a><span class="com">/// CUDA device manager</span>
 <a class="br" href="#L2" id="L2">2 </a><span class="kwrd">module</span> <span class="hid">grain.cuda.device</span>;
 <a class="br" href="#L3" id="L3">3 </a>
-<a class="br" href="#L4" id="L4">4 </a><span class="kwrd">import</span> <span class="hid">grain.cuda.testing</span> : <a class="hid" href="grain.cuda.testing.d.html#L85" title="grain.cuda.testing.checkCuda">checkCuda</a>;
+<a class="br" href="#L4" id="L4">4 </a><span class="kwrd">import</span> <span class="hid">grain.cuda.testing</span> : <span class="hid">checkCuda</span>;
 <a class="br" href="#L5" id="L5">5 </a><span class="kwrd">import</span> <span class="hid">grain.dpp.cuda_runtime_api</span>;
 <a class="br" href="#L6" id="L6">6 </a>
 <a class="br" href="#L7" id="L7">7 </a>@<span class="hid">nogc</span> <span class="kwrd">nothrow</span>:
@@ -45,11 +45,11 @@
 <a class="br" href="#L17" id="L17">17 </a>    <span class="kwrd">static</span> <span class="kwrd">this</span>()
 <a class="br" href="#L18" id="L18">18 </a>    {
 <a class="br" href="#L19" id="L19">19 </a>        <span class="kwrd">debug</span> <span class="kwrd">import</span> <span class="hid">core.stdc.stdio</span> : <span class="hid">printf</span>;
-<a class="br" href="#L20" id="L20">20 </a>        
+<a class="br" href="#L20" id="L20">20 </a>
 <a class="br" href="#L21" id="L21">21 </a>        <span class="kwrd">scope</span> (<span class="hid">exit</span>) <span class="hid">cudaSetDevice</span>(<span class="num">0</span>);
-<a class="br" href="#L22" id="L22">22 </a>        
+<a class="br" href="#L22" id="L22">22 </a>
 <a class="br" href="#L23" id="L23">23 </a>        <span class="com">// init cuda devices</span>
-<a class="br" href="#L24" id="L24">24 </a>        <a class="hid" href="grain.cuda.testing.d.html#L85" title="grain.cuda.testing.checkCuda">checkCuda</a>(<span class="hid">cudaGetDeviceCount</span>(&amp;<span class="hid">devicesLength</span>));
+<a class="br" href="#L24" id="L24">24 </a>        <span class="hid">checkCuda</span>(<span class="hid">cudaGetDeviceCount</span>(&amp;<span class="hid">devicesLength</span>));
 <a class="br" href="#L25" id="L25">25 </a>        <span class="kwrd">debug</span>
 <a class="br" href="#L26" id="L26">26 </a>        {
 <a class="br" href="#L27" id="L27">27 </a>            <span class="hid">printf</span>(<span class="str">&quot;[grain.info]: device count %d\n&quot;</span>, <span class="hid">devicesLength</span>);
@@ -66,7 +66,7 @@
 <a class="br" href="#L38" id="L38">38 </a>            {
 <a class="br" href="#L39" id="L39">39 </a>                <span class="kwrd">if</span> (<span class="hid">i</span> == <span class="hid">j</span>) <span class="kwrd">continue</span>;
 <a class="br" href="#L40" id="L40">40 </a>                <span class="type">int</span> <span class="hid">ok</span> = <span class="num">0</span>;
-<a class="br" href="#L41" id="L41">41 </a>                <a class="hid" href="grain.cuda.testing.d.html#L85" title="grain.cuda.testing.checkCuda">checkCuda</a>(<span class="hid">cudaDeviceCanAccessPeer</span>(&amp;<span class="hid">ok</span>, <span class="hid">i</span>, <span class="hid">j</span>));
+<a class="br" href="#L41" id="L41">41 </a>                <span class="hid">checkCuda</span>(<span class="hid">cudaDeviceCanAccessPeer</span>(&amp;<span class="hid">ok</span>, <span class="hid">i</span>, <span class="hid">j</span>));
 <a class="br" href="#L42" id="L42">42 </a>                <span class="kwrd">if</span> (!<span class="hid">ok</span>)
 <a class="br" href="#L43" id="L43">43 </a>                {
 <a class="br" href="#L44" id="L44">44 </a>                    <span class="kwrd">debug</span>
@@ -86,25 +86,25 @@
 <a class="br" href="#L58" id="L58">58 </a>        <span class="hid">pureFree</span>(<span class="hid">devicesPtr</span>);
 <a class="br" href="#L59" id="L59">59 </a>        <span class="hid">devicesPtr</span> = <span class="kwrd">null</span>;
 <a class="br" href="#L60" id="L60">60 </a>    }
-<a class="br" href="#L61" id="L61">61 </a>    
+<a class="br" href="#L61" id="L61">61 </a>
 <a class="br" href="#L62" id="L62">62 </a>    <span class="kwrd">static</span> <span class="hid">count</span>()
 <a class="br" href="#L63" id="L63">63 </a>    {
 <a class="br" href="#L64" id="L64">64 </a>        <span class="kwrd">return</span> <span class="hid">devicesLength</span>;
 <a class="br" href="#L65" id="L65">65 </a>    }
-<a class="br" href="#L66" id="L66">66 </a>    
+<a class="br" href="#L66" id="L66">66 </a>
 <a class="br" href="#L67" id="L67">67 </a>    <span class="kwrd">static</span> <a class="hid" href="grain.cuda.device.d.html#L9" title="grain.cuda.device.CuDevice">CuDevice</a>[] <span class="hid">devices</span>()
 <a class="br" href="#L68" id="L68">68 </a>    {
 <a class="br" href="#L69" id="L69">69 </a>        <span class="kwrd">return</span> <span class="hid">devicesPtr</span>[<span class="num">0</span> .. <span class="hid">devicesLength</span>];
 <a class="br" href="#L70" id="L70">70 </a>    }
-<a class="br" href="#L71" id="L71">71 </a>    
+<a class="br" href="#L71" id="L71">71 </a>
 <a class="br" href="#L72" id="L72">72 </a>    <span class="kwrd">static</span> <span class="hid">get</span>(<span class="type">int</span> <span class="hid">index</span>)
 <a class="br" href="#L73" id="L73">73 </a>    {
 <a class="br" href="#L74" id="L74">74 </a>        <span class="kwrd">assert</span>(<span class="hid">index</span> &gt;= <span class="num">0</span>);
-<a class="br" href="#L75" id="L75">75 </a>        <a class="hid" href="grain.cuda.testing.d.html#L85" title="grain.cuda.testing.checkCuda">checkCuda</a>(<span class="hid">cudaSetDevice</span>(<span class="hid">index</span>));
+<a class="br" href="#L75" id="L75">75 </a>        <span class="hid">checkCuda</span>(<span class="hid">cudaSetDevice</span>(<span class="hid">index</span>));
 <a class="br" href="#L76" id="L76">76 </a>        <span class="kwrd">auto</span> <span class="hid">dev</span> = <span class="hid">devices</span>[<span class="hid">index</span>];
 <a class="br" href="#L77" id="L77">77 </a>        <span class="kwrd">if</span> (<span class="hid">dev.stream</span> <span class="kwrd">is</span> <span class="kwrd">null</span>)
 <a class="br" href="#L78" id="L78">78 </a>        {
-<a class="br" href="#L79" id="L79">79 </a>            <a class="hid" href="grain.cuda.testing.d.html#L85" title="grain.cuda.testing.checkCuda">checkCuda</a>(<span class="hid">cudaStreamCreateWithFlags</span>(&amp;<span class="hid">dev.stream</span>, <span class="hid">cudaStreamNonBlocking</span>));
+<a class="br" href="#L79" id="L79">79 </a>            <span class="hid">checkCuda</span>(<span class="hid">cudaStreamCreateWithFlags</span>(&amp;<span class="hid">dev.stream</span>, <span class="hid">cudaStreamNonBlocking</span>));
 <a class="br" href="#L80" id="L80">80 </a>        }
 <a class="br" href="#L81" id="L81">81 </a>        <span class="kwrd">return</span> <span class="hid">dev</span>;
 <a class="br" href="#L82" id="L82">82 </a>    }

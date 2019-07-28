@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+        <title>grain.cl.device source code</title>
+	<meta charset="utf-8" />
+	<meta content="width=device-width, initial-scale=1" name="viewport" />
+        <link href="../style.css" rel="stylesheet" />
+        <script src="../script.js" type="text/javascript"></script>
+
+	
+	<link href="../search-results.html" rel="prefetch" />
+</head>
+<body>
+	<div id="page-header">
+		<div id="logotype">
+		<span>Documentation</span>
+		<nav>
+			<a href="http://dlang.org/">Dlang.org</a>
+		</nav>
+		</div>
+
+		<form action="../search-docs.html" id="search">
+			<input name="searchTerm" placeholder="Find a symbol name..." type="search" />
+			<input type="submit" value="Go" />
+		</form>
+	</div>
+	<div id="page-body">
+		<div id="page-content">
+		<pre class="d_code highlighted with-line-wrappers"><a class="br" href="#L1" id="L1">1 </a><span class="kwrd">module</span> <span class="hid">grain.cl.device</span>;
+<a class="br" href="#L2" id="L2">2 </a>
+<a class="br" href="#L3" id="L3">3 </a><span class="kwrd">import</span> <span class="hid">grain.dpp.cl</span>;
+<a class="br" href="#L4" id="L4">4 </a><span class="kwrd">import</span> <span class="hid">grain.dpp.cl_enum</span> : <span class="hid">CL_DEVICE_TYPE_DEFAULT</span>, <span class="hid">CL_MEM_READ_WRITE</span>;
+<a class="br" href="#L5" id="L5">5 </a>
+<a class="br" href="#L6" id="L6">6 </a><span class="kwrd">import</span> <span class="hid">grain.cl.testing</span>;
+<a class="br" href="#L7" id="L7">7 </a>
+<a class="br" href="#L8" id="L8">8 </a>@<span class="hid">nogc</span> <span class="kwrd">nothrow</span>
+<a class="br" href="#L9" id="L9">9 </a><span class="type">void</span> <a class="hid" href="grain.cl.device.d.html#L9" title="grain.cl.device.printDeviceInfo">printDeviceInfo</a>(<span class="hid">cl_device_id</span> <span class="hid">device</span>)
+<a class="br" href="#L10" id="L10">10 </a>{
+<a class="br" href="#L11" id="L11">11 </a>    <span class="kwrd">import</span> <span class="hid">core.stdc.stdio</span> : <span class="hid">printf</span>;
+<a class="br" href="#L12" id="L12">12 </a>    <span class="kwrd">import</span> <span class="hid">std.typecons</span> : <span class="hid">tuple</span>;
+<a class="br" href="#L13" id="L13">13 </a>
+<a class="br" href="#L14" id="L14">14 </a>    <span class="com">// print string info</span>
+<a class="br" href="#L15" id="L15">15 </a>    <span class="hid">cl_ulong</span> <span class="hid">len</span>;
+<a class="br" href="#L16" id="L16">16 </a>    <span class="type">char</span>* <span class="hid">p</span>;
+<a class="br" href="#L17" id="L17">17 </a>    <span class="kwrd">static</span> <span class="kwrd">foreach</span> (<span class="hid">s</span>; <span class="hid">tuple</span>(
+<a class="br" href="#L18" id="L18">18 </a>        <span class="str">&quot;CL_DEVICE_NAME&quot;</span>,
+<a class="br" href="#L19" id="L19">19 </a>        <span class="str">&quot;CL_DEVICE_VERSION&quot;</span>,
+<a class="br" href="#L20" id="L20">20 </a>        <span class="str">&quot;CL_DRIVER_VERSION&quot;</span>,
+<a class="br" href="#L21" id="L21">21 </a>        <span class="str">&quot;CL_DEVICE_OPENCL_C_VERSION&quot;</span>))
+<a class="br" href="#L22" id="L22">22 </a>    {
+<a class="br" href="#L23" id="L23">23 </a>        {
+<a class="br" href="#L24" id="L24">24 </a>            <span class="kwrd">mixin</span>(<span class="str">&quot;enum d = &quot;</span> ~ <span class="hid">s</span> ~ <span class="str">&quot;;&quot;</span>);
+<a class="br" href="#L25" id="L25">25 </a>            <span class="com">// print device name</span>
+<a class="br" href="#L26" id="L26">26 </a>            <span class="hid">clGetDeviceInfo</span>(<span class="hid">device</span>, <span class="hid">d</span>, <span class="num">0</span>, <span class="kwrd">null</span>, &amp;<span class="hid">len</span>);
+<a class="br" href="#L27" id="L27">27 </a>            <span class="hid">p</span> = <span class="kwrd">cast</span>(<span class="type">char</span>*) <span class="hid">malloc</span>(<span class="hid">len</span>);
+<a class="br" href="#L28" id="L28">28 </a>            <span class="hid">clGetDeviceInfo</span>(<span class="hid">device</span>, <span class="hid">d</span>, <span class="hid">len</span>, <span class="hid">p</span>, <span class="kwrd">null</span>);
+<a class="br" href="#L29" id="L29">29 </a>            <span class="hid">printf</span>(<span class="str">&quot;%-40s: %s\n&quot;</span>, <span class="hid">s.ptr</span>, <span class="hid">p</span>);
+<a class="br" href="#L30" id="L30">30 </a>            <span class="hid">free</span>(<span class="hid">p</span>);
+<a class="br" href="#L31" id="L31">31 </a>        }
+<a class="br" href="#L32" id="L32">32 </a>    }
+<a class="br" href="#L33" id="L33">33 </a>
+<a class="br" href="#L34" id="L34">34 </a>    <span class="com">// print size info</span>
+<a class="br" href="#L35" id="L35">35 </a>    <span class="kwrd">static</span> <span class="kwrd">foreach</span> (<span class="hid">s</span>; <span class="hid">tuple</span>(
+<a class="br" href="#L36" id="L36">36 </a>        <span class="str">&quot;CL_DEVICE_MAX_CLOCK_FREQUENCY&quot;</span>,
+<a class="br" href="#L37" id="L37">37 </a>        <span class="str">&quot;CL_DEVICE_MAX_COMPUTE_UNITS&quot;</span>,
+<a class="br" href="#L38" id="L38">38 </a>        <span class="str">&quot;CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS&quot;</span>,
+<a class="br" href="#L39" id="L39">39 </a>        <span class="str">&quot;CL_DEVICE_GLOBAL_MEM_SIZE&quot;</span>,
+<a class="br" href="#L40" id="L40">40 </a>        <span class="str">&quot;CL_DEVICE_LOCAL_MEM_SIZE&quot;</span>,
+<a class="br" href="#L41" id="L41">41 </a>        <span class="str">&quot;CL_DEVICE_MAX_CONSTANT_BUFFER_SIZE&quot;</span>,
+<a class="br" href="#L42" id="L42">42 </a>        <span class="str">&quot;CL_DEVICE_MAX_MEM_ALLOC_SIZE&quot;</span>))
+<a class="br" href="#L43" id="L43">43 </a>    {
+<a class="br" href="#L44" id="L44">44 </a>        {
+<a class="br" href="#L45" id="L45">45 </a>            <span class="kwrd">mixin</span>(<span class="str">&quot;enum d = &quot;</span> ~ <span class="hid">s</span> ~ <span class="str">&quot;;&quot;</span>);
+<a class="br" href="#L46" id="L46">46 </a>            <span class="hid">clGetDeviceInfo</span>(<span class="hid">device</span>, <span class="hid">d</span>, <span class="hid">len.sizeof</span>, &amp;<span class="hid">len</span>, <span class="kwrd">null</span>);
+<a class="br" href="#L47" id="L47">47 </a>            <span class="hid">printf</span>(<span class="str">&quot;%-40s: %ld\n&quot;</span>, <span class="hid">s.ptr</span>, <span class="hid">len</span>);
+<a class="br" href="#L48" id="L48">48 </a>        }
+<a class="br" href="#L49" id="L49">49 </a>    }
+<a class="br" href="#L50" id="L50">50 </a>}
+<a class="br" href="#L51" id="L51">51 </a>
+<a class="br" href="#L52" id="L52">52 </a><span class="kwrd">struct</span> <a class="hid" href="grain.cl.device.d.html#L52" title="grain.cl.device.ClDevice">ClDevice</a>
+<a class="br" href="#L53" id="L53">53 </a>{
+<a class="br" href="#L54" id="L54">54 </a>    @<span class="hid">nogc</span> <span class="kwrd">nothrow</span>:
+<a class="br" href="#L55" id="L55">55 </a>
+<a class="br" href="#L56" id="L56">56 </a>    <span class="kwrd">static</span> <span class="hid">cl_platform_id</span>[] <span class="hid">platformIds</span>;
+<a class="br" href="#L57" id="L57">57 </a>    <span class="kwrd">static</span> <span class="kwrd">typeof</span>(<span class="kwrd">this</span>)[] <span class="hid">platforms</span>;
+<a class="br" href="#L58" id="L58">58 </a>
+<a class="br" href="#L59" id="L59">59 </a>    <span class="hid">cl_platform_id</span> <span class="hid">platformId</span>;
+<a class="br" href="#L60" id="L60">60 </a>    <span class="hid">cl_device_id</span>[] <span class="hid">deviceIds</span>;
+<a class="br" href="#L61" id="L61">61 </a>
+<a class="br" href="#L62" id="L62">62 </a>    <span class="kwrd">static</span> <span class="kwrd">this</span>()
+<a class="br" href="#L63" id="L63">63 </a>    {
+<a class="br" href="#L64" id="L64">64 </a>        <span class="kwrd">import</span> <span class="hid">core.memory</span> : <span class="hid">pureMalloc</span>;
+<a class="br" href="#L65" id="L65">65 </a>        <span class="com">// init device</span>
+<a class="br" href="#L66" id="L66">66 </a>        <span class="hid">cl_uint</span> <span class="hid">numPlatform</span>;
+<a class="br" href="#L67" id="L67">67 </a>        <span class="hid">checkCl</span>(<span class="hid">clGetPlatformIDs</span>(<span class="num">0</span>, <span class="kwrd">null</span>, &amp;<span class="hid">numPlatform</span>));
+<a class="br" href="#L68" id="L68">68 </a>        <span class="kwrd">auto</span> <span class="hid">platformIdsPtr</span> = <span class="kwrd">cast</span>(<span class="hid">cl_platform_id</span>*)
+<a class="br" href="#L69" id="L69">69 </a>            <span class="hid">pureMalloc</span>(<span class="hid">cl_platform_id.sizeof</span> * <span class="hid">numPlatform</span>);
+<a class="br" href="#L70" id="L70">70 </a>        <span class="hid">platformIds</span> = <span class="hid">platformIdsPtr</span>[<span class="num">0</span> .. <span class="hid">numPlatform</span>];
+<a class="br" href="#L71" id="L71">71 </a>        <span class="hid">checkCl</span>(<span class="hid">clGetPlatformIDs</span>(<span class="hid">numPlatform</span>, <span class="hid">platformIdsPtr</span>, <span class="kwrd">null</span>));
+<a class="br" href="#L72" id="L72">72 </a>
+<a class="br" href="#L73" id="L73">73 </a>        <span class="kwrd">auto</span> <span class="hid">platformsPtr</span> = <span class="kwrd">cast</span>(<span class="kwrd">typeof</span>(<span class="kwrd">this</span>)*)
+<a class="br" href="#L74" id="L74">74 </a>            <span class="hid">pureMalloc</span>(<span class="kwrd">typeof</span>(<span class="kwrd">this</span>).<span class="hid">sizeof</span> * <span class="hid">numPlatform</span>);
+<a class="br" href="#L75" id="L75">75 </a>        <span class="hid">platforms</span> = <span class="hid">platformsPtr</span>[<span class="num">0</span> .. <span class="hid">numPlatform</span>];
+<a class="br" href="#L76" id="L76">76 </a>        <span class="hid">platforms</span>[] = <span class="kwrd">typeof</span>(<span class="kwrd">this</span>).<span class="hid">init</span>;
+<a class="br" href="#L77" id="L77">77 </a>        <span class="kwrd">foreach</span> (<span class="hid">pid</span>, <span class="kwrd">ref</span> <span class="hid">p</span>; <span class="hid">platforms</span>)
+<a class="br" href="#L78" id="L78">78 </a>        {
+<a class="br" href="#L79" id="L79">79 </a>            <span class="hid">p.platformId</span> = <span class="hid">platformIds</span>[<span class="hid">pid</span>];
+<a class="br" href="#L80" id="L80">80 </a>        }
+<a class="br" href="#L81" id="L81">81 </a>
+<a class="br" href="#L82" id="L82">82 </a>        <span class="kwrd">foreach</span> (<span class="hid">pid</span>, <span class="kwrd">ref</span> <span class="hid">p</span>; <span class="hid">platforms</span>)
+<a class="br" href="#L83" id="L83">83 </a>        {
+<a class="br" href="#L84" id="L84">84 </a>            <span class="hid">cl_device_id</span> <span class="hid">device_id</span> = <span class="kwrd">null</span>;
+<a class="br" href="#L85" id="L85">85 </a>            <span class="hid">cl_uint</span> <span class="hid">numDevice</span>;
+<a class="br" href="#L86" id="L86">86 </a>            <span class="hid">checkCl</span>(<span class="hid">clGetDeviceIDs</span>(<span class="hid">p.platformId</span>, <span class="hid">CL_DEVICE_TYPE_DEFAULT</span>,
+<a class="br" href="#L87" id="L87">87 </a>                                   <span class="num">0</span>, <span class="kwrd">null</span>, &amp;<span class="hid">numDevice</span>));
+<a class="br" href="#L88" id="L88">88 </a>            <span class="kwrd">auto</span> <span class="hid">deviceIdsPtr</span> = <span class="kwrd">cast</span>(<span class="hid">cl_device_id</span>*)
+<a class="br" href="#L89" id="L89">89 </a>                <span class="hid">pureMalloc</span>(<span class="hid">cl_device_id.sizeof</span> * <span class="hid">numDevice</span>);
+<a class="br" href="#L90" id="L90">90 </a>            <span class="hid">checkCl</span>(<span class="hid">clGetDeviceIDs</span>(<span class="hid">p.platformId</span>, <span class="hid">CL_DEVICE_TYPE_DEFAULT</span>,
+<a class="br" href="#L91" id="L91">91 </a>                                   <span class="hid">numDevice</span>, <span class="hid">deviceIdsPtr</span>, <span class="kwrd">null</span>));
+<a class="br" href="#L92" id="L92">92 </a>            <span class="hid">p.deviceIds</span> = <span class="hid">deviceIdsPtr</span>[<span class="num">0</span> .. <span class="hid">numDevice</span>];
+<a class="br" href="#L93" id="L93">93 </a>        }
+<a class="br" href="#L94" id="L94">94 </a>        <span class="hid">printInfo</span>();
+<a class="br" href="#L95" id="L95">95 </a>    }
+<a class="br" href="#L96" id="L96">96 </a>
+<a class="br" href="#L97" id="L97">97 </a>    <span class="kwrd">static</span> <span class="hid">cl_device_id</span> <span class="hid">get</span>(<span class="hid">cl_uint</span> <span class="hid">device</span>, <span class="hid">cl_uint</span> <span class="hid">platform</span>=<span class="num">0</span>)
+<a class="br" href="#L98" id="L98">98 </a>    {
+<a class="br" href="#L99" id="L99">99 </a>        <span class="kwrd">return</span> <span class="hid">platforms</span>[<span class="hid">platform</span>].<span class="hid">deviceIds</span>[<span class="hid">device</span>];
+<a class="br" href="#L100" id="L100">100 </a>    }
+<a class="br" href="#L101" id="L101">101 </a>
+<a class="br" href="#L102" id="L102">102 </a>    <span class="kwrd">static</span> <span class="type">void</span> <span class="hid">printInfo</span>()
+<a class="br" href="#L103" id="L103">103 </a>    {
+<a class="br" href="#L104" id="L104">104 </a>        <span class="kwrd">import</span> <span class="hid">core.stdc.stdio</span> : <span class="hid">printf</span>;
+<a class="br" href="#L105" id="L105">105 </a>        <span class="kwrd">foreach</span> (<span class="hid">pid</span>, <span class="hid">p</span>; <span class="hid">platforms</span>)
+<a class="br" href="#L106" id="L106">106 </a>        {
+<a class="br" href="#L107" id="L107">107 </a>            <span class="kwrd">foreach</span> (<span class="hid">did</span>, <span class="hid">d</span>; <span class="hid">p.deviceIds</span>)
+<a class="br" href="#L108" id="L108">108 </a>            {
+<a class="br" href="#L109" id="L109">109 </a>                <span class="kwrd">debug</span> <span class="hid">printf</span>(<span class="str">&quot;platform id: %d, device id: %d\n&quot;</span>, <span class="hid">pid</span>, <span class="hid">did</span>);
+<a class="br" href="#L110" id="L110">110 </a>                <a class="hid" href="grain.cl.device.d.html#L9" title="grain.cl.device.printDeviceInfo">printDeviceInfo</a>(<span class="hid">d</span>);
+<a class="br" href="#L111" id="L111">111 </a>            }
+<a class="br" href="#L112" id="L112">112 </a>        }
+<a class="br" href="#L113" id="L113">113 </a>    }
+<a class="br" href="#L114" id="L114">114 </a>
+<a class="br" href="#L115" id="L115">115 </a>    <span class="kwrd">static</span> ~<span class="kwrd">this</span>()
+<a class="br" href="#L116" id="L116">116 </a>    {
+<a class="br" href="#L117" id="L117">117 </a>        <span class="kwrd">import</span> <span class="hid">core.memory</span> : <span class="hid">pureFree</span>;
+<a class="br" href="#L118" id="L118">118 </a>        <span class="kwrd">foreach</span> (<span class="hid">p</span>; <span class="hid">platforms</span>)
+<a class="br" href="#L119" id="L119">119 </a>        {
+<a class="br" href="#L120" id="L120">120 </a>            <span class="hid">pureFree</span>(<span class="hid">p.deviceIds.ptr</span>);
+<a class="br" href="#L121" id="L121">121 </a>        }
+<a class="br" href="#L122" id="L122">122 </a>        <span class="hid">pureFree</span>(<span class="hid">platformIds.ptr</span>);
+<a class="br" href="#L123" id="L123">123 </a>        <span class="hid">pureFree</span>(<span class="hid">platforms.ptr</span>);
+<a class="br" href="#L124" id="L124">124 </a>    }
+<a class="br" href="#L125" id="L125">125 </a>}</pre></div>
+		<div id="page-nav">
+		<div id="source-navigation"><div class="list-holder"><ul><li><a href="#L1">grain.cl.device</a><ul><li><a href="#L3">grain.dpp.cl</a></li><li><a href="#L4">grain.dpp.cl_enum</a></li><li><a href="#L6">grain.cl.testing</a></li><li><a href="#L9">printDeviceInfo</a></li><li><a href="#L52">ClDevice</a><ul><li><a href="#L56">platformIds</a></li><li><a href="#L57">platforms</a></li><li><a href="#L59">platformId</a></li><li><a href="#L60">deviceIds</a></li><li><a href="#L97">get</a></li><li><a href="#L102">printInfo</a></li></ul></li></ul></li></ul></div></div></div>
+	</div>
+	<div id="page-footer">Page generated by <a href="https://github.com/adamdruppe/adrdox">adrdox</a></div>
+</body>
+</html>
