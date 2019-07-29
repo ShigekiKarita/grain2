@@ -2,6 +2,7 @@ DPPROOT := build/grain/dpp
 CL := /usr/include/CL/cl.h
 CUSRC := cublas.d cudnn.d cuda_driver.d nvrtc.d cuda_runtime_api.d
 CLSRC := cl.d cl_enum.d
+DPP := dpp/bin/d++
 
 .PHONY: all clean cuda cl
 
@@ -23,15 +24,19 @@ cl: $(addprefix $(DPPROOT)/,$(CLSRC))
 # 	cat cl.d >> $@
 # 	rm cl.d
 
+dpp/bin/d++:
+	git clone https://github.com/atilaneves/dpp
+	cd dpp; git checkout c087e3ef64388cb891b4fbae67d39c8fa9a3c857; dub build -b=release
+
 $(DPPROOT)/cl_enum.d:
 	mkdir -p $(DPPROOT)
 	echo "module grain.dpp.cl_enum;" > $@
 	grep "#define CL_" $(CL) | awk -f preprocess.awk >> $@
 
-$(DPPROOT)/%.d: %.dpp
+$(DPPROOT)/%.d: %.dpp dpp/bin/d++
 	mkdir -p $(DPPROOT)
 	echo "module grain.dpp.$(basename $<);" > tmp.$(<)
 	cat $< >> tmp.$(<)
-	d++ --preprocess-only tmp.$(<)
+	$(DPP) --preprocess-only tmp.$(<)
 	mv tmp.$(basename $<).d $@
 	rm tmp.$(<)

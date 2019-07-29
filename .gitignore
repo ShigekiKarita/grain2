@@ -13,6 +13,7 @@
 !*.cu
 !*.cpp
 !*.md
+!*.awk
 
 !dub.json
 !.gitignore
