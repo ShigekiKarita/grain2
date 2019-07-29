@@ -43,7 +43,7 @@
 <a class="br" href="#L15" id="L15">15 </a>    <span class="kwrd">import</span> <span class="hid">core.stdc.stdlib</span> : <span class="hid">malloc</span>, <span class="hid">free</span>;
 <a class="br" href="#L16" id="L16">16 </a>
 <a class="br" href="#L17" id="L17">17 </a>    <span class="com">// init device</span>
-<a class="br" href="#L18" id="L18">18 </a>    <span class="kwrd">auto</span> <span class="hid">device_id</span> = <span class="hid">ClDevice.get</span>(<span class="num">0</span>);
+<a class="br" href="#L18" id="L18">18 </a>    <span class="kwrd">auto</span> <span class="hid">device_id</span> = <a class="hid" href="grain.cl.device.d.html#L97" title="grain.cl.device.ClDevice.get">ClDevice.get</a>(<span class="num">0</span>);
 <a class="br" href="#L19" id="L19">19 </a>    <span class="kwrd">auto</span> <span class="hid">context</span> = <span class="hid">checkClFun</span>!<span class="hid">clCreateContext</span>(<span class="kwrd">null</span>, <span class="num">1</span>, &amp;<span class="hid">device_id</span>, <span class="kwrd">null</span>, <span class="kwrd">null</span>);
 <a class="br" href="#L20" id="L20">20 </a>    <span class="kwrd">scope</span> (<span class="hid">exit</span>) <span class="hid">checkCl</span>(<span class="hid">clReleaseContext</span>(<span class="hid">context</span>));
 <a class="br" href="#L21" id="L21">21 </a>    <span class="kwrd">auto</span> <span class="hid">command_queue</span> = <span class="hid">checkClFun</span>!<span class="hid">clCreateCommandQueue</span>(<span class="hid">context</span>, <span class="hid">device_id</span>, <span class="num">0</span>);
