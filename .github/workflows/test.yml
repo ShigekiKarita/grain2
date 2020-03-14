@@ -25,7 +25,7 @@ jobs:
     - name: test-cl
       if: matrix.subpackage == 'cl' && startsWith(matrix.compiler, 'ldc')
       run: |
-        sudo apt-get remove -y clang-6.0 libclang-common-6.0-dev libclang1-6.0 libllvm6.0
+        sudo apt-get remove -y clang* libclang* libllvm*
         sudo apt-get autoremove
         sudo apt-get install -y clinfo libpocl-dev libclang-6.0-dev ocl-icd-opencl-dev
         cd /usr/lib/x86_64-linux-gnu; sudo ln -s libclang-6.0.so libclang.so; cd -
