@@ -31,29 +31,29 @@
 <a class="br" href="#L3" id="L3">3 </a>
 <a class="br" href="#L4" id="L4">4 </a><span class="kwrd">import</span> <span class="hid">std.typecons</span> : <span class="hid">Tuple</span>, <span class="hid">tuple</span>;
 <a class="br" href="#L5" id="L5">5 </a>
-<a class="br" href="#L6" id="L6">6 </a><span class="kwrd">import</span> <span class="hid">grain.tensor</span> : <a class="hid" href="grain.tensor.d.html#L37" title="grain.tensor.Tensor">Tensor</a>;
-<a class="br" href="#L7" id="L7">7 </a><span class="kwrd">import</span> <span class="hid">grain.testing</span> : <a class="hid" href="grain.testing.d.html#L6" title="grain.testing.assertEqual">assertEqual</a>;
-<a class="br" href="#L8" id="L8">8 </a><span class="kwrd">import</span> <span class="hid">grain.ops.common</span> : <a class="hid" href="grain.ops.common.d.html#L3" title="grain.ops.common.apply">apply</a>;
+<a class="br" href="#L6" id="L6">6 </a><span class="kwrd">import</span> <span class="hid">grain.tensor</span> : <span class="hid">Tensor</span>;
+<a class="br" href="#L7" id="L7">7 </a><span class="kwrd">import</span> <span class="hid">grain.testing</span> : <span class="hid">assertEqual</span>;
+<a class="br" href="#L8" id="L8">8 </a><span class="kwrd">import</span> <span class="hid">grain.ops.common</span> : <span class="hid">apply</span>;
 <a class="br" href="#L9" id="L9">9 </a>
 <a class="br" href="#L10" id="L10">10 </a>
 <a class="br" href="#L11" id="L11">11 </a><span class="com">/// matrix multiplication</span>
 <a class="br" href="#L12" id="L12">12 </a><span class="kwrd">struct</span> <a class="hid" href="grain.ops.matmul.d.html#L12" title="grain.ops.matmul.Matmul">Matmul</a>(<span class="hid">T</span>, <span class="hid">Storage</span>) <span class="kwrd">if</span> (<span class="hid">Storage.deviceof</span> == <span class="str">&quot;cpu&quot;</span>)
 <a class="br" href="#L13" id="L13">13 </a>{
-<a class="br" href="#L14" id="L14">14 </a>    <span class="kwrd">alias</span> <span class="hid">Matrix</span> = <a class="hid" href="grain.tensor.d.html#L37" title="grain.tensor.Tensor">Tensor</a>!(<span class="num">2</span>, <span class="hid">T</span>, <span class="hid">Storage</span>);
+<a class="br" href="#L14" id="L14">14 </a>    <span class="kwrd">alias</span> <span class="hid">Matrix</span> = <span class="hid">Tensor</span>!(<span class="num">2</span>, <span class="hid">T</span>, <span class="hid">Storage</span>);
 <a class="br" href="#L15" id="L15">15 </a>
 <a class="br" href="#L16" id="L16">16 </a>    <span class="hid">Matrix</span> <span class="hid">a</span>, <span class="hid">b</span>;
 <a class="br" href="#L17" id="L17">17 </a>
 <a class="br" href="#L18" id="L18">18 </a>    <span class="hid">Matrix</span> <span class="hid">forward</span>(<span class="hid">Matrix</span> <span class="hid">a</span>, <span class="hid">Matrix</span> <span class="hid">b</span>)
 <a class="br" href="#L19" id="L19">19 </a>    <span class="kwrd">in</span>
 <a class="br" href="#L20" id="L20">20 </a>    {
-<a class="br" href="#L21" id="L21">21 </a>        <a class="hid" href="grain.testing.d.html#L6" title="grain.testing.assertEqual">assertEqual</a>(<span class="hid">a.lengths</span>[<span class="num">1</span>], <span class="hid">b.lengths</span>[<span class="num">0</span>], <span class="str">&quot;Matmul lengths mismatch&quot;</span>);
+<a class="br" href="#L21" id="L21">21 </a>        <span class="hid">assertEqual</span>(<span class="hid">a.lengths</span>[<span class="num">1</span>], <span class="hid">b.lengths</span>[<span class="num">0</span>], <span class="str">&quot;Matmul lengths mismatch&quot;</span>);
 <a class="br" href="#L22" id="L22">22 </a>    }
 <a class="br" href="#L23" id="L23">23 </a>    <span class="kwrd">do</span>
 <a class="br" href="#L24" id="L24">24 </a>    {
 <a class="br" href="#L25" id="L25">25 </a>        <span class="kwrd">import</span> <span class="hid">mir.ndslice</span> : <span class="hid">as</span>;
 <a class="br" href="#L26" id="L26">26 </a>        <span class="kwrd">import</span> <span class="hid">mir.blas</span> : <span class="hid">gemm</span>;
 <a class="br" href="#L27" id="L27">27 </a>
-<a class="br" href="#L28" id="L28">28 </a>        <span class="kwrd">auto</span> <span class="hid">c</span> = <a class="hid" href="grain.tensor.d.html#L37" title="grain.tensor.Tensor">Tensor</a>!(<span class="num">2</span>, <span class="hid">T</span>)(<span class="hid">a.lengths</span>[<span class="num">0</span>], <span class="hid">b.lengths</span>[<span class="num">1</span>]);
+<a class="br" href="#L28" id="L28">28 </a>        <span class="kwrd">auto</span> <span class="hid">c</span> = <span class="hid">Tensor</span>!(<span class="num">2</span>, <span class="hid">T</span>)(<span class="hid">a.lengths</span>[<span class="num">0</span>], <span class="hid">b.lengths</span>[<span class="num">1</span>]);
 <a class="br" href="#L29" id="L29">29 </a>        <span class="hid">gemm</span>(<span class="kwrd">cast</span>(<span class="hid">T</span>) <span class="num">1</span>, <span class="hid">a.lightScope</span>, <span class="hid">b.lightScope</span>, <span class="kwrd">cast</span>(<span class="hid">T</span>) <span class="num">0</span>, <span class="hid">c.lightScope</span>);
 <a class="br" href="#L30" id="L30">30 </a>        <span class="kwrd">return</span> <span class="hid">c</span>;
 <a class="br" href="#L31" id="L31">31 </a>    }
@@ -69,7 +69,7 @@
 <a class="br" href="#L41" id="L41">41 </a>}
 <a class="br" href="#L42" id="L42">42 </a>
 <a class="br" href="#L43" id="L43">43 </a><span class="com">/// ditto</span>
-<a class="br" href="#L44" id="L44">44 </a><span class="kwrd">auto</span> <a class="hid" href="grain.ops.matmul.d.html#L44" title="grain.ops.matmul.matmul">matmul</a>(<span class="hid">T</span>, <span class="hid">Storage</span>)(<a class="hid" href="grain.tensor.d.html#L37" title="grain.tensor.Tensor">Tensor</a>!(<span class="num">2</span>, <span class="hid">T</span>, <span class="hid">Storage</span>) <span class="hid">a</span>, <a class="hid" href="grain.tensor.d.html#L37" title="grain.tensor.Tensor">Tensor</a>!(<span class="num">2</span>, <span class="hid">T</span>, <span class="hid">Storage</span>) <span class="hid">b</span>)
+<a class="br" href="#L44" id="L44">44 </a><span class="kwrd">auto</span> <a class="hid" href="grain.ops.matmul.d.html#L44" title="grain.ops.matmul.matmul">matmul</a>(<span class="hid">T</span>, <span class="hid">Storage</span>)(<span class="hid">Tensor</span>!(<span class="num">2</span>, <span class="hid">T</span>, <span class="hid">Storage</span>) <span class="hid">a</span>, <span class="hid">Tensor</span>!(<span class="num">2</span>, <span class="hid">T</span>, <span class="hid">Storage</span>) <span class="hid">b</span>)
 <a class="br" href="#L45" id="L45">45 </a>{
 <a class="br" href="#L46" id="L46">46 </a>    <a class="hid" href="grain.ops.matmul.d.html#L12" title="grain.ops.matmul.Matmul">Matmul</a>!(<span class="hid">T</span>, <span class="hid">Storage</span>) <span class="hid">mm</span>;
 <a class="br" href="#L47" id="L47">47 </a>    <span class="kwrd">return</span> <span class="hid">mm.apply</span>(<span class="hid">a</span>, <span class="hid">b</span>);
@@ -80,12 +80,12 @@
 <a class="br" href="#L52" id="L52">52 </a><span class="kwrd">unittest</span>
 <a class="br" href="#L53" id="L53">53 </a>{
 <a class="br" href="#L54" id="L54">54 </a>    <span class="kwrd">import</span> <span class="hid">grain.random</span> : <span class="hid">normal_</span>;
-<a class="br" href="#L55" id="L55">55 </a>    <span class="kwrd">import</span> <span class="hid">grain.testing</span> : <a class="hid" href="grain.testing.d.html#L45" title="grain.testing.assertAllClose">assertAllClose</a>;
+<a class="br" href="#L55" id="L55">55 </a>    <span class="kwrd">import</span> <span class="hid">grain.testing</span> : <span class="hid">assertAllClose</span>;
 <a class="br" href="#L56" id="L56">56 </a>    
-<a class="br" href="#L57" id="L57">57 </a>    <span class="kwrd">auto</span> <span class="hid">x</span> = <a class="hid" href="grain.tensor.d.html#L37" title="grain.tensor.Tensor">Tensor</a>!(<span class="num">2</span>, <span class="type">double</span>)(<span class="num">2</span>, <span class="num">3</span>).<span class="hid">normal_</span>;
-<a class="br" href="#L58" id="L58">58 </a>    <span class="kwrd">auto</span> <span class="hid">y</span> = <a class="hid" href="grain.tensor.d.html#L37" title="grain.tensor.Tensor">Tensor</a>!(<span class="num">2</span>, <span class="type">double</span>)(<span class="num">3</span>, <span class="num">2</span>).<span class="hid">normal_</span>;
+<a class="br" href="#L57" id="L57">57 </a>    <span class="kwrd">auto</span> <span class="hid">x</span> = <span class="hid">Tensor</span>!(<span class="num">2</span>, <span class="type">double</span>)(<span class="num">2</span>, <span class="num">3</span>).<span class="hid">normal_</span>;
+<a class="br" href="#L58" id="L58">58 </a>    <span class="kwrd">auto</span> <span class="hid">y</span> = <span class="hid">Tensor</span>!(<span class="num">2</span>, <span class="type">double</span>)(<span class="num">3</span>, <span class="num">2</span>).<span class="hid">normal_</span>;
 <a class="br" href="#L59" id="L59">59 </a>    <span class="kwrd">auto</span> <span class="hid">z</span> = <span class="hid">x.matmul</span>(<span class="hid">y</span>);
-<a class="br" href="#L60" id="L60">60 </a>    <span class="kwrd">auto</span> <span class="hid">c</span> = <a class="hid" href="grain.tensor.d.html#L37" title="grain.tensor.Tensor">Tensor</a>!(<span class="num">2</span>, <span class="type">double</span>)(<span class="num">2</span>, <span class="num">2</span>);
+<a class="br" href="#L60" id="L60">60 </a>    <span class="kwrd">auto</span> <span class="hid">c</span> = <span class="hid">Tensor</span>!(<span class="num">2</span>, <span class="type">double</span>)(<span class="num">2</span>, <span class="num">2</span>);
 <a class="br" href="#L61" id="L61">61 </a>    <span class="hid">c.asSlice</span>[] = <span class="num">0</span>;
 <a class="br" href="#L62" id="L62">62 </a>    <span class="kwrd">foreach</span> (<span class="hid">i</span>; <span class="num">0</span> .. <span class="hid">x.lengths</span>[<span class="num">0</span>])
 <a class="br" href="#L63" id="L63">63 </a>    {
@@ -97,7 +97,7 @@
 <a class="br" href="#L69" id="L69">69 </a>            }
 <a class="br" href="#L70" id="L70">70 </a>        }
 <a class="br" href="#L71" id="L71">71 </a>    }
-<a class="br" href="#L72" id="L72">72 </a>    <a class="hid" href="grain.testing.d.html#L45" title="grain.testing.assertAllClose">assertAllClose</a>(<span class="hid">x.matmul</span>(<span class="hid">y</span>), <span class="hid">c</span>);
+<a class="br" href="#L72" id="L72">72 </a>    <span class="hid">assertAllClose</span>(<span class="hid">x.matmul</span>(<span class="hid">y</span>), <span class="hid">c</span>);
 <a class="br" href="#L73" id="L73">73 </a>}
 <a class="br" href="#L74" id="L74">74 </a></pre></div>
 		<div id="page-nav">

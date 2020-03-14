@@ -71,7 +71,7 @@
 <a class="br" href="#L43" id="L43">43 </a>    @<span class="hid">system</span> @<span class="hid">nogc</span> <span class="kwrd">nothrow</span>
 <a class="br" href="#L44" id="L44">44 </a>    <span class="type">bool</span> <span class="hid">deallocate</span>()(<a class="hid" href="grain.cl.allocator.d.html#L10" title="grain.cl.allocator.ClMem">ClMem</a> <span class="hid">b</span>)
 <a class="br" href="#L45" id="L45">45 </a>    {
-<a class="br" href="#L46" id="L46">46 </a>        <a class="hid" href="grain.cl.testing.d.html#L119" title="grain.cl.testing.checkCl">checkCl</a>(<span class="hid">clReleaseMemObject</span>(<span class="hid">b.ptr</span>));
+<a class="br" href="#L46" id="L46">46 </a>        <span class="hid">checkCl</span>(<span class="hid">clReleaseMemObject</span>(<span class="hid">b.ptr</span>));
 <a class="br" href="#L47" id="L47">47 </a>        <span class="kwrd">return</span> <span class="kwrd">true</span>;
 <a class="br" href="#L48" id="L48">48 </a>    }
 <a class="br" href="#L49" id="L49">49 </a>
