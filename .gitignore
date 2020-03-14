@@ -14,6 +14,7 @@
 !*.cpp
 !*.md
 !*.awk
+dpp/dpp
 
 !dub.json
 !.gitignore

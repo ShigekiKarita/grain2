@@ -27,8 +27,7 @@
             },
             "libs": ["cuda", "cudart", "cublas", "cudnn", "nvrtc"],
             "sourcePaths": ["cuda/source"],
-            "importPaths": ["cuda/source", "dpp/build"],
-            "preBuildCommands": ["cd dpp; make cuda -j"],
+            "importPaths": ["cuda/source", "dpp/generated"],
         },
         {
             "name": "cl",
@@ -38,8 +37,7 @@
             },
             "libs": ["OpenCL"],
             "sourcePaths": ["cl/source"],
-            "importPaths": ["cl/source", "dpp/build"],
-            "preBuildCommands": ["cd dpp; make cl -j"],
+            "importPaths": ["cl/source", "dpp/generated"],
         }
     ]
 }
