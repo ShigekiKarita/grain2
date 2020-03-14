@@ -31,8 +31,8 @@
 <a class="br" href="#L3" id="L3">3 </a>
 <a class="br" href="#L4" id="L4">4 </a>
 <a class="br" href="#L5" id="L5">5 </a>
-<a class="br" href="#L6" id="L6">6 </a><span class="kwrd">import</span> <span class="hid">grain.storage</span> : <a class="hid" href="grain.storage.d.html#L43" title="grain.storage.RCStorage">RCStorage</a>, <a class="hid" href="grain.storage.d.html#L70" title="grain.storage.RCIter">RCIter</a>, <a class="hid" href="grain.storage.d.html#L161" title="grain.storage.DefaultCPUStorage">DefaultCPUStorage</a>;
-<a class="br" href="#L7" id="L7">7 </a><span class="kwrd">debug</span> <span class="kwrd">import</span> <span class="hid">grain.testing</span> : <a class="hid" href="grain.testing.d.html#L45" title="grain.testing.assertAllClose">assertAllClose</a>, <a class="hid" href="grain.testing.d.html#L6" title="grain.testing.assertEqual">assertEqual</a>;
+<a class="br" href="#L6" id="L6">6 </a><span class="kwrd">import</span> <span class="hid">grain.storage</span> : <span class="hid">RCStorage</span>, <span class="hid">RCIter</span>, <span class="hid">DefaultCPUStorage</span>;
+<a class="br" href="#L7" id="L7">7 </a><span class="kwrd">debug</span> <span class="kwrd">import</span> <span class="hid">grain.testing</span> : <span class="hid">assertAllClose</span>, <span class="hid">assertEqual</span>;
 <a class="br" href="#L8" id="L8">8 </a>
 <a class="br" href="#L9" id="L9">9 </a>
 <a class="br" href="#L10" id="L10">10 </a><span class="com">// TODO fix this linker error</span>
@@ -62,17 +62,17 @@
 <a class="br" href="#L34" id="L34">34 </a>}
 <a class="br" href="#L35" id="L35">35 </a>
 <a class="br" href="#L36" id="L36">36 </a><span class="com">// Tensor on CPU implementation</span>
-<a class="br" href="#L37" id="L37">37 </a><span class="kwrd">struct</span> <a class="hid" href="grain.tensor.d.html#L37" title="grain.tensor.Tensor">Tensor</a>(<span class="hid">size_t</span> <span class="hid">_dim</span>, <span class="hid">T</span>, <a class="hid" href="grain.storage.d.html#L6" title="grain.storage.Storage">Storage</a> = <a class="hid" href="grain.storage.d.html#L161" title="grain.storage.DefaultCPUStorage">DefaultCPUStorage</a>)
+<a class="br" href="#L37" id="L37">37 </a><span class="kwrd">struct</span> <a class="hid" href="grain.tensor.d.html#L37" title="grain.tensor.Tensor">Tensor</a>(<span class="hid">size_t</span> <span class="hid">_dim</span>, <span class="hid">T</span>, <span class="hid">Storage</span> = <span class="hid">DefaultCPUStorage</span>)
 <a class="br" href="#L38" id="L38">38 </a>{
 <a class="br" href="#L39" id="L39">39 </a>    <span class="kwrd">import</span> <span class="hid">mir.ndslice.slice</span> : <span class="hid">Slice</span>, <span class="hid">Universal</span>, <span class="hid">Structure</span>;
 <a class="br" href="#L40" id="L40">40 </a>
 <a class="br" href="#L41" id="L41">41 </a>    <span class="kwrd">alias</span> <span class="hid">dim</span> = <span class="hid">_dim</span>;
-<a class="br" href="#L42" id="L42">42 </a>    <span class="kwrd">alias</span> <span class="hid">deviceof</span> = <a class="hid" href="grain.storage.d.html#L0" title="grain.storage.Storage.deviceof">Storage.deviceof</a>;
+<a class="br" href="#L42" id="L42">42 </a>    <span class="kwrd">alias</span> <span class="hid">deviceof</span> = <span class="hid">Storage.deviceof</span>;
 <a class="br" href="#L43" id="L43">43 </a>    <span class="kwrd">alias</span> <span class="hid">shape</span> = <span class="hid">lengths</span>;
 <a class="br" href="#L44" id="L44">44 </a>
 <a class="br" href="#L45" id="L45">45 </a>    <span class="hid">size_t</span>[<span class="hid">dim</span>] <span class="hid">lengths</span>;
 <a class="br" href="#L46" id="L46">46 </a>    <span class="hid">ptrdiff_t</span>[<span class="hid">dim</span>] <span class="hid">strides</span>;
-<a class="br" href="#L47" id="L47">47 </a>    <a class="hid" href="grain.storage.d.html#L6" title="grain.storage.Storage">Storage</a> <span class="hid">payload</span>;
+<a class="br" href="#L47" id="L47">47 </a>    <span class="hid">Storage</span> <span class="hid">payload</span>;
 <a class="br" href="#L48" id="L48">48 </a>    <span class="hid">ptrdiff_t</span> <span class="hid">offset</span> = <span class="num">0</span>;
 <a class="br" href="#L49" id="L49">49 </a>
 <a class="br" href="#L50" id="L50">50 </a>    <a class="hid" href="grain.tensor.d.html#L16" title="grain.tensor.Opt">Opt</a> <span class="hid">opt</span>;
@@ -113,7 +113,7 @@
 <a class="br" href="#L85" id="L85">85 </a>        <span class="kwrd">return</span> <span class="hid">ret</span>;
 <a class="br" href="#L86" id="L86">86 </a>    }
 <a class="br" href="#L87" id="L87">87 </a>
-<a class="br" href="#L88" id="L88">88 </a>    <a class="hid" href="grain.storage.d.html#L70" title="grain.storage.RCIter">RCIter</a>!(<span class="hid">T</span>*, <a class="hid" href="grain.storage.d.html#L6" title="grain.storage.Storage">Storage</a>) <span class="hid">iterator</span>() @<span class="hid">property</span>
+<a class="br" href="#L88" id="L88">88 </a>    <span class="hid">RCIter</span>!(<span class="hid">T</span>*, <span class="hid">Storage</span>) <span class="hid">iterator</span>() @<span class="hid">property</span>
 <a class="br" href="#L89" id="L89">89 </a>    {
 <a class="br" href="#L90" id="L90">90 </a>        <span class="kwrd">static</span> <span class="kwrd">if</span> (<span class="hid">deviceof</span> == <span class="str">&quot;cuda&quot;</span>)
 <a class="br" href="#L91" id="L91">91 </a>        {
@@ -128,7 +128,7 @@
 <a class="br" href="#L100" id="L100">100 </a>        <span class="kwrd">return</span> <span class="kwrd">this</span>.<span class="hid">iterator.lightScope</span>;
 <a class="br" href="#L101" id="L101">101 </a>    }
 <a class="br" href="#L102" id="L102">102 </a>
-<a class="br" href="#L103" id="L103">103 </a>    <span class="kwrd">static</span> <span class="kwrd">if</span> (<a class="hid" href="grain.storage.d.html#L0" title="grain.storage.Storage.deviceof">Storage.deviceof</a> == <span class="str">&quot;cpu&quot;</span>)
+<a class="br" href="#L103" id="L103">103 </a>    <span class="kwrd">static</span> <span class="kwrd">if</span> (<span class="hid">Storage.deviceof</span> == <span class="str">&quot;cpu&quot;</span>)
 <a class="br" href="#L104" id="L104">104 </a>    {
 <a class="br" href="#L105" id="L105">105 </a>        <span class="hid">Slice</span>!(<span class="kwrd">typeof</span>(<span class="kwrd">this</span>.<span class="hid">iterator</span>()), <span class="hid">dim</span>, <span class="hid">Universal</span>) <span class="hid">asSlice</span>()()
 <a class="br" href="#L106" id="L106">106 </a>        {
@@ -161,8 +161,8 @@
 <a class="br" href="#L133" id="L133">133 </a>    <span class="kwrd">auto</span> <span class="hid">x</span> = <a class="hid" href="grain.tensor.d.html#L37" title="grain.tensor.Tensor">Tensor</a>!(<span class="num">2</span>, <span class="type">double</span>)(<span class="num">2</span>, <span class="num">3</span>);
 <a class="br" href="#L134" id="L134">134 </a>    <span class="kwrd">static</span> <span class="kwrd">assert</span>(<a class="hid" href="grain.tensor.d.html#L121" title="grain.tensor.isTensor">isTensor</a>!(<span class="kwrd">typeof</span>(<span class="hid">x</span>)));
 <a class="br" href="#L135" id="L135">135 </a>    <span class="kwrd">static</span> <span class="kwrd">assert</span>(<span class="hid">x.deviceof</span> == <span class="str">&quot;cpu&quot;</span>);
-<a class="br" href="#L136" id="L136">136 </a>    <a class="hid" href="grain.testing.d.html#L6" title="grain.testing.assertEqual">assertEqual</a>(<span class="hid">x.strides</span>[<span class="num">0</span>], <span class="num">3</span>);
-<a class="br" href="#L137" id="L137">137 </a>    <a class="hid" href="grain.testing.d.html#L6" title="grain.testing.assertEqual">assertEqual</a>(<span class="hid">x.strides</span>[<span class="num">1</span>], <span class="num">1</span>);
+<a class="br" href="#L136" id="L136">136 </a>    <span class="hid">assertEqual</span>(<span class="hid">x.strides</span>[<span class="num">0</span>], <span class="num">3</span>);
+<a class="br" href="#L137" id="L137">137 </a>    <span class="hid">assertEqual</span>(<span class="hid">x.strides</span>[<span class="num">1</span>], <span class="num">1</span>);
 <a class="br" href="#L138" id="L138">138 </a>    <span class="kwrd">assert</span>(<span class="hid">x.isContiguous</span>);
 <a class="br" href="#L139" id="L139">139 </a>    <span class="kwrd">assert</span>(<span class="hid">x.numel</span> == <span class="num">2</span> * <span class="num">3</span>);
 <a class="br" href="#L140" id="L140">140 </a>}</pre></div>
