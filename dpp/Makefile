@@ -1,6 +1,5 @@
 DPPROOT := generated/grain/dpp
 CUDA_ROOT := /usr/local/cuda
-CL := /usr/include/CL/cl.h
 CUSRC := cublas.d cudnn.d cuda_driver.d nvrtc.d cuda_runtime_api.d
 CLSRC := cl.d
 DPP := dpp/bin/d++
