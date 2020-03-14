@@ -1,16 +1,15 @@
 /// Tensor data structure module
 module grain.tensor;
 
-
+import std.numeric : CustomFloat;
 
 import grain.storage : RCStorage, RCIter, DefaultCPUStorage;
 debug import grain.testing : assertAllClose, assertEqual;
 
-
-// TODO fix this linker error
-// import std.numeric : CustomFloat;
-// // /// IEEE 754-2008 16-bit float
-// alias grain_half = CustomFloat!16;
+/// IEEE 754-2008 half: https://en.wikipedia.org/wiki/Half-precision_floating-point_format
+alias half = CustomFloat!(10, 5);
+/// bfloat16: https://en.wikipedia.org/wiki/Bfloat16_floating-point_format
+alias bfloat16 = CustomFloat!(7, 8);
 
 
 struct Opt
