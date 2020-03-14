@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+<head>
+        <title>grain.dlpack.conv source code</title>
+	<meta charset="utf-8" />
+	<meta content="width=device-width, initial-scale=1" name="viewport" />
+        <link href="../style.css" rel="stylesheet" />
+        <script src="../script.js" type="text/javascript"></script>
+
+	
+	<link href="../search-results.html" rel="prefetch" />
+</head>
+<body>
+	<div id="page-header">
+		<div id="logotype">
+		<span>Documentation</span>
+		<nav>
+			<a href="http://dlang.org/">Dlang.org</a>
+		</nav>
+		</div>
+
+		<form action="../search-docs.html" id="search">
+			<input name="searchTerm" placeholder="Find a symbol name..." type="search" />
+			<input type="submit" value="Go" />
+		</form>
+	</div>
+	<div id="page-body">
+		<div id="page-content">
+		<pre class="d_code highlighted with-line-wrappers"><a class="br" href="#L1" id="L1">1 </a><span class="kwrd">module</span> <span class="hid">grain.dlpack.conv</span>;
+<a class="br" href="#L2" id="L2">2 </a>
+<a class="br" href="#L3" id="L3">3 </a><span class="kwrd">import</span> <span class="hid">std.container.array</span> : <span class="hid">Array</span>;
+<a class="br" href="#L4" id="L4">4 </a><span class="kwrd">import</span> <span class="hid">std.traits</span> : <span class="hid">isIntegral</span>, <span class="hid">isFloatingPoint</span>, <span class="hid">isUnsigned</span>, <span class="hid">isSIMDVector</span>;
+<a class="br" href="#L5" id="L5">5 </a>
+<a class="br" href="#L6" id="L6">6 </a><span class="kwrd">import</span> <span class="hid">grain.dlpack.header</span> : <span class="hid">DLManagedTensor</span>, <span class="hid">DLDataType</span>, <span class="hid">kDLInt</span>, <span class="hid">kDLUInt</span>, <span class="hid">kDLFloat</span>;
+<a class="br" href="#L7" id="L7">7 </a>
+<a class="br" href="#L8" id="L8">8 </a>
+<a class="br" href="#L9" id="L9">9 </a><span class="kwrd">enum</span> <span class="hid">DLDataType</span> <a class="hid" href="grain.dlpack.conv.d.html#L9" title="grain.dlpack.conv.dataTypeOf">dataTypeOf</a>(<span class="hid">T</span>) = {
+<a class="br" href="#L10" id="L10">10 </a>    <span class="hid">DLDataType</span> <span class="hid">ret</span>;
+<a class="br" href="#L11" id="L11">11 </a>    <span class="hid">ret.bits</span> = <span class="hid">T.sizeof</span> * <span class="num">8</span>;
+<a class="br" href="#L12" id="L12">12 </a>    <span class="hid">ret.lanes</span> = <span class="num">1</span>;
+<a class="br" href="#L13" id="L13">13 </a>    <span class="kwrd">static</span> <span class="kwrd">if</span> (<span class="kwrd">is</span>(<span class="hid">T</span> : <span class="kwrd">__vector</span>(<span class="hid">V</span>[<span class="hid">N</span>]), <span class="hid">V</span>, <span class="hid">size_t</span> <span class="hid">N</span>))
+<a class="br" href="#L14" id="L14">14 </a>    {
+<a class="br" href="#L15" id="L15">15 </a>        <span class="hid">ret</span> = <a class="hid" href="grain.dlpack.conv.d.html#L9" title="grain.dlpack.conv.dataTypeOf">dataTypeOf</a>!<span class="hid">V</span>;
+<a class="br" href="#L16" id="L16">16 </a>        <span class="hid">ret.bits</span> = <span class="hid">V.sizeof</span> * <span class="num">8</span>;
+<a class="br" href="#L17" id="L17">17 </a>        <span class="hid">ret.lanes</span> = <span class="hid">N</span>;
+<a class="br" href="#L18" id="L18">18 </a>    }
+<a class="br" href="#L19" id="L19">19 </a>    <span class="kwrd">else</span> <span class="kwrd">static</span> <span class="kwrd">if</span> (<span class="hid">isFloatingPoint</span>!<span class="hid">T</span>)
+<a class="br" href="#L20" id="L20">20 </a>    {
+<a class="br" href="#L21" id="L21">21 </a>        <span class="hid">ret.code</span> = <span class="hid">kDLFloat</span>;
+<a class="br" href="#L22" id="L22">22 </a>    }
+<a class="br" href="#L23" id="L23">23 </a>    <span class="kwrd">else</span> <span class="kwrd">static</span> <span class="kwrd">if</span> (<span class="hid">isUnsigned</span>!<span class="hid">T</span>)
+<a class="br" href="#L24" id="L24">24 </a>    {
+<a class="br" href="#L25" id="L25">25 </a>        <span class="hid">ret.code</span> = <span class="hid">kDLUInt</span>;
+<a class="br" href="#L26" id="L26">26 </a>    }
+<a class="br" href="#L27" id="L27">27 </a>    <span class="kwrd">else</span> <span class="kwrd">static</span> <span class="kwrd">if</span> (<span class="hid">isIntegral</span>!<span class="hid">T</span>)
+<a class="br" href="#L28" id="L28">28 </a>    {
+<a class="br" href="#L29" id="L29">29 </a>        <span class="hid">ret.code</span> = <span class="hid">kDLInt</span>;
+<a class="br" href="#L30" id="L30">30 </a>    }
+<a class="br" href="#L31" id="L31">31 </a>    <span class="kwrd">else</span>
+<a class="br" href="#L32" id="L32">32 </a>    {
+<a class="br" href="#L33" id="L33">33 </a>        <span class="kwrd">static</span> <span class="kwrd">assert</span>(<span class="kwrd">false</span>, <span class="str">&quot;cannot convert to DLDataType: &quot;</span> ~ <span class="hid">T.stringof</span>);
+<a class="br" href="#L34" id="L34">34 </a>    }
+<a class="br" href="#L35" id="L35">35 </a>    <span class="kwrd">return</span> <span class="hid">ret</span>;
+<a class="br" href="#L36" id="L36">36 </a>}();
+<a class="br" href="#L37" id="L37">37 </a>
+<a class="br" href="#L38" id="L38">38 </a><span class="com">///</span>
+<a class="br" href="#L39" id="L39">39 </a>@<span class="hid">nogc</span> <span class="kwrd">nothrow</span> <span class="kwrd">pure</span> @<span class="hid">safe</span> <span class="kwrd">unittest</span>
+<a class="br" href="#L40" id="L40">40 </a>{
+<a class="br" href="#L41" id="L41">41 </a>    <span class="kwrd">static</span> <span class="kwrd">assert</span>(<a class="hid" href="grain.dlpack.conv.d.html#L9" title="grain.dlpack.conv.dataTypeOf">dataTypeOf</a>!<span class="type">ubyte</span> == <span class="hid">DLDataType</span>(<span class="hid">kDLUInt</span>, <span class="num">8</span>, <span class="num">1</span>));
+<a class="br" href="#L42" id="L42">42 </a>    <span class="kwrd">static</span> <span class="kwrd">assert</span>(<a class="hid" href="grain.dlpack.conv.d.html#L9" title="grain.dlpack.conv.dataTypeOf">dataTypeOf</a>!<span class="type">long</span> == <span class="hid">DLDataType</span>(<span class="hid">kDLInt</span>, <span class="num">64</span>, <span class="num">1</span>));
+<a class="br" href="#L43" id="L43">43 </a>    <span class="kwrd">static</span> <span class="kwrd">assert</span>(<a class="hid" href="grain.dlpack.conv.d.html#L9" title="grain.dlpack.conv.dataTypeOf">dataTypeOf</a>!<span class="type">float</span> == <span class="hid">DLDataType</span>(<span class="hid">kDLFloat</span>, <span class="num">32</span>, <span class="num">1</span>));
+<a class="br" href="#L44" id="L44">44 </a>
+<a class="br" href="#L45" id="L45">45 </a>    <span class="kwrd">alias</span> <span class="hid">float4</span> = <span class="kwrd">__vector</span>(<span class="type">float</span>[<span class="num">4</span>]);
+<a class="br" href="#L46" id="L46">46 </a>    <span class="kwrd">static</span> <span class="kwrd">assert</span>(<a class="hid" href="grain.dlpack.conv.d.html#L9" title="grain.dlpack.conv.dataTypeOf">dataTypeOf</a>!<span class="hid">float4</span> == <span class="hid">DLDataType</span>(<span class="hid">kDLFloat</span>, <span class="num">32</span>, <span class="num">4</span>));
+<a class="br" href="#L47" id="L47">47 </a>}
+<a class="br" href="#L48" id="L48">48 </a>
+<a class="br" href="#L49" id="L49">49 </a><span class="com">/+ TODO(karita): implement AnyTensor (type-erased tensor)
+<a class="br" href="#L50" id="L50">50 </a>
+<a class="br" href="#L51" id="L51">51 </a>import grain.buffer : AnyBuffer;
+<a class="br" href="#L52" id="L52">52 </a>import grain.tensor : AnyTensor;
+<a class="br" href="#L53" id="L53">53 </a>
+<a class="br" href="#L54" id="L54">54 </a>/// DLPack resource export manager(_ctx)
+<a class="br" href="#L55" id="L55">55 </a>private struct DLManager
+<a class="br" href="#L56" id="L56">56 </a>{
+<a class="br" href="#L57" id="L57">57 </a>    AnyTensor handle;
+<a class="br" href="#L58" id="L58">58 </a>    DLManagedTensor tensor;
+<a class="br" href="#L59" id="L59">59 </a>}
+<a class="br" href="#L60" id="L60">60 </a>
+<a class="br" href="#L61" id="L61">61 </a>/// DLPack resource import buffer
+<a class="br" href="#L62" id="L62">62 </a>private struct DLBuffer
+<a class="br" href="#L63" id="L63">63 </a>{
+<a class="br" href="#L64" id="L64">64 </a>    @nogc nothrow:
+<a class="br" href="#L65" id="L65">65 </a>
+<a class="br" href="#L66" id="L66">66 </a>    AnyBuffer base;
+<a class="br" href="#L67" id="L67">67 </a>    alias base this;
+<a class="br" href="#L68" id="L68">68 </a>    DLManagedTensor* src;
+<a class="br" href="#L69" id="L69">69 </a>
+<a class="br" href="#L70" id="L70">70 </a>    this(DLManagedTensor* src)
+<a class="br" href="#L71" id="L71">71 </a>    {
+<a class="br" href="#L72" id="L72">72 </a>        this.src = src;
+<a class="br" href="#L73" id="L73">73 </a>        auto t = src.dl_tensor;
+<a class="br" href="#L74" id="L74">74 </a>        this.base.payload = t.data[0 .. 0]; // dummy length
+<a class="br" href="#L75" id="L75">75 </a>    }
+<a class="br" href="#L76" id="L76">76 </a>
+<a class="br" href="#L77" id="L77">77 </a>    ~this() { src.deleter(src); }
+<a class="br" href="#L78" id="L78">78 </a>}
+<a class="br" href="#L79" id="L79">79 </a>
+<a class="br" href="#L80" id="L80">80 </a>/** Convert AnyTensor to DLManagedTensor
+<a class="br" href="#L81" id="L81">81 </a>
+<a class="br" href="#L82" id="L82">82 </a>    Returns:
+<a class="br" href="#L83" id="L83">83 </a>    The DLManagedTensor to be consumed exactly once (i.e., call deleter once)
+<a class="br" href="#L84" id="L84">84 </a>
+<a class="br" href="#L85" id="L85">85 </a>    See_also:
+<a class="br" href="#L86" id="L86">86 </a>    https://github.com/pytorch/pytorch/blob/v1.2.0/aten/src/ATen/DLConvertor.cpp
+<a class="br" href="#L87" id="L87">87 </a>*/
+<a class="br" href="#L88" id="L88">88 </a>@nogc nothrow
+<a class="br" href="#L89" id="L89">89 </a>DLManagedTensor* toDLPack(AnyTensor src)
+<a class="br" href="#L90" id="L90">90 </a>{
+<a class="br" href="#L91" id="L91">91 </a>    import std.experimental.allocator : make, dispose;
+<a class="br" href="#L92" id="L92">92 </a>    import std.experimental.allocator.mallocator : Mallocator;
+<a class="br" href="#L93" id="L93">93 </a>
+<a class="br" href="#L94" id="L94">94 </a>    auto manager = Mallocator.instance.make!DLManager;
+<a class="br" href="#L95" id="L95">95 </a>    manager.handle = src; // inc ref counts by copy
+<a class="br" href="#L96" id="L96">96 </a>    auto ret = &amp;manager.tensor;
+<a class="br" href="#L97" id="L97">97 </a>    with (ret.dl_tensor)
+<a class="br" href="#L98" id="L98">98 </a>    {
+<a class="br" href="#L99" id="L99">99 </a>        ndim = cast(int) src.shape.length;
+<a class="br" href="#L100" id="L100">100 </a>        byte_offset = src.offset;
+<a class="br" href="#L101" id="L101">101 </a>        data = src.buffer.payload.ptr;
+<a class="br" href="#L102" id="L102">102 </a>        shape = &amp;(*src.shape)[0];
+<a class="br" href="#L103" id="L103">103 </a>        strides = &amp;(*src.strides)[0];
+<a class="br" href="#L104" id="L104">104 </a>        ctx = src.context;
+<a class="br" href="#L105" id="L105">105 </a>        dtype = src.dataType;
+<a class="br" href="#L106" id="L106">106 </a>    }
+<a class="br" href="#L107" id="L107">107 </a>    ret.manager_ctx = manager;
+<a class="br" href="#L108" id="L108">108 </a>    ret.deleter = (DLManagedTensor* self) @trusted {
+<a class="br" href="#L109" id="L109">109 </a>        // dec ref count by dtor in DLManager.handle
+<a class="br" href="#L110" id="L110">110 </a>        Mallocator.instance.dispose(cast(DLManager*) self.manager_ctx);
+<a class="br" href="#L111" id="L111">111 </a>    };
+<a class="br" href="#L112" id="L112">112 </a>    return ret;
+<a class="br" href="#L113" id="L113">113 </a>}
+<a class="br" href="#L114" id="L114">114 </a>
+<a class="br" href="#L115" id="L115">115 </a>/// Load a new AnyTensor from DLManagedTensor
+<a class="br" href="#L116" id="L116">116 </a>@nogc nothrow
+<a class="br" href="#L117" id="L117">117 </a>AnyTensor toAny(DLManagedTensor* src)
+<a class="br" href="#L118" id="L118">118 </a>{
+<a class="br" href="#L119" id="L119">119 </a>    import grain.rc : RC;
+<a class="br" href="#L120" id="L120">120 </a>    AnyTensor ret;
+<a class="br" href="#L121" id="L121">121 </a>    ret.buffer = RC!DLBuffer.create(src).castTo!AnyBuffer;
+<a class="br" href="#L122" id="L122">122 </a>    with (src.dl_tensor)
+<a class="br" href="#L123" id="L123">123 </a>    {
+<a class="br" href="#L124" id="L124">124 </a>        ret.offset = byte_offset;
+<a class="br" href="#L125" id="L125">125 </a>        ret.shape = RC!(Array!long).create(shape[0 .. ndim]);
+<a class="br" href="#L126" id="L126">126 </a>        ret.strides = RC!(Array!long).create(strides[0 .. ndim]);
+<a class="br" href="#L127" id="L127">127 </a>        ret.context = ctx;
+<a class="br" href="#L128" id="L128">128 </a>        ret.dataType = dtype;
+<a class="br" href="#L129" id="L129">129 </a>    }
+<a class="br" href="#L130" id="L130">130 </a>    return ret;
+<a class="br" href="#L131" id="L131">131 </a>}
+<a class="br" href="#L132" id="L132">132 </a>
+<a class="br" href="#L133" id="L133">133 </a>///
+<a class="br" href="#L134" id="L134">134 </a>@nogc nothrow
+<a class="br" href="#L135" id="L135">135 </a>unittest
+<a class="br" href="#L136" id="L136">136 </a>{
+<a class="br" href="#L137" id="L137">137 </a>    import grain.rc : RC;
+<a class="br" href="#L138" id="L138">138 </a>
+<a class="br" href="#L139" id="L139">139 </a>    Array!byte bs;
+<a class="br" href="#L140" id="L140">140 </a>    bs.length = 6;
+<a class="br" href="#L141" id="L141">141 </a>    bs[] = 123;
+<a class="br" href="#L142" id="L142">142 </a>    auto br = (&amp;bs[0])[0 .. bs.length];
+<a class="br" href="#L143" id="L143">143 </a>    AnyTensor a = {
+<a class="br" href="#L144" id="L144">144 </a>        buffer: RC!AnyBuffer.create(br),
+<a class="br" href="#L145" id="L145">145 </a>        offset: 0,
+<a class="br" href="#L146" id="L146">146 </a>        shape: RC!(Array!long).create(2, 3),
+<a class="br" href="#L147" id="L147">147 </a>        strides: RC!(Array!long).create(3, 1)
+<a class="br" href="#L148" id="L148">148 </a>    };
+<a class="br" href="#L149" id="L149">149 </a>    assert(a.buffer._counter == 1);
+<a class="br" href="#L150" id="L150">150 </a>
+<a class="br" href="#L151" id="L151">151 </a>    {
+<a class="br" href="#L152" id="L152">152 </a>        auto d = a.toDLPack();
+<a class="br" href="#L153" id="L153">153 </a>        // check contents equal without copy
+<a class="br" href="#L154" id="L154">154 </a>        assert(d.dl_tensor.data == br.ptr);
+<a class="br" href="#L155" id="L155">155 </a>        assert(d.dl_tensor.ndim == 2);
+<a class="br" href="#L156" id="L156">156 </a>        assert(d.dl_tensor.shape == &amp;(*a.shape)[0]);
+<a class="br" href="#L157" id="L157">157 </a>        assert(d.dl_tensor.strides == &amp;(*a.strides)[0]);
+<a class="br" href="#L158" id="L158">158 </a>
+<a class="br" href="#L159" id="L159">159 </a>        assert(a.buffer._counter == 2);
+<a class="br" href="#L160" id="L160">160 </a>        d.deleter(d);  // manually disposed
+<a class="br" href="#L161" id="L161">161 </a>        assert(a.buffer._counter == 1);
+<a class="br" href="#L162" id="L162">162 </a>    }
+<a class="br" href="#L163" id="L163">163 </a>
+<a class="br" href="#L164" id="L164">164 </a>    {
+<a class="br" href="#L165" id="L165">165 </a>        auto d = a.toDLPack();
+<a class="br" href="#L166" id="L166">166 </a>        assert(a.buffer._counter == 2);
+<a class="br" href="#L167" id="L167">167 </a>        AnyTensor b = d.toAny;  // automatically disposed
+<a class="br" href="#L168" id="L168">168 </a>        assert(a.buffer.payload.ptr == b.buffer.payload.ptr);
+<a class="br" href="#L169" id="L169">169 </a>        assert((*a.shape) == (*b.shape));
+<a class="br" href="#L170" id="L170">170 </a>        assert((*a.strides) == (*b.strides));
+<a class="br" href="#L171" id="L171">171 </a>        assert(a.context == b.context);
+<a class="br" href="#L172" id="L172">172 </a>        assert(a.dataType == b.dataType);
+<a class="br" href="#L173" id="L173">173 </a>
+<a class="br" href="#L174" id="L174">174 </a>        assert(a.buffer._counter == 2);  // no increase
+<a class="br" href="#L175" id="L175">175 </a>    }
+<a class="br" href="#L176" id="L176">176 </a>    // check freed only once
+<a class="br" href="#L177" id="L177">177 </a>    assert(a.buffer._counter == 1);
+<a class="br" href="#L178" id="L178">178 </a>}
+<a class="br" href="#L179" id="L179">179 </a>+/</span></pre></div>
+		<div id="page-nav">
+		<div id="source-navigation"><div class="list-holder"><ul><li><a href="#L1">grain.dlpack.conv</a><ul><li><a href="#L3">std.container.array</a></li><li><a href="#L4">std.traits</a></li><li><a href="#L6">grain.dlpack.header</a></li><li><a href="#L9">dataTypeOf</a></li></ul></li></ul></div></div></div>
+	</div>
+	<div id="page-footer">Page generated by <a href="https://github.com/adamdruppe/adrdox">adrdox</a></div>
+</body>
+</html>

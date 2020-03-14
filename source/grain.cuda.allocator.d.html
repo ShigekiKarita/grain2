@@ -28,14 +28,14 @@
 		<div id="page-content">
 		<pre class="d_code highlighted with-line-wrappers"><a class="br" href="#L1" id="L1">1 </a><span class="kwrd">module</span> <span class="hid">grain.cuda.allocator</span>;
 <a class="br" href="#L2" id="L2">2 </a>
-<a class="br" href="#L3" id="L3">3 </a><span class="kwrd">import</span> <span class="hid">grain.tensor</span> : <a class="hid" href="grain.tensor.d.html#L16" title="grain.tensor.Opt">Opt</a>;
+<a class="br" href="#L3" id="L3">3 </a><span class="kwrd">import</span> <span class="hid">grain.tensor</span> : <a class="hid" href="grain.tensor.d.html#L15" title="grain.tensor.Opt">Opt</a>;
 <a class="br" href="#L4" id="L4">4 </a><span class="kwrd">import</span> <span class="hid">grain.allocator</span> : <a class="hid" href="grain.allocator.d.html#L5" title="grain.allocator.CPUMallocator">CPUMallocator</a>;
 <a class="br" href="#L5" id="L5">5 </a><span class="kwrd">import</span> <span class="hid">grain.cuda.testing</span> : <a class="hid" href="grain.cuda.testing.d.html#L85" title="grain.cuda.testing.checkCuda">checkCuda</a>;
 <a class="br" href="#L6" id="L6">6 </a><span class="kwrd">import</span> <span class="hid">grain.dpp.cuda_runtime_api</span>;
 <a class="br" href="#L7" id="L7">7 </a>
 <a class="br" href="#L8" id="L8">8 </a><span class="kwrd">struct</span> <a class="hid" href="grain.cuda.allocator.d.html#L8" title="grain.cuda.allocator.PinnedMallocator">PinnedMallocator</a>
 <a class="br" href="#L9" id="L9">9 </a>{
-<a class="br" href="#L10" id="L10">10 </a>    <a class="hid" href="grain.tensor.d.html#L16" title="grain.tensor.Opt">Opt</a> <span class="hid">opt</span>;
+<a class="br" href="#L10" id="L10">10 </a>    <a class="hid" href="grain.tensor.d.html#L15" title="grain.tensor.Opt">Opt</a> <span class="hid">opt</span>;
 <a class="br" href="#L11" id="L11">11 </a>    <span class="kwrd">alias</span> <span class="hid">opt</span> <span class="kwrd">this</span>;
 <a class="br" href="#L12" id="L12">12 </a>
 <a class="br" href="#L13" id="L13">13 </a>    <span class="kwrd">enum</span> <span class="hid">deviceof</span> = <span class="str">&quot;cpu&quot;</span>;
@@ -76,7 +76,7 @@
 <a class="br" href="#L48" id="L48">48 </a><span class="com">/// CUDA heap allocator</span>
 <a class="br" href="#L49" id="L49">49 </a><span class="kwrd">struct</span> <a class="hid" href="grain.cuda.allocator.d.html#L49" title="grain.cuda.allocator.CuMallocator">CuMallocator</a>
 <a class="br" href="#L50" id="L50">50 </a>{
-<a class="br" href="#L51" id="L51">51 </a>    <a class="hid" href="grain.tensor.d.html#L16" title="grain.tensor.Opt">Opt</a> <span class="hid">opt</span>;
+<a class="br" href="#L51" id="L51">51 </a>    <a class="hid" href="grain.tensor.d.html#L15" title="grain.tensor.Opt">Opt</a> <span class="hid">opt</span>;
 <a class="br" href="#L52" id="L52">52 </a>    <span class="kwrd">alias</span> <span class="hid">opt</span> <span class="kwrd">this</span>;
 <a class="br" href="#L53" id="L53">53 </a>
 <a class="br" href="#L54" id="L54">54 </a>    <span class="com">/// device indicator</span>
@@ -112,20 +112,20 @@
 <a class="br" href="#L84" id="L84">84 </a>@<span class="hid">nogc</span>
 <a class="br" href="#L85" id="L85">85 </a><span class="kwrd">unittest</span>
 <a class="br" href="#L86" id="L86">86 </a>{
-<a class="br" href="#L87" id="L87">87 </a>    <span class="kwrd">import</span> <span class="hid">grain.tensor</span> : <a class="hid" href="grain.tensor.d.html#L37" title="grain.tensor.Tensor">Tensor</a>;
+<a class="br" href="#L87" id="L87">87 </a>    <span class="kwrd">import</span> <span class="hid">grain.tensor</span> : <a class="hid" href="grain.tensor.d.html#L36" title="grain.tensor.Tensor">Tensor</a>;
 <a class="br" href="#L88" id="L88">88 </a>    <span class="kwrd">import</span> <span class="hid">grain.storage</span> : <a class="hid" href="grain.storage.d.html#L43" title="grain.storage.RCStorage">RCStorage</a>;
-<a class="br" href="#L89" id="L89">89 </a>    <span class="kwrd">auto</span> <span class="hid">x</span> = <a class="hid" href="grain.tensor.d.html#L37" title="grain.tensor.Tensor">Tensor</a>!(<span class="num">2</span>, <span class="type">double</span>, <a class="hid" href="grain.storage.d.html#L43" title="grain.storage.RCStorage">RCStorage</a>!<a class="hid" href="grain.cuda.allocator.d.html#L49" title="grain.cuda.allocator.CuMallocator">CuMallocator</a>)(<span class="num">2</span>, <span class="num">3</span>);
+<a class="br" href="#L89" id="L89">89 </a>    <span class="kwrd">auto</span> <span class="hid">x</span> = <a class="hid" href="grain.tensor.d.html#L36" title="grain.tensor.Tensor">Tensor</a>!(<span class="num">2</span>, <span class="type">double</span>, <a class="hid" href="grain.storage.d.html#L43" title="grain.storage.RCStorage">RCStorage</a>!<a class="hid" href="grain.cuda.allocator.d.html#L49" title="grain.cuda.allocator.CuMallocator">CuMallocator</a>)(<span class="num">2</span>, <span class="num">3</span>);
 <a class="br" href="#L90" id="L90">90 </a>    <span class="kwrd">static</span> <span class="kwrd">assert</span>(<span class="hid">x.deviceof</span> == <span class="str">&quot;cuda&quot;</span>);
 <a class="br" href="#L91" id="L91">91 </a>}
 <a class="br" href="#L92" id="L92">92 </a>
 <a class="br" href="#L93" id="L93">93 </a>
 <a class="br" href="#L94" id="L94">94 </a><span class="kwrd">import</span> <span class="hid">grain.storage</span> : <a class="hid" href="grain.storage.d.html#L43" title="grain.storage.RCStorage">RCStorage</a>;
-<a class="br" href="#L95" id="L95">95 </a><span class="kwrd">import</span> <span class="hid">grain.tensor</span> : <a class="hid" href="grain.tensor.d.html#L37" title="grain.tensor.Tensor">Tensor</a>;
+<a class="br" href="#L95" id="L95">95 </a><span class="kwrd">import</span> <span class="hid">grain.tensor</span> : <a class="hid" href="grain.tensor.d.html#L36" title="grain.tensor.Tensor">Tensor</a>;
 <a class="br" href="#L96" id="L96">96 </a>
 <a class="br" href="#L97" id="L97">97 </a><span class="kwrd">alias</span> <a class="hid" href="grain.cuda.allocator.d.html#L97" title="grain.cuda.allocator.DefaultCuStorage">DefaultCuStorage</a> = <a class="hid" href="grain.storage.d.html#L43" title="grain.storage.RCStorage">RCStorage</a>!<a class="hid" href="grain.cuda.allocator.d.html#L49" title="grain.cuda.allocator.CuMallocator">CuMallocator</a>;
 <a class="br" href="#L98" id="L98">98 </a><span class="kwrd">alias</span> <a class="hid" href="grain.cuda.allocator.d.html#L98" title="grain.cuda.allocator.cuda">cuda</a> = <a class="hid" href="grain.storage.d.html#L43" title="grain.storage.RCStorage">RCStorage</a>!<a class="hid" href="grain.cuda.allocator.d.html#L49" title="grain.cuda.allocator.CuMallocator">CuMallocator</a>;
 <a class="br" href="#L99" id="L99">99 </a><span class="kwrd">alias</span> <a class="hid" href="grain.cuda.allocator.d.html#L99" title="grain.cuda.allocator.pinned">pinned</a> = <a class="hid" href="grain.storage.d.html#L43" title="grain.storage.RCStorage">RCStorage</a>!<a class="hid" href="grain.cuda.allocator.d.html#L8" title="grain.cuda.allocator.PinnedMallocator">PinnedMallocator</a>;
-<a class="br" href="#L100" id="L100">100 </a><span class="kwrd">alias</span> <a class="hid" href="grain.cuda.allocator.d.html#L100" title="grain.cuda.allocator.CuTensor">CuTensor</a>(<span class="hid">size_t</span> <span class="hid">dim</span>, <span class="hid">T</span>) = <a class="hid" href="grain.tensor.d.html#L37" title="grain.tensor.Tensor">Tensor</a>!(<span class="hid">dim</span>, <span class="hid">T</span>, <a class="hid" href="grain.cuda.allocator.d.html#L97" title="grain.cuda.allocator.DefaultCuStorage">DefaultCuStorage</a>);</pre></div>
+<a class="br" href="#L100" id="L100">100 </a><span class="kwrd">alias</span> <a class="hid" href="grain.cuda.allocator.d.html#L100" title="grain.cuda.allocator.CuTensor">CuTensor</a>(<span class="hid">size_t</span> <span class="hid">dim</span>, <span class="hid">T</span>) = <a class="hid" href="grain.tensor.d.html#L36" title="grain.tensor.Tensor">Tensor</a>!(<span class="hid">dim</span>, <span class="hid">T</span>, <a class="hid" href="grain.cuda.allocator.d.html#L97" title="grain.cuda.allocator.DefaultCuStorage">DefaultCuStorage</a>);</pre></div>
 		<div id="page-nav">
 		<div id="source-navigation"><div class="list-holder"><ul><li><a class="docs" href="../grain.cuda.allocator.html">[Docs] </a><a href="#L1">grain.cuda.allocator</a><ul><li><a href="#L3">grain.tensor</a></li><li><a href="#L4">grain.allocator</a></li><li><a href="#L5">grain.cuda.testing</a></li><li><a href="#L6">grain.dpp.cuda_runtime_api</a></li><li><a class="docs" href="../grain.cuda.allocator.PinnedMallocator.html">[Docs] </a><a href="#L8">PinnedMallocator</a><ul><li><a href="#L10">opt</a></li><li><a href="#L1">deviceof</a></li><li><a href="#L1">pinned</a></li><li><a class="docs" href="../grain.cuda.allocator.PinnedMallocator.allocate.html">[Docs] </a><a href="#L24">allocate</a></li><li><a class="docs" href="../grain.cuda.allocator.PinnedMallocator.deallocate.html">[Docs] </a><a href="#L37">deallocate</a></li><li><a href="#L1">instance</a></li></ul></li><li><a class="docs" href="../grain.cuda.allocator.CuMallocator.html">[Docs] </a><a href="#L49">CuMallocator</a><ul><li><a href="#L51">opt</a></li><li><a class="docs" href="../grain.cuda.allocator.CuMallocator.deviceof.html">[Docs] </a><a href="#L1">deviceof</a></li><li><a href="#L1">pinned</a></li><li><a class="docs" href="../grain.cuda.allocator.CuMallocator.allocate.html">[Docs] </a><a href="#L60">allocate</a></li><li><a class="docs" href="../grain.cuda.allocator.CuMallocator.deallocate.html">[Docs] </a><a href="#L73">deallocate</a></li><li><a href="#L1">instance</a></li></ul></li><li><a href="#L94">grain.storage</a></li><li><a href="#L95">grain.tensor</a></li><li><a href="#L97">DefaultCuStorage</a></li><li><a href="#L98">cuda</a></li><li><a href="#L99">pinned</a></li><li><a href="#L100">CuTensor</a></li></ul></li></ul></div></div></div>
 	</div>
