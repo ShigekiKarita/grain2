@@ -3,6 +3,7 @@
 [![CircleCI](https://circleci.com/gh/ShigekiKarita/grain2.svg?style=svg)](https://circleci.com/gh/ShigekiKarita/grain2)
 [![Build status](https://ci.appveyor.com/api/projects/status/xd6ux9097brdbs61?svg=true)](https://ci.appveyor.com/project/ShigekiKarita/grain2)
 [![codecov](https://codecov.io/gh/ShigekiKarita/grain2/branch/master/graph/badge.svg)](https://codecov.io/gh/ShigekiKarita/grain2)
+![CI](https://github.com/ShigekiKarita/grain2/workflows/CI/badge.svg)
 
 Autograd and GPGPU library for dynamic neural networks in D.
 This project is a successor of [grain](https://github.com/ShigekiKarita/grain).

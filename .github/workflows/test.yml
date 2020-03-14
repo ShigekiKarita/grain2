@@ -6,17 +6,24 @@ jobs:
   test:
 
     runs-on: ubuntu-18.04
-
+    strategy:
+      max-parallel: 20
+      matrix:
+        compiler: [dmd, dmd-beta, ldc, ldc-beta]
     steps:
     - uses: actions/checkout@v1
     - name: install
       run: |
-        sudo apt-get remove -y clang-6.0 libclang-common-6.0-dev libclang1-6.0 libllvm6.0
-        sudo apt-get autoremove
-        sudo apt-get update -y
+    - name: test-core
+      run: |
+        sudo apt-get install -y libopenblas-dev
+        source $(curl https://dlang.org/install.sh | bash -s -- ${{ matrix.compiler }} -a)
+        dub test grain2:core
+    - name: test-cl
+      if: matrix.compiler == 'ldc'
+      run: |
         sudo apt-get install -y clinfo libpocl-dev libclang-6.0-dev ocl-icd-opencl-dev libopenblas-dev
         clinfo
-    - name: test
-      run: |
-        source $(curl https://dlang.org/install.sh | bash -s -- ldc -a)
+        source $(curl https://dlang.org/install.sh | bash -s -- ${{ matrix.compiler }} -a)
         dub test grain2:cl
+
