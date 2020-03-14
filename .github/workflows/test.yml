@@ -14,9 +14,10 @@ jobs:
     - uses: actions/checkout@v1
     - name: install
       run: |
+        sudo apt-get update -y
+        sudo apt-get install -y libopenblas-dev
     - name: test-core
       run: |
-        sudo apt-get install -y libopenblas-dev
         source $(curl https://dlang.org/install.sh | bash -s -- ${{ matrix.compiler }} -a)
         dub test grain2:core
     - name: test-cl
