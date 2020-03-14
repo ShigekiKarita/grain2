@@ -23,8 +23,11 @@ jobs:
     - name: test-cl
       if: startsWith(matrix.compiler, 'ldc')
       run: |
-        sudo apt-get install -y clinfo libpocl-dev ocl-icd-opencl-dev libopenblas-dev
+        sudo apt-get remove -y clang-6.0 libclang-common-6.0-dev libclang1-6.0 libllvm6.0
+        sudo apt-get autoremove
+        sudo apt-get install -y clinfo libpocl-dev libclang-6.0-dev ocl-icd-opencl-dev
         clinfo
+        cd dpp; rm -rf generated; make all; cd -
         source $(curl https://dlang.org/install.sh | bash -s -- ${{ matrix.compiler }} -a)
         dub test grain2:cl
 
