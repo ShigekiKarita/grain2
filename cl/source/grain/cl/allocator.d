@@ -5,7 +5,7 @@ import grain.cl.testing;
 import grain.cl.device : ClDevice;
 
 import grain.dpp.cl;
-import grain.dpp.cl_enum : CL_MEM_READ_WRITE;
+
 
 struct ClMem
 {

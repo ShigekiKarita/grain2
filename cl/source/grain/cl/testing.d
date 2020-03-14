@@ -6,8 +6,8 @@ import grain.dpp.cl;
 pure @safe @nogc nothrow
 string getErrorString()(cl_int error)
 {
-switch(error){
-    // run-time and JIT compiler errors
+    switch(error){
+        // run-time and JIT compiler errors
     case 0: return "CL_SUCCESS";
     case -1: return "CL_DEVICE_NOT_FOUND";
     case -2: return "CL_DEVICE_NOT_AVAILABLE";
@@ -29,7 +29,7 @@ switch(error){
     case -18: return "CL_DEVICE_PARTITION_FAILED";
     case -19: return "CL_KERNEL_ARG_INFO_NOT_AVAILABLE";
 
-    // compile-time errors
+        // compile-time errors
     case -30: return "CL_INVALID_VALUE";
     case -31: return "CL_INVALID_DEVICE_TYPE";
     case -32: return "CL_INVALID_PLATFORM";
@@ -70,7 +70,7 @@ switch(error){
     case -67: return "CL_INVALID_LINKER_OPTIONS";
     case -68: return "CL_INVALID_DEVICE_PARTITION_COUNT";
 
-    // extension errors
+        // extension errors
     case -1000: return "CL_INVALID_GL_SHAREGROUP_REFERENCE_KHR";
     case -1001: return "CL_PLATFORM_NOT_FOUND_KHR";
     case -1002: return "CL_INVALID_D3D10_DEVICE_KHR";
@@ -81,26 +81,79 @@ switch(error){
     }
 }
 
-@nogc nothrow @safe
-void checkCl(
-    string func = __FUNCTION__,
-    string file = __FILE__,
-    size_t line = __LINE__
-)(cl_int err)
+
+/// print opencl device info
+@nogc nothrow
+void printDeviceInfo(cl_device_id device)
 {
-    assert(err == CL_SUCCESS, err.getErrorString);
+    import core.stdc.stdio : fprintf, stderr;
+    import core.memory : pureMalloc, pureFree;
+    cl_ulong len;
+
+    // print str info
+    static foreach (s; ["CL_DEVICE_NAME", "CL_DEVICE_VERSION", "CL_DRIVER_VERSION", "CL_DEVICE_OPENCL_C_VERSION"])
+    {
+        {
+            mixin("enum d = " ~ s ~ ";");
+            clGetDeviceInfo(device, d, 0, null, &len);
+            auto p = cast(char*) pureMalloc(len);
+            scope (exit) pureFree(p);
+            clGetDeviceInfo(device, d, len, p, null);
+            stderr.fprintf("%s: %s\n", s.ptr, p);
+        }
+    }
+
+    // print size info
+    static foreach (s; ["CL_DEVICE_MAX_CLOCK_FREQUENCY", "CL_DEVICE_MAX_COMPUTE_UNITS", "CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS", "CL_DEVICE_GLOBAL_MEM_SIZE", "CL_DEVICE_LOCAL_MEM_SIZE", "CL_DEVICE_MAX_CONSTANT_BUFFER_SIZE", "CL_DEVICE_MAX_MEM_ALLOC_SIZE"])
+    {
+        {
+            mixin("enum d = " ~ s ~ ";");
+            clGetDeviceInfo(device, d, len.sizeof, &len, null);
+            stderr.fprintf("%s: %d\n", s.ptr, len);
+        }
+    }
 }
 
-auto checkClFun(
+/// assert opencl error and print where it was raised
+@nogc nothrow
+auto checkCl(
     alias f,
     string func = __FUNCTION__,
     string file = __FILE__,
     size_t line = __LINE__,
     Args ...
-)(Args args)
+)(auto return ref Args args)
 {
+    // import std.format : format;
     import std.functional : forward;
-    cl_int err;
-    scope (exit) checkCl(err);
-    return f(forward!args, &err);
+    // enum msg = format!"error at line: %d, file: %s"(line, file);
+    import mir.format : getData, stringBuf;
+    static if (__traits(compiles, f(args)))
+    {
+        auto err = f(forward!args);
+        // assert(err == CL_SUCCESS, msg);
+        assert(err == CL_SUCCESS,
+               stringBuf()
+               << err.getErrorString
+               << " from " << func
+               << " at file: " << file
+               << " of line: " << line
+               << getData);
+    }
+    else
+    {
+        cl_int err;
+        scope (exit)
+        {
+            //assert(err == CL_SUCCESS, msg);
+            assert(err == CL_SUCCESS,
+                   stringBuf()
+                   << err.getErrorString
+                   << " from " << func
+                   << " at file: " << file
+                   << " of line: " << line
+                   << getData);
+        }
+        return f(forward!args, &err);
+    }
 }

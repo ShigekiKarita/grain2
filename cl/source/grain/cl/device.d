@@ -1,7 +1,7 @@
 module grain.cl.device;
 
 import grain.dpp.cl;
-import grain.dpp.cl_enum : CL_DEVICE_TYPE_DEFAULT, CL_MEM_READ_WRITE;
+// import grain.dpp.cl_enum : CL_DEVICE_TYPE_DEFAULT, CL_MEM_READ_WRITE;
 
 import grain.cl.testing;
 
@@ -64,11 +64,11 @@ struct ClDevice
         import core.memory : pureMalloc;
         // init device
         cl_uint numPlatform;
-        checkCl(clGetPlatformIDs(0, null, &numPlatform));
+        checkCl!clGetPlatformIDs(0, null, &numPlatform);
         auto platformIdsPtr = cast(cl_platform_id*)
             pureMalloc(cl_platform_id.sizeof * numPlatform);
         platformIds = platformIdsPtr[0 .. numPlatform];
-        checkCl(clGetPlatformIDs(numPlatform, platformIdsPtr, null));
+        checkCl!clGetPlatformIDs(numPlatform, platformIdsPtr, null);
 
         auto platformsPtr = cast(typeof(this)*)
             pureMalloc(typeof(this).sizeof * numPlatform);
@@ -83,12 +83,12 @@ struct ClDevice
         {
             cl_device_id device_id = null;
             cl_uint numDevice;
-            checkCl(clGetDeviceIDs(p.platformId, CL_DEVICE_TYPE_DEFAULT,
-                                   0, null, &numDevice));
+            checkCl!clGetDeviceIDs(p.platformId, CL_DEVICE_TYPE_DEFAULT,
+                                   0, null, &numDevice);
             auto deviceIdsPtr = cast(cl_device_id*)
                 pureMalloc(cl_device_id.sizeof * numDevice);
-            checkCl(clGetDeviceIDs(p.platformId, CL_DEVICE_TYPE_DEFAULT,
-                                   numDevice, deviceIdsPtr, null));
+            checkCl!clGetDeviceIDs(p.platformId, CL_DEVICE_TYPE_DEFAULT,
+                                   numDevice, deviceIdsPtr, null);
             p.deviceIds = deviceIdsPtr[0 .. numDevice];
         }
         printInfo();
