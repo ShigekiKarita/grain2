@@ -34,8 +34,8 @@
 <a class="br" href="#L6" id="L6">6 </a><span class="kwrd">pure</span> @<span class="hid">safe</span> @<span class="hid">nogc</span> <span class="kwrd">nothrow</span>
 <a class="br" href="#L7" id="L7">7 </a><span class="type">string</span> <a class="hid" href="grain.cl.testing.d.html#L7" title="grain.cl.testing.getErrorString">getErrorString</a>()(<span class="hid">cl_int</span> <span class="hid">error</span>)
 <a class="br" href="#L8" id="L8">8 </a>{
-<a class="br" href="#L9" id="L9">9 </a><span class="kwrd">switch</span>(<span class="hid">error</span>){
-<a class="br" href="#L10" id="L10">10 </a>    <span class="com">// run-time and JIT compiler errors</span>
+<a class="br" href="#L9" id="L9">9 </a>    <span class="kwrd">switch</span>(<span class="hid">error</span>){
+<a class="br" href="#L10" id="L10">10 </a>        <span class="com">// run-time and JIT compiler errors</span>
 <a class="br" href="#L11" id="L11">11 </a>    <span class="kwrd">case</span> <span class="num">0</span>: <span class="kwrd">return</span> <span class="str">&quot;CL_SUCCESS&quot;</span>;
 <a class="br" href="#L12" id="L12">12 </a>    <span class="kwrd">case</span> -<span class="num">1</span>: <span class="kwrd">return</span> <span class="str">&quot;CL_DEVICE_NOT_FOUND&quot;</span>;
 <a class="br" href="#L13" id="L13">13 </a>    <span class="kwrd">case</span> -<span class="num">2</span>: <span class="kwrd">return</span> <span class="str">&quot;CL_DEVICE_NOT_AVAILABLE&quot;</span>;
@@ -57,7 +57,7 @@
 <a class="br" href="#L29" id="L29">29 </a>    <span class="kwrd">case</span> -<span class="num">18</span>: <span class="kwrd">return</span> <span class="str">&quot;CL_DEVICE_PARTITION_FAILED&quot;</span>;
 <a class="br" href="#L30" id="L30">30 </a>    <span class="kwrd">case</span> -<span class="num">19</span>: <span class="kwrd">return</span> <span class="str">&quot;CL_KERNEL_ARG_INFO_NOT_AVAILABLE&quot;</span>;
 <a class="br" href="#L31" id="L31">31 </a>
-<a class="br" href="#L32" id="L32">32 </a>    <span class="com">// compile-time errors</span>
+<a class="br" href="#L32" id="L32">32 </a>        <span class="com">// compile-time errors</span>
 <a class="br" href="#L33" id="L33">33 </a>    <span class="kwrd">case</span> -<span class="num">30</span>: <span class="kwrd">return</span> <span class="str">&quot;CL_INVALID_VALUE&quot;</span>;
 <a class="br" href="#L34" id="L34">34 </a>    <span class="kwrd">case</span> -<span class="num">31</span>: <span class="kwrd">return</span> <span class="str">&quot;CL_INVALID_DEVICE_TYPE&quot;</span>;
 <a class="br" href="#L35" id="L35">35 </a>    <span class="kwrd">case</span> -<span class="num">32</span>: <span class="kwrd">return</span> <span class="str">&quot;CL_INVALID_PLATFORM&quot;</span>;
@@ -98,7 +98,7 @@
 <a class="br" href="#L70" id="L70">70 </a>    <span class="kwrd">case</span> -<span class="num">67</span>: <span class="kwrd">return</span> <span class="str">&quot;CL_INVALID_LINKER_OPTIONS&quot;</span>;
 <a class="br" href="#L71" id="L71">71 </a>    <span class="kwrd">case</span> -<span class="num">68</span>: <span class="kwrd">return</span> <span class="str">&quot;CL_INVALID_DEVICE_PARTITION_COUNT&quot;</span>;
 <a class="br" href="#L72" id="L72">72 </a>
-<a class="br" href="#L73" id="L73">73 </a>    <span class="com">// extension errors</span>
+<a class="br" href="#L73" id="L73">73 </a>        <span class="com">// extension errors</span>
 <a class="br" href="#L74" id="L74">74 </a>    <span class="kwrd">case</span> -<span class="num">1000</span>: <span class="kwrd">return</span> <span class="str">&quot;CL_INVALID_GL_SHAREGROUP_REFERENCE_KHR&quot;</span>;
 <a class="br" href="#L75" id="L75">75 </a>    <span class="kwrd">case</span> -<span class="num">1001</span>: <span class="kwrd">return</span> <span class="str">&quot;CL_PLATFORM_NOT_FOUND_KHR&quot;</span>;
 <a class="br" href="#L76" id="L76">76 </a>    <span class="kwrd">case</span> -<span class="num">1002</span>: <span class="kwrd">return</span> <span class="str">&quot;CL_INVALID_D3D10_DEVICE_KHR&quot;</span>;
@@ -109,31 +109,84 @@
 <a class="br" href="#L81" id="L81">81 </a>    }
 <a class="br" href="#L82" id="L82">82 </a>}
 <a class="br" href="#L83" id="L83">83 </a>
-<a class="br" href="#L84" id="L84">84 </a>@<span class="hid">nogc</span> <span class="kwrd">nothrow</span> @<span class="hid">safe</span>
-<a class="br" href="#L85" id="L85">85 </a><span class="type">void</span> <a class="hid" href="grain.cl.testing.d.html#L85" title="grain.cl.testing.checkCl">checkCl</a>(
-<a class="br" href="#L86" id="L86">86 </a>    <span class="type">string</span> <span class="hid">func</span> = <span class="kwrd">__FUNCTION__</span>,
-<a class="br" href="#L87" id="L87">87 </a>    <span class="type">string</span> <span class="hid">file</span> = <span class="kwrd">__FILE__</span>,
-<a class="br" href="#L88" id="L88">88 </a>    <span class="hid">size_t</span> <span class="hid">line</span> = <span class="kwrd">__LINE__</span>
-<a class="br" href="#L89" id="L89">89 </a>)(<span class="hid">cl_int</span> <span class="hid">err</span>)
-<a class="br" href="#L90" id="L90">90 </a>{
-<a class="br" href="#L91" id="L91">91 </a>    <span class="kwrd">assert</span>(<span class="hid">err</span> == <span class="hid">CL_SUCCESS</span>, <span class="hid">err.getErrorString</span>);
-<a class="br" href="#L92" id="L92">92 </a>}
-<a class="br" href="#L93" id="L93">93 </a>
-<a class="br" href="#L94" id="L94">94 </a><span class="kwrd">auto</span> <a class="hid" href="grain.cl.testing.d.html#L94" title="grain.cl.testing.checkClFun">checkClFun</a>(
-<a class="br" href="#L95" id="L95">95 </a>    <span class="kwrd">alias</span> <span class="hid">f</span>,
-<a class="br" href="#L96" id="L96">96 </a>    <span class="type">string</span> <span class="hid">func</span> = <span class="kwrd">__FUNCTION__</span>,
-<a class="br" href="#L97" id="L97">97 </a>    <span class="type">string</span> <span class="hid">file</span> = <span class="kwrd">__FILE__</span>,
-<a class="br" href="#L98" id="L98">98 </a>    <span class="hid">size_t</span> <span class="hid">line</span> = <span class="kwrd">__LINE__</span>,
-<a class="br" href="#L99" id="L99">99 </a>    <span class="hid">Args</span> ...
-<a class="br" href="#L100" id="L100">100 </a>)(<span class="hid">Args</span> <span class="hid">args</span>)
-<a class="br" href="#L101" id="L101">101 </a>{
-<a class="br" href="#L102" id="L102">102 </a>    <span class="kwrd">import</span> <span class="hid">std.functional</span> : <span class="hid">forward</span>;
-<a class="br" href="#L103" id="L103">103 </a>    <span class="hid">cl_int</span> <span class="hid">err</span>;
-<a class="br" href="#L104" id="L104">104 </a>    <span class="kwrd">scope</span> (<span class="hid">exit</span>) <a class="hid" href="grain.cl.testing.d.html#L85" title="grain.cl.testing.checkCl">checkCl</a>(<span class="hid">err</span>);
-<a class="br" href="#L105" id="L105">105 </a>    <span class="kwrd">return</span> <span class="hid">f</span>(<span class="hid">forward</span>!<span class="hid">args</span>, &amp;<span class="hid">err</span>);
-<a class="br" href="#L106" id="L106">106 </a>}</pre></div>
+<a class="br" href="#L84" id="L84">84 </a>
+<a class="br" href="#L85" id="L85">85 </a><span class="com">/// print opencl device info</span>
+<a class="br" href="#L86" id="L86">86 </a>@<span class="hid">nogc</span> <span class="kwrd">nothrow</span>
+<a class="br" href="#L87" id="L87">87 </a><span class="type">void</span> <a class="hid" href="grain.cl.testing.d.html#L87" title="grain.cl.testing.printDeviceInfo">printDeviceInfo</a>(<span class="hid">cl_device_id</span> <span class="hid">device</span>)
+<a class="br" href="#L88" id="L88">88 </a>{
+<a class="br" href="#L89" id="L89">89 </a>    <span class="kwrd">import</span> <span class="hid">core.stdc.stdio</span> : <span class="hid">fprintf</span>, <span class="hid">stderr</span>;
+<a class="br" href="#L90" id="L90">90 </a>    <span class="kwrd">import</span> <span class="hid">core.memory</span> : <span class="hid">pureMalloc</span>, <span class="hid">pureFree</span>;
+<a class="br" href="#L91" id="L91">91 </a>    <span class="hid">cl_ulong</span> <span class="hid">len</span>;
+<a class="br" href="#L92" id="L92">92 </a>
+<a class="br" href="#L93" id="L93">93 </a>    <span class="com">// print str info</span>
+<a class="br" href="#L94" id="L94">94 </a>    <span class="kwrd">static</span> <span class="kwrd">foreach</span> (<span class="hid">s</span>; [<span class="str">&quot;CL_DEVICE_NAME&quot;</span>, <span class="str">&quot;CL_DEVICE_VERSION&quot;</span>, <span class="str">&quot;CL_DRIVER_VERSION&quot;</span>, <span class="str">&quot;CL_DEVICE_OPENCL_C_VERSION&quot;</span>])
+<a class="br" href="#L95" id="L95">95 </a>    {
+<a class="br" href="#L96" id="L96">96 </a>        {
+<a class="br" href="#L97" id="L97">97 </a>            <span class="kwrd">mixin</span>(<span class="str">&quot;enum d = &quot;</span> ~ <span class="hid">s</span> ~ <span class="str">&quot;;&quot;</span>);
+<a class="br" href="#L98" id="L98">98 </a>            <span class="hid">clGetDeviceInfo</span>(<span class="hid">device</span>, <span class="hid">d</span>, <span class="num">0</span>, <span class="kwrd">null</span>, &amp;<span class="hid">len</span>);
+<a class="br" href="#L99" id="L99">99 </a>            <span class="kwrd">auto</span> <span class="hid">p</span> = <span class="kwrd">cast</span>(<span class="type">char</span>*) <span class="hid">pureMalloc</span>(<span class="hid">len</span>);
+<a class="br" href="#L100" id="L100">100 </a>            <span class="kwrd">scope</span> (<span class="hid">exit</span>) <span class="hid">pureFree</span>(<span class="hid">p</span>);
+<a class="br" href="#L101" id="L101">101 </a>            <span class="hid">clGetDeviceInfo</span>(<span class="hid">device</span>, <span class="hid">d</span>, <span class="hid">len</span>, <span class="hid">p</span>, <span class="kwrd">null</span>);
+<a class="br" href="#L102" id="L102">102 </a>            <span class="hid">stderr.fprintf</span>(<span class="str">&quot;%s: %s\n&quot;</span>, <span class="hid">s.ptr</span>, <span class="hid">p</span>);
+<a class="br" href="#L103" id="L103">103 </a>        }
+<a class="br" href="#L104" id="L104">104 </a>    }
+<a class="br" href="#L105" id="L105">105 </a>
+<a class="br" href="#L106" id="L106">106 </a>    <span class="com">// print size info</span>
+<a class="br" href="#L107" id="L107">107 </a>    <span class="kwrd">static</span> <span class="kwrd">foreach</span> (<span class="hid">s</span>; [<span class="str">&quot;CL_DEVICE_MAX_CLOCK_FREQUENCY&quot;</span>, <span class="str">&quot;CL_DEVICE_MAX_COMPUTE_UNITS&quot;</span>, <span class="str">&quot;CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS&quot;</span>, <span class="str">&quot;CL_DEVICE_GLOBAL_MEM_SIZE&quot;</span>, <span class="str">&quot;CL_DEVICE_LOCAL_MEM_SIZE&quot;</span>, <span class="str">&quot;CL_DEVICE_MAX_CONSTANT_BUFFER_SIZE&quot;</span>, <span class="str">&quot;CL_DEVICE_MAX_MEM_ALLOC_SIZE&quot;</span>])
+<a class="br" href="#L108" id="L108">108 </a>    {
+<a class="br" href="#L109" id="L109">109 </a>        {
+<a class="br" href="#L110" id="L110">110 </a>            <span class="kwrd">mixin</span>(<span class="str">&quot;enum d = &quot;</span> ~ <span class="hid">s</span> ~ <span class="str">&quot;;&quot;</span>);
+<a class="br" href="#L111" id="L111">111 </a>            <span class="hid">clGetDeviceInfo</span>(<span class="hid">device</span>, <span class="hid">d</span>, <span class="hid">len.sizeof</span>, &amp;<span class="hid">len</span>, <span class="kwrd">null</span>);
+<a class="br" href="#L112" id="L112">112 </a>            <span class="hid">stderr.fprintf</span>(<span class="str">&quot;%s: %d\n&quot;</span>, <span class="hid">s.ptr</span>, <span class="hid">len</span>);
+<a class="br" href="#L113" id="L113">113 </a>        }
+<a class="br" href="#L114" id="L114">114 </a>    }
+<a class="br" href="#L115" id="L115">115 </a>}
+<a class="br" href="#L116" id="L116">116 </a>
+<a class="br" href="#L117" id="L117">117 </a><span class="com">/// assert opencl error and print where it was raised</span>
+<a class="br" href="#L118" id="L118">118 </a>@<span class="hid">nogc</span> <span class="kwrd">nothrow</span>
+<a class="br" href="#L119" id="L119">119 </a><span class="kwrd">auto</span> <a class="hid" href="grain.cl.testing.d.html#L119" title="grain.cl.testing.checkCl">checkCl</a>(
+<a class="br" href="#L120" id="L120">120 </a>    <span class="kwrd">alias</span> <span class="hid">f</span>,
+<a class="br" href="#L121" id="L121">121 </a>    <span class="type">string</span> <span class="hid">func</span> = <span class="kwrd">__FUNCTION__</span>,
+<a class="br" href="#L122" id="L122">122 </a>    <span class="type">string</span> <span class="hid">file</span> = <span class="kwrd">__FILE__</span>,
+<a class="br" href="#L123" id="L123">123 </a>    <span class="hid">size_t</span> <span class="hid">line</span> = <span class="kwrd">__LINE__</span>,
+<a class="br" href="#L124" id="L124">124 </a>    <span class="hid">Args</span> ...
+<a class="br" href="#L125" id="L125">125 </a>)(<span class="kwrd">auto</span> <span class="kwrd">return</span> <span class="kwrd">ref</span> <span class="hid">Args</span> <span class="hid">args</span>)
+<a class="br" href="#L126" id="L126">126 </a>{
+<a class="br" href="#L127" id="L127">127 </a>    <span class="com">// import std.format : format;</span>
+<a class="br" href="#L128" id="L128">128 </a>    <span class="kwrd">import</span> <span class="hid">std.functional</span> : <span class="hid">forward</span>;
+<a class="br" href="#L129" id="L129">129 </a>    <span class="com">// enum msg = format!&quot;error at line: %d, file: %s&quot;(line, file);</span>
+<a class="br" href="#L130" id="L130">130 </a>    <span class="kwrd">import</span> <span class="hid">mir.format</span> : <span class="hid">getData</span>, <span class="hid">stringBuf</span>;
+<a class="br" href="#L131" id="L131">131 </a>    <span class="kwrd">static</span> <span class="kwrd">if</span> (<span class="kwrd">__traits</span>(<span class="hid">compiles</span>, <span class="hid">f</span>(<span class="hid">args</span>)))
+<a class="br" href="#L132" id="L132">132 </a>    {
+<a class="br" href="#L133" id="L133">133 </a>        <span class="kwrd">auto</span> <span class="hid">err</span> = <span class="hid">f</span>(<span class="hid">forward</span>!<span class="hid">args</span>);
+<a class="br" href="#L134" id="L134">134 </a>        <span class="com">// assert(err == CL_SUCCESS, msg);</span>
+<a class="br" href="#L135" id="L135">135 </a>        <span class="kwrd">assert</span>(<span class="hid">err</span> == <span class="hid">CL_SUCCESS</span>,
+<a class="br" href="#L136" id="L136">136 </a>               <span class="hid">stringBuf</span>()
+<a class="br" href="#L137" id="L137">137 </a>               &lt;&lt; <span class="hid">err.getErrorString</span>
+<a class="br" href="#L138" id="L138">138 </a>               &lt;&lt; <span class="str">&quot; from &quot;</span> &lt;&lt; <span class="hid">func</span>
+<a class="br" href="#L139" id="L139">139 </a>               &lt;&lt; <span class="str">&quot; at file: &quot;</span> &lt;&lt; <span class="hid">file</span>
+<a class="br" href="#L140" id="L140">140 </a>               &lt;&lt; <span class="str">&quot; of line: &quot;</span> &lt;&lt; <span class="hid">line</span>
+<a class="br" href="#L141" id="L141">141 </a>               &lt;&lt; <span class="hid">getData</span>);
+<a class="br" href="#L142" id="L142">142 </a>    }
+<a class="br" href="#L143" id="L143">143 </a>    <span class="kwrd">else</span>
+<a class="br" href="#L144" id="L144">144 </a>    {
+<a class="br" href="#L145" id="L145">145 </a>        <span class="hid">cl_int</span> <span class="hid">err</span>;
+<a class="br" href="#L146" id="L146">146 </a>        <span class="kwrd">scope</span> (<span class="hid">exit</span>)
+<a class="br" href="#L147" id="L147">147 </a>        {
+<a class="br" href="#L148" id="L148">148 </a>            <span class="com">//assert(err == CL_SUCCESS, msg);</span>
+<a class="br" href="#L149" id="L149">149 </a>            <span class="kwrd">assert</span>(<span class="hid">err</span> == <span class="hid">CL_SUCCESS</span>,
+<a class="br" href="#L150" id="L150">150 </a>                   <span class="hid">stringBuf</span>()
+<a class="br" href="#L151" id="L151">151 </a>                   &lt;&lt; <span class="hid">err.getErrorString</span>
+<a class="br" href="#L152" id="L152">152 </a>                   &lt;&lt; <span class="str">&quot; from &quot;</span> &lt;&lt; <span class="hid">func</span>
+<a class="br" href="#L153" id="L153">153 </a>                   &lt;&lt; <span class="str">&quot; at file: &quot;</span> &lt;&lt; <span class="hid">file</span>
+<a class="br" href="#L154" id="L154">154 </a>                   &lt;&lt; <span class="str">&quot; of line: &quot;</span> &lt;&lt; <span class="hid">line</span>
+<a class="br" href="#L155" id="L155">155 </a>                   &lt;&lt; <span class="hid">getData</span>);
+<a class="br" href="#L156" id="L156">156 </a>        }
+<a class="br" href="#L157" id="L157">157 </a>        <span class="kwrd">return</span> <span class="hid">f</span>(<span class="hid">forward</span>!<span class="hid">args</span>, &amp;<span class="hid">err</span>);
+<a class="br" href="#L158" id="L158">158 </a>    }
+<a class="br" href="#L159" id="L159">159 </a>}</pre></div>
 		<div id="page-nav">
-		<div id="source-navigation"><div class="list-holder"><ul><li><a href="#L1">grain.cl.testing</a><ul><li><a href="#L3">grain.dpp.cl</a></li><li><a href="#L7">getErrorString</a></li><li><a href="#L85">checkCl</a></li><li><a href="#L94">checkClFun</a></li></ul></li></ul></div></div></div>
+		<div id="source-navigation"><div class="list-holder"><ul><li><a class="docs" href="../grain.cl.testing.html">[Docs] </a><a href="#L1">grain.cl.testing</a><ul><li><a href="#L3">grain.dpp.cl</a></li><li><a href="#L7">getErrorString</a></li><li><a class="docs" href="../grain.cl.testing.printDeviceInfo.html">[Docs] </a><a href="#L87">printDeviceInfo</a></li><li><a class="docs" href="../grain.cl.testing.checkCl.html">[Docs] </a><a href="#L119">checkCl</a></li></ul></li></ul></div></div></div>
 	</div>
 	<div id="page-footer">Page generated by <a href="https://github.com/adamdruppe/adrdox">adrdox</a></div>
 </body>

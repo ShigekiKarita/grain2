@@ -30,10 +30,10 @@
 <a class="br" href="#L2" id="L2">2 </a>
 <a class="br" href="#L3" id="L3">3 </a><span class="kwrd">import</span> <span class="hid">grain.tensor</span> : <a class="hid" href="grain.tensor.d.html#L16" title="grain.tensor.Opt">Opt</a>;
 <a class="br" href="#L4" id="L4">4 </a><span class="kwrd">import</span> <span class="hid">grain.cl.testing</span>;
-<a class="br" href="#L5" id="L5">5 </a><span class="kwrd">import</span> <span class="hid">grain.cl.device</span> : <a class="hid" href="grain.cl.device.d.html#L52" title="grain.cl.device.ClDevice">ClDevice</a>;
+<a class="br" href="#L5" id="L5">5 </a><span class="kwrd">import</span> <span class="hid">grain.cl.device</span> : <span class="hid">ClDevice</span>;
 <a class="br" href="#L6" id="L6">6 </a>
 <a class="br" href="#L7" id="L7">7 </a><span class="kwrd">import</span> <span class="hid">grain.dpp.cl</span>;
-<a class="br" href="#L8" id="L8">8 </a><span class="kwrd">import</span> <span class="hid">grain.dpp.cl_enum</span> : <span class="hid">CL_MEM_READ_WRITE</span>;
+<a class="br" href="#L8" id="L8">8 </a>
 <a class="br" href="#L9" id="L9">9 </a>
 <a class="br" href="#L10" id="L10">10 </a><span class="kwrd">struct</span> <a class="hid" href="grain.cl.allocator.d.html#L10" title="grain.cl.allocator.ClMem">ClMem</a>
 <a class="br" href="#L11" id="L11">11 </a>{
@@ -61,7 +61,7 @@
 <a class="br" href="#L33" id="L33">33 </a>        <span class="com">// import grain.dpp.cuda_driver : cuMemAlloc_v2, CUdeviceptr;</span>
 <a class="br" href="#L34" id="L34">34 </a>        <span class="kwrd">if</span> (!<span class="hid">bytes</span>) <span class="kwrd">return</span> <a class="hid" href="grain.cl.allocator.d.html#L10" title="grain.cl.allocator.ClMem">ClMem</a>(<span class="kwrd">null</span>, <span class="num">0</span>);
 <a class="br" href="#L35" id="L35">35 </a>
-<a class="br" href="#L36" id="L36">36 </a>        <span class="kwrd">auto</span> <span class="hid">id</span> = <a class="hid" href="grain.cl.device.d.html#L97" title="grain.cl.device.ClDevice.get">ClDevice.get</a>(<span class="hid">opt.deviceId</span>, <span class="hid">opt.platformId</span>);
+<a class="br" href="#L36" id="L36">36 </a>        <span class="kwrd">auto</span> <span class="hid">id</span> = <span class="hid">ClDevice.get</span>(<span class="hid">opt.deviceId</span>, <span class="hid">opt.platformId</span>);
 <a class="br" href="#L37" id="L37">37 </a>        <span class="kwrd">auto</span> <span class="hid">context</span> = <span class="hid">checkClFun</span>!<span class="hid">clCreateContext</span>(<span class="kwrd">null</span>, <span class="num">1</span>, &amp;<span class="hid">id</span>, <span class="kwrd">null</span>, <span class="kwrd">null</span>);
 <a class="br" href="#L38" id="L38">38 </a>        <span class="kwrd">auto</span> <span class="hid">da</span> = <span class="hid">checkClFun</span>!<span class="hid">clCreateBuffer</span>(<span class="hid">context</span>, <span class="hid">CL_MEM_READ_WRITE</span>, <span class="hid">bytes</span>, <span class="kwrd">null</span>);
 <a class="br" href="#L39" id="L39">39 </a>        <span class="kwrd">return</span> <a class="hid" href="grain.cl.allocator.d.html#L10" title="grain.cl.allocator.ClMem">ClMem</a>(<span class="hid">da</span>, <span class="hid">bytes</span>);
@@ -78,7 +78,7 @@
 <a class="br" href="#L50" id="L50">50 </a>    <span class="kwrd">enum</span> <span class="hid">instance</span> = <a class="hid" href="grain.cl.allocator.d.html#L20" title="grain.cl.allocator.ClMallocator">ClMallocator</a>();
 <a class="br" href="#L51" id="L51">51 </a>}</pre></div>
 		<div id="page-nav">
-		<div id="source-navigation"><div class="list-holder"><ul><li><a class="docs" href="../grain.cl.allocator.html">[Docs] </a><a href="#L1">grain.cl.allocator</a><ul><li><a href="#L3">grain.tensor</a></li><li><a href="#L4">grain.cl.testing</a></li><li><a href="#L5">grain.cl.device</a></li><li><a href="#L7">grain.dpp.cl</a></li><li><a href="#L8">grain.dpp.cl_enum</a></li><li><a href="#L10">ClMem</a><ul><li><a href="#L14">ptr</a></li><li><a href="#L15">length</a></li></ul></li><li><a class="docs" href="../grain.cl.allocator.ClMallocator.html">[Docs] </a><a href="#L20">ClMallocator</a><ul><li><a href="#L22">opt</a></li><li><a class="docs" href="../grain.cl.allocator.ClMallocator.deviceof.html">[Docs] </a><a href="#L1">deviceof</a></li><li><a href="#L1">pinned</a></li><li><a class="docs" href="../grain.cl.allocator.ClMallocator.allocate.html">[Docs] </a><a href="#L31">allocate</a></li><li><a class="docs" href="../grain.cl.allocator.ClMallocator.deallocate.html">[Docs] </a><a href="#L44">deallocate</a></li><li><a href="#L1">instance</a></li></ul></li></ul></li></ul></div></div></div>
+		<div id="source-navigation"><div class="list-holder"><ul><li><a class="docs" href="../grain.cl.allocator.html">[Docs] </a><a href="#L1">grain.cl.allocator</a><ul><li><a href="#L3">grain.tensor</a></li><li><a href="#L4">grain.cl.testing</a></li><li><a href="#L5">grain.cl.device</a></li><li><a href="#L7">grain.dpp.cl</a></li><li><a href="#L10">ClMem</a><ul><li><a href="#L14">ptr</a></li><li><a href="#L15">length</a></li></ul></li><li><a class="docs" href="../grain.cl.allocator.ClMallocator.html">[Docs] </a><a href="#L20">ClMallocator</a><ul><li><a href="#L22">opt</a></li><li><a class="docs" href="../grain.cl.allocator.ClMallocator.deviceof.html">[Docs] </a><a href="#L1">deviceof</a></li><li><a href="#L1">pinned</a></li><li><a class="docs" href="../grain.cl.allocator.ClMallocator.allocate.html">[Docs] </a><a href="#L31">allocate</a></li><li><a class="docs" href="../grain.cl.allocator.ClMallocator.deallocate.html">[Docs] </a><a href="#L44">deallocate</a></li><li><a href="#L1">instance</a></li></ul></li></ul></li></ul></div></div></div>
 	</div>
 	<div id="page-footer">Page generated by <a href="https://github.com/adamdruppe/adrdox">adrdox</a></div>
 </body>
