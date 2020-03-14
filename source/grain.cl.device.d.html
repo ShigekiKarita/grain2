@@ -92,11 +92,11 @@
 <a class="br" href="#L64" id="L64">64 </a>        <span class="kwrd">import</span> <span class="hid">core.memory</span> : <span class="hid">pureMalloc</span>;
 <a class="br" href="#L65" id="L65">65 </a>        <span class="com">// init device</span>
 <a class="br" href="#L66" id="L66">66 </a>        <span class="hid">cl_uint</span> <span class="hid">numPlatform</span>;
-<a class="br" href="#L67" id="L67">67 </a>        <a class="hid" href="grain.cl.testing.d.html#L119" title="grain.cl.testing.checkCl">checkCl</a>!<span class="hid">clGetPlatformIDs</span>(<span class="num">0</span>, <span class="kwrd">null</span>, &amp;<span class="hid">numPlatform</span>);
+<a class="br" href="#L67" id="L67">67 </a>        <span class="hid">checkCl</span>!<span class="hid">clGetPlatformIDs</span>(<span class="num">0</span>, <span class="kwrd">null</span>, &amp;<span class="hid">numPlatform</span>);
 <a class="br" href="#L68" id="L68">68 </a>        <span class="kwrd">auto</span> <span class="hid">platformIdsPtr</span> = <span class="kwrd">cast</span>(<span class="hid">cl_platform_id</span>*)
 <a class="br" href="#L69" id="L69">69 </a>            <span class="hid">pureMalloc</span>(<span class="hid">cl_platform_id.sizeof</span> * <span class="hid">numPlatform</span>);
 <a class="br" href="#L70" id="L70">70 </a>        <span class="hid">platformIds</span> = <span class="hid">platformIdsPtr</span>[<span class="num">0</span> .. <span class="hid">numPlatform</span>];
-<a class="br" href="#L71" id="L71">71 </a>        <a class="hid" href="grain.cl.testing.d.html#L119" title="grain.cl.testing.checkCl">checkCl</a>!<span class="hid">clGetPlatformIDs</span>(<span class="hid">numPlatform</span>, <span class="hid">platformIdsPtr</span>, <span class="kwrd">null</span>);
+<a class="br" href="#L71" id="L71">71 </a>        <span class="hid">checkCl</span>!<span class="hid">clGetPlatformIDs</span>(<span class="hid">numPlatform</span>, <span class="hid">platformIdsPtr</span>, <span class="kwrd">null</span>);
 <a class="br" href="#L72" id="L72">72 </a>
 <a class="br" href="#L73" id="L73">73 </a>        <span class="kwrd">auto</span> <span class="hid">platformsPtr</span> = <span class="kwrd">cast</span>(<span class="kwrd">typeof</span>(<span class="kwrd">this</span>)*)
 <a class="br" href="#L74" id="L74">74 </a>            <span class="hid">pureMalloc</span>(<span class="kwrd">typeof</span>(<span class="kwrd">this</span>).<span class="hid">sizeof</span> * <span class="hid">numPlatform</span>);
@@ -111,11 +111,11 @@
 <a class="br" href="#L83" id="L83">83 </a>        {
 <a class="br" href="#L84" id="L84">84 </a>            <span class="hid">cl_device_id</span> <span class="hid">device_id</span> = <span class="kwrd">null</span>;
 <a class="br" href="#L85" id="L85">85 </a>            <span class="hid">cl_uint</span> <span class="hid">numDevice</span>;
-<a class="br" href="#L86" id="L86">86 </a>            <a class="hid" href="grain.cl.testing.d.html#L119" title="grain.cl.testing.checkCl">checkCl</a>!<span class="hid">clGetDeviceIDs</span>(<span class="hid">p.platformId</span>, <span class="hid">CL_DEVICE_TYPE_DEFAULT</span>,
+<a class="br" href="#L86" id="L86">86 </a>            <span class="hid">checkCl</span>!<span class="hid">clGetDeviceIDs</span>(<span class="hid">p.platformId</span>, <span class="hid">CL_DEVICE_TYPE_DEFAULT</span>,
 <a class="br" href="#L87" id="L87">87 </a>                                   <span class="num">0</span>, <span class="kwrd">null</span>, &amp;<span class="hid">numDevice</span>);
 <a class="br" href="#L88" id="L88">88 </a>            <span class="kwrd">auto</span> <span class="hid">deviceIdsPtr</span> = <span class="kwrd">cast</span>(<span class="hid">cl_device_id</span>*)
 <a class="br" href="#L89" id="L89">89 </a>                <span class="hid">pureMalloc</span>(<span class="hid">cl_device_id.sizeof</span> * <span class="hid">numDevice</span>);
-<a class="br" href="#L90" id="L90">90 </a>            <a class="hid" href="grain.cl.testing.d.html#L119" title="grain.cl.testing.checkCl">checkCl</a>!<span class="hid">clGetDeviceIDs</span>(<span class="hid">p.platformId</span>, <span class="hid">CL_DEVICE_TYPE_DEFAULT</span>,
+<a class="br" href="#L90" id="L90">90 </a>            <span class="hid">checkCl</span>!<span class="hid">clGetDeviceIDs</span>(<span class="hid">p.platformId</span>, <span class="hid">CL_DEVICE_TYPE_DEFAULT</span>,
 <a class="br" href="#L91" id="L91">91 </a>                                   <span class="hid">numDevice</span>, <span class="hid">deviceIdsPtr</span>, <span class="kwrd">null</span>);
 <a class="br" href="#L92" id="L92">92 </a>            <span class="hid">p.deviceIds</span> = <span class="hid">deviceIdsPtr</span>[<span class="num">0</span> .. <span class="hid">numDevice</span>];
 <a class="br" href="#L93" id="L93">93 </a>        }
