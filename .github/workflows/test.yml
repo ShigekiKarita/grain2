@@ -21,9 +21,9 @@ jobs:
         source $(curl https://dlang.org/install.sh | bash -s -- ${{ matrix.compiler }} -a)
         dub test grain2:core
     - name: test-cl
-      if: matrix.compiler == 'ldc'
+      if: startsWith(matrix.compiler, 'ldc')
       run: |
-        sudo apt-get install -y clinfo libpocl-dev libclang-6.0-dev ocl-icd-opencl-dev libopenblas-dev
+        sudo apt-get install -y clinfo libpocl-dev ocl-icd-opencl-dev libopenblas-dev
         clinfo
         source $(curl https://dlang.org/install.sh | bash -s -- ${{ matrix.compiler }} -a)
         dub test grain2:cl
