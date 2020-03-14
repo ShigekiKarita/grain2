@@ -3,6 +3,7 @@ module grain.dlpack.conv;
 import std.container.array : Array;
 import std.traits : isIntegral, isFloatingPoint, isUnsigned, isSIMDVector;
 
+import grain.tensor : bfloat16;
 import grain.dlpack.header : DLManagedTensor, DLDataType, kDLInt, kDLUInt, kDLFloat;
 
 
@@ -15,6 +16,10 @@ enum DLDataType dataTypeOf(T) = {
         ret = dataTypeOf!V;
         ret.bits = V.sizeof * 8;
         ret.lanes = N;
+    }
+    else static if (is(T == bfloat16))
+    {
+        ret.code = kDLBFloat;
     }
     else static if (isFloatingPoint!T)
     {
