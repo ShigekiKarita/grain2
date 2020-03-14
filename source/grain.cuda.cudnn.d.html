@@ -30,7 +30,7 @@
 <a class="br" href="#L2" id="L2">2 </a><span class="kwrd">module</span> <span class="hid">grain.cuda.cudnn</span>;
 <a class="br" href="#L3" id="L3">3 </a>
 <a class="br" href="#L4" id="L4">4 </a><span class="kwrd">import</span> <span class="hid">grain.tensor</span> : <a class="hid" href="grain.tensor.d.html#L37" title="grain.tensor.Tensor">Tensor</a>;
-<a class="br" href="#L5" id="L5">5 </a><span class="kwrd">import</span> <span class="hid">grain.cuda</span> : <span class="hid">cudnnHandle</span>;
+<a class="br" href="#L5" id="L5">5 </a><span class="kwrd">import</span> <span class="hid">grain.cuda</span> : <a class="hid" href="grain.cuda.d.html#L15" title="grain.cuda.cudnnHandle">cudnnHandle</a>;
 <a class="br" href="#L6" id="L6">6 </a><span class="kwrd">import</span> <span class="hid">grain.dpp.cudnn</span>;
 <a class="br" href="#L7" id="L7">7 </a><span class="kwrd">import</span> <span class="hid">grain.dpp.cuda_driver</span> : <span class="hid">CUdeviceptr</span>;
 <a class="br" href="#L8" id="L8">8 </a><span class="kwrd">import</span> <span class="hid">grain.cuda.testing</span> : <span class="hid">checkCudnn</span>;
@@ -135,11 +135,11 @@
 <a class="br" href="#L107" id="L107">107 </a>@<span class="hid">system</span> @<span class="hid">nogc</span>
 <a class="br" href="#L108" id="L108">108 </a><span class="kwrd">unittest</span>
 <a class="br" href="#L109" id="L109">109 </a>{
-<a class="br" href="#L110" id="L110">110 </a>    <span class="kwrd">import</span> <span class="hid">grain.cuda.allocator</span> : <span class="hid">CuTensor</span>;
+<a class="br" href="#L110" id="L110">110 </a>    <span class="kwrd">import</span> <span class="hid">grain.cuda.allocator</span> : <a class="hid" href="grain.cuda.allocator.d.html#L100" title="grain.cuda.allocator.CuTensor">CuTensor</a>;
 <a class="br" href="#L111" id="L111">111 </a>    <span class="kwrd">import</span> <span class="hid">grain.ops.transposed</span> : <span class="hid">transposed</span>;
 <a class="br" href="#L112" id="L112">112 </a>    <span class="kwrd">import</span> <span class="hid">grain.testing</span> : <span class="hid">assertEqual</span>;
 <a class="br" href="#L113" id="L113">113 </a>    
-<a class="br" href="#L114" id="L114">114 </a>    <span class="kwrd">auto</span> <span class="hid">x</span> = <span class="hid">CuTensor</span>!(<span class="num">3</span>, <span class="type">float</span>)(<span class="num">2</span>, <span class="num">3</span>, <span class="num">4</span>).<span class="hid">transposed</span>;
+<a class="br" href="#L114" id="L114">114 </a>    <span class="kwrd">auto</span> <span class="hid">x</span> = <a class="hid" href="grain.cuda.allocator.d.html#L100" title="grain.cuda.allocator.CuTensor">CuTensor</a>!(<span class="num">3</span>, <span class="type">float</span>)(<span class="num">2</span>, <span class="num">3</span>, <span class="num">4</span>).<span class="hid">transposed</span>;
 <a class="br" href="#L115" id="L115">115 </a>    <span class="kwrd">auto</span> <span class="hid">t</span> = <span class="hid">x.makeCudnnTensor</span>;
 <a class="br" href="#L116" id="L116">116 </a>
 <a class="br" href="#L117" id="L117">117 </a>    <span class="hid">cudnnDataType_t</span> <span class="hid">dtype</span>;
@@ -166,7 +166,7 @@
 <a class="br" href="#L138" id="L138">138 </a>    <span class="kwrd">assert</span>(<span class="hid">src.shape</span> == <span class="hid">dst.shape</span>);
 <a class="br" href="#L139" id="L139">139 </a>    <span class="hid">checkCudnn</span>(
 <a class="br" href="#L140" id="L140">140 </a>        <span class="hid">cudnnTransformTensor</span>(
-<a class="br" href="#L141" id="L141">141 </a>            <span class="hid">cudnnHandle</span>,
+<a class="br" href="#L141" id="L141">141 </a>            <a class="hid" href="grain.cuda.d.html#L15" title="grain.cuda.cudnnHandle">cudnnHandle</a>,
 <a class="br" href="#L142" id="L142">142 </a>            <span class="kwrd">cast</span>(<span class="kwrd">const</span> <span class="type">void</span>*) &amp;<span class="hid">alpha</span>, <span class="hid">src.makeCudnnTensor</span>!<span class="kwrd">true</span>, <span class="kwrd">cast</span>(<span class="kwrd">const</span> <span class="type">void</span>*) <span class="hid">src.ptr</span>,
 <a class="br" href="#L143" id="L143">143 </a>            <span class="kwrd">cast</span>(<span class="kwrd">const</span> <span class="type">void</span>*) &amp;<span class="hid">beta</span>, <span class="hid">dst.makeCudnnTensor</span>!<span class="kwrd">true</span>, <span class="kwrd">cast</span>(<span class="type">void</span>*) <span class="hid">dst.ptr</span>
 <a class="br" href="#L144" id="L144">144 </a>            ) );
@@ -177,10 +177,10 @@
 <a class="br" href="#L149" id="L149">149 </a><span class="kwrd">unittest</span>
 <a class="br" href="#L150" id="L150">150 </a>{
 <a class="br" href="#L151" id="L151">151 </a>    <span class="com">/// FIXME: int/long support</span>
-<a class="br" href="#L152" id="L152">152 </a>    <span class="kwrd">import</span> <span class="hid">grain.cuda.allocator</span> : <span class="hid">CuTensor</span>;
+<a class="br" href="#L152" id="L152">152 </a>    <span class="kwrd">import</span> <span class="hid">grain.cuda.allocator</span> : <a class="hid" href="grain.cuda.allocator.d.html#L100" title="grain.cuda.allocator.CuTensor">CuTensor</a>;
 <a class="br" href="#L153" id="L153">153 </a>    <span class="kwrd">import</span> <span class="hid">grain.ops.transposed</span> : <span class="hid">transposed</span>;
-<a class="br" href="#L154" id="L154">154 </a>    <span class="kwrd">auto</span> <span class="hid">x</span> = <span class="hid">CuTensor</span>!(<span class="num">3</span>, <span class="type">float</span>)(<span class="num">2</span>, <span class="num">3</span>, <span class="num">4</span>).<span class="hid">transposed</span>;
-<a class="br" href="#L155" id="L155">155 </a>    <span class="kwrd">auto</span> <span class="hid">y</span> = <span class="hid">CuTensor</span>!(<span class="num">3</span>, <span class="type">float</span>)(<span class="hid">x.shape</span>);
+<a class="br" href="#L154" id="L154">154 </a>    <span class="kwrd">auto</span> <span class="hid">x</span> = <a class="hid" href="grain.cuda.allocator.d.html#L100" title="grain.cuda.allocator.CuTensor">CuTensor</a>!(<span class="num">3</span>, <span class="type">float</span>)(<span class="num">2</span>, <span class="num">3</span>, <span class="num">4</span>).<span class="hid">transposed</span>;
+<a class="br" href="#L155" id="L155">155 </a>    <span class="kwrd">auto</span> <span class="hid">y</span> = <a class="hid" href="grain.cuda.allocator.d.html#L100" title="grain.cuda.allocator.CuTensor">CuTensor</a>!(<span class="num">3</span>, <span class="type">float</span>)(<span class="hid">x.shape</span>);
 <a class="br" href="#L156" id="L156">156 </a>    <a class="hid" href="grain.cuda.cudnn.d.html#L129" title="grain.cuda.cudnn.transform">transform</a>(<span class="hid">x</span>, <span class="hid">y</span>);
 <a class="br" href="#L157" id="L157">157 </a>    <a class="hid" href="grain.cuda.cudnn.d.html#L129" title="grain.cuda.cudnn.transform">transform</a>(<span class="hid">y</span>, <span class="hid">x</span>);
 <a class="br" href="#L158" id="L158">158 </a>}</pre></div>

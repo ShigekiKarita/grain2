@@ -30,7 +30,7 @@
 <a class="br" href="#L2" id="L2">2 </a>
 <a class="br" href="#L3" id="L3">3 </a><span class="kwrd">import</span> <span class="hid">grain.tensor</span> : <a class="hid" href="grain.tensor.d.html#L16" title="grain.tensor.Opt">Opt</a>;
 <a class="br" href="#L4" id="L4">4 </a><span class="kwrd">import</span> <span class="hid">grain.cl.testing</span>;
-<a class="br" href="#L5" id="L5">5 </a><span class="kwrd">import</span> <span class="hid">grain.cl.device</span> : <a class="hid" href="grain.cl.device.d.html#L52" title="grain.cl.device.ClDevice">ClDevice</a>;
+<a class="br" href="#L5" id="L5">5 </a><span class="kwrd">import</span> <span class="hid">grain.cl.device</span> : <span class="hid">ClDevice</span>;
 <a class="br" href="#L6" id="L6">6 </a>
 <a class="br" href="#L7" id="L7">7 </a><span class="kwrd">import</span> <span class="hid">grain.dpp.cl</span>;
 <a class="br" href="#L8" id="L8">8 </a>
@@ -61,7 +61,7 @@
 <a class="br" href="#L33" id="L33">33 </a>        <span class="com">// import grain.dpp.cuda_driver : cuMemAlloc_v2, CUdeviceptr;</span>
 <a class="br" href="#L34" id="L34">34 </a>        <span class="kwrd">if</span> (!<span class="hid">bytes</span>) <span class="kwrd">return</span> <a class="hid" href="grain.cl.allocator.d.html#L10" title="grain.cl.allocator.ClMem">ClMem</a>(<span class="kwrd">null</span>, <span class="num">0</span>);
 <a class="br" href="#L35" id="L35">35 </a>
-<a class="br" href="#L36" id="L36">36 </a>        <span class="kwrd">auto</span> <span class="hid">id</span> = <a class="hid" href="grain.cl.device.d.html#L97" title="grain.cl.device.ClDevice.get">ClDevice.get</a>(<span class="hid">opt.deviceId</span>, <span class="hid">opt.platformId</span>);
+<a class="br" href="#L36" id="L36">36 </a>        <span class="kwrd">auto</span> <span class="hid">id</span> = <span class="hid">ClDevice.get</span>(<span class="hid">opt.deviceId</span>, <span class="hid">opt.platformId</span>);
 <a class="br" href="#L37" id="L37">37 </a>        <span class="kwrd">auto</span> <span class="hid">context</span> = <span class="hid">checkClFun</span>!<span class="hid">clCreateContext</span>(<span class="kwrd">null</span>, <span class="num">1</span>, &amp;<span class="hid">id</span>, <span class="kwrd">null</span>, <span class="kwrd">null</span>);
 <a class="br" href="#L38" id="L38">38 </a>        <span class="kwrd">auto</span> <span class="hid">da</span> = <span class="hid">checkClFun</span>!<span class="hid">clCreateBuffer</span>(<span class="hid">context</span>, <span class="hid">CL_MEM_READ_WRITE</span>, <span class="hid">bytes</span>, <span class="kwrd">null</span>);
 <a class="br" href="#L39" id="L39">39 </a>        <span class="kwrd">return</span> <a class="hid" href="grain.cl.allocator.d.html#L10" title="grain.cl.allocator.ClMem">ClMem</a>(<span class="hid">da</span>, <span class="hid">bytes</span>);
