@@ -1,0 +1,22 @@
+name: CI
+
+on: [push]
+
+jobs:
+  test:
+
+    runs-on: ubuntu-18.04
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: install
+      run: |
+        sudo apt-get remove -y clang-6.0 libclang-common-6.0-dev libclang1-6.0 libllvm6.0
+        sudo apt-get autoremove
+        sudo apt-get update -y
+        sudo apt-get install -y clinfo libpocl-dev libclang-6.0-dev ocl-icd-opencl-dev
+        clinfo
+    - name: test
+      run: |
+        source $(curl https://dlang.org/install.sh | bash -s -- ldc -a)
+        dub test grain2:cl
