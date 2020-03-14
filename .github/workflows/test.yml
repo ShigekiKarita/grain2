@@ -10,7 +10,7 @@ jobs:
       max-parallel: 20
       matrix:
         compiler: [dmd, dmd-beta, ldc, ldc-beta]
-        subpackage: [core, cl]
+        subpackage: [core] # TODO: cl
     steps:
     - uses: actions/checkout@v1
     - name: install-common
